@@ -1,0 +1,55 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  Caption = 'CustomPaint - TatukGIS DK11 Sample'
+  ClientHeight = 515
+  ClientWidth = 768
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  TextHeight = 13
+  object GIS: TGIS_ViewerWnd
+    Left = 8
+    Top = 32
+    Width = 752
+    Height = 475
+    CursorForDrag = crDefault
+    CursorForEdit = crDefault
+    CursorForSelect = crDefault
+    CursorForUserDefined = crDefault
+    CursorForZoom = crDefault
+    CursorForZoomEx = crDefault
+    CursorForCameraPosition = crDefault
+    CursorForCameraRotation = crDefault
+    CursorForCameraXYZ = crDefault
+    CursorForCameraXY = crDefault
+    CursorForCameraZoom = crDefault
+    CursorForSunPosition = crDefault
+    CursorFor3DSelect = crDefault
+    Ctl3D = True
+    ParentColor = False
+    ParentCtl3D = False
+    TabOrder = 0
+    KeepScale = False
+    DelayedUpdate = 700
+    ProgressiveUpdate = 2500
+    Mode = Zoom
+    Color = clWhite
+    BorderStyle = bsNone
+    PaintExtraEvent = GISPaintExtraEvent
+  end
+  object cbRenderer: TComboBox
+    Left = 8
+    Top = 10
+    Width = 177
+    Height = 21
+    Style = csDropDownList
+    TabOrder = 1
+    OnChange = cbRendererChange
+  end
+end

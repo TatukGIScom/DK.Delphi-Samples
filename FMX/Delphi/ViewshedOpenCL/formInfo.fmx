@@ -1,0 +1,34 @@
+object frmInfo: TfrmInfo
+  Left = 0
+  Top = 0
+  Caption = 'frmInfo'
+  ClientHeight = 305
+  ClientWidth = 457
+  Position = ScreenCenter
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object btnClose: TButton
+    Anchors = [akRight, akBottom]
+    ModalResult = 1
+    Position.X = 368.000000000000000000
+    Position.Y = 272.000000000000000000
+    TabOrder = 0
+    Text = 'Close'
+  end
+  object mmInfo: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    ReadOnly = True
+    Anchors = [akLeft, akTop, akRight, akBottom]
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 441.000000000000000000
+    Size.Height = 257.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    Viewport.Width = 441.000000000000000000
+    Viewport.Height = 257.000000000000000000
+  end
+end

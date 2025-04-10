@@ -1,0 +1,191 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  Caption = 'Form1'
+  ClientHeight = 754
+  ClientWidth = 656
+  WindowState = wsMaximized
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnClose = FormClose
+  OnShow = FormShow
+  DesignerMasterStyle = 0
+  object GIS: TGIS_ViewerWnd
+    Touch.InteractiveGestures = [Zoom, Pan]
+    CursorForDrag = crDefault
+    CursorForEdit = crDefault
+    CursorForSelect = crDefault
+    CursorForUserDefined = crDefault
+    CursorForZoom = crDefault
+    CursorForZoomEx = crDefault
+    CursorForCameraPosition = crDefault
+    CursorForCameraRotation = crDefault
+    CursorForCameraXYZ = crDefault
+    CursorForCameraXY = crDefault
+    CursorForCameraZoom = crDefault
+    CursorForSunPosition = crDefault
+    CursorFor3DSelect = crDefault
+    KeepScale = False
+    DelayedUpdate = 700
+    ProgressiveUpdate = 2500
+    BackgroundColor = claWhite
+    HiRes = True
+    SelectionColor = claRed
+    TapSimpleEvent = GISTapSimpleEvent
+    Align = Client
+    Size.Width = 528.000000000000000000
+    Size.Height = 714.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    OnMouseMove = GISMouseMove
+    OnMouseWheel = GISMouseWheel
+  end
+  object GIS_Legend: TGIS_ControlLegend
+    GIS_Viewer = GIS
+    Mode = Layers
+    Options = [AllowMove, AllowActive, AllowExpand, AllowParams, AllowSelect, ShowSubLayers, AllowParamsVisible]
+    ReverseOrder = False
+    CompactView = False
+    DialogOptions.VectorWizardUniqueLimit = 256
+    DialogOptions.VectorWizardUniqueSearchLimit = 16384
+    BackgroundColor = claWhite
+    FontColor = claBlack
+    Anchors = [akLeft, akTop, akBottom]
+    HitTest = True
+    Position.Y = 312.000000000000000000
+    Size.Width = 153.000000000000000000
+    Size.Height = 442.000000000000000000
+    Size.PlatformDefault = False
+    Visible = False
+  end
+  object Panel1: TPanel
+    Position.Y = 40.000000000000000000
+    Size.Width = 153.000000000000000000
+    Size.Height = 217.000000000000000000
+    Size.PlatformDefault = False
+    Visible = False
+    TabOrder = 4
+    object btnNavigation: TButton
+      Align = Top
+      Position.Y = 41.000000000000000000
+      Size.Width = 153.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      Text = 'Adv. Navigation'
+      OnClick = btnNavigationClick
+    end
+    object btnFullExtent: TButton
+      Align = Top
+      Position.Y = 81.000000000000000000
+      Size.Width = 153.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+      Text = 'Full Extent'
+      OnClick = btnFullExtentClick
+    end
+    object cbx3DMode: TComboBox
+      Align = Top
+      Items.Strings = (
+        'Camera Position'
+        'Camera XYZ'
+        'Camera XY'
+        'Camera Rotation'
+        'Sun Position'
+        'Zoom'
+        'Select 3D')
+      Position.Y = 194.000000000000000000
+      Size.Width = 153.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 4
+      OnChange = cbx3DModeChange
+    end
+    object btn2D3D: TButton
+      Align = Top
+      Size.Width = 153.000000000000000000
+      Size.Height = 41.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = '3D'
+      OnClick = btn2D3DClick
+    end
+    object Button2: TButton
+      Align = Top
+      Position.Y = 121.000000000000000000
+      Size.Width = 153.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 5
+      Text = 'Show Legend'
+      OnClick = Button2Click
+    end
+    object btnShowOpt: TButton
+      Align = Top
+      Position.Y = 161.000000000000000000
+      Size.Width = 153.000000000000000000
+      Size.Height = 33.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 6
+      Text = 'Show Options'
+      OnClick = btnShowOptClick
+    end
+  end
+  object ScrollBox1: TScrollBox
+    Align = Right
+    Position.X = 528.000000000000000000
+    Position.Y = 40.000000000000000000
+    Size.Width = 128.000000000000000000
+    Size.Height = 714.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 5
+    Viewport.Width = 128.000000000000000000
+    Viewport.Height = 714.000000000000000000
+    object GIS_3D: TGIS_Control3D
+      Align = Client
+      Size.Width = 128.000000000000000000
+      Size.Height = 745.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      AutoSize = True
+      Mode = CameraPosition
+      Options = [ShowNavigation, ShowCoordinates, ShowReferencePoint, ShowLights, ShowFrameModes, ShowScalings, ShowFloods, ShowWalls]
+    end
+  end
+  object ToolBar1: TToolBar
+    Size.Width = 656.000000000000000000
+    Size.Height = 40.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 7
+    object btnWalls: TButton
+      Position.X = 152.000000000000000000
+      Size.Width = 105.000000000000000000
+      Size.Height = 41.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = 'Hide walls'
+      Visible = False
+      OnClick = btnWallsClick
+    end
+    object btnRoof: TButton
+      Position.X = 256.000000000000000000
+      Size.Width = 113.000000000000000000
+      Size.Height = 41.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      Text = 'Hide roof'
+      Visible = False
+      OnClick = btnRoofClick
+    end
+    object Button1: TButton
+      Size.Width = 153.000000000000000000
+      Size.Height = 41.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+      Text = 'Menu'
+      OnClick = Button1Click
+    end
+  end
+end

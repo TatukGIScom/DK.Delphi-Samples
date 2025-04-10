@@ -1,0 +1,96 @@
+object Form3: TForm3
+  Left = 0
+  Top = 0
+  Caption = 'TatukGIS Samples - Hello DK'
+  ClientHeight = 480
+  ClientWidth = 682
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object ToolBar1: TToolBar
+    Size.Width = 682.000000000000000000
+    Size.Height = 40.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object btnOpen: TSpeedButton
+      Align = Left
+      Size.Width = 105.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Open project'
+      OnClick = btnOpenClick
+    end
+    object btnZoom: TSpeedButton
+      Align = Left
+      Position.X = 105.000000000000000000
+      Size.Width = 105.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Zooming'
+      OnClick = btnZoomClick
+    end
+    object btnDrag: TSpeedButton
+      Align = Left
+      Position.X = 210.000000000000000000
+      Size.Width = 112.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Dragging'
+      OnClick = btnDragClick
+    end
+    object btnSelect: TSpeedButton
+      Align = Left
+      Position.X = 322.000000000000000000
+      Size.Width = 120.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Selecting'
+      OnClick = btnSelectClick
+    end
+    object btnCreate: TSpeedButton
+      Align = Left
+      Position.X = 442.000000000000000000
+      Size.Width = 111.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Create shape'
+      OnClick = btnCreateClick
+    end
+    object btnFind: TSpeedButton
+      Align = Left
+      Position.X = 553.000000000000000000
+      Size.Width = 145.000000000000000000
+      Size.Height = 40.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Find shapes'
+      OnClick = btnFindClick
+    end
+  end
+  object GIS: TGIS_ViewerWnd
+    Touch.InteractiveGestures = [Zoom, Pan]
+    CursorForDrag = crDefault
+    CursorForEdit = crDefault
+    CursorForSelect = crDefault
+    CursorForUserDefined = crDefault
+    CursorForZoom = crDefault
+    CursorForZoomEx = crDefault
+    CursorForCameraPosition = crDefault
+    CursorForCameraRotation = crDefault
+    CursorForCameraXYZ = crDefault
+    CursorForCameraXY = crDefault
+    CursorForCameraZoom = crDefault
+    CursorForSunPosition = crDefault
+    CursorFor3DSelect = crDefault
+    ProgressiveUpdate = 2500
+    BackgroundColor = claWhite
+    HiRes = True
+    SelectionColor = claRed
+    TapSimpleEvent = GISTapSimpleEvent
+    Align = Client
+    Size.Width = 682.000000000000000000
+    Size.Height = 440.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+  end
+end

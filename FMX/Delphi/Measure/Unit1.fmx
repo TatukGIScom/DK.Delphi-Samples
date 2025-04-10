@@ -1,0 +1,120 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  Caption = 'Measure'
+  ClientHeight = 490
+  ClientWidth = 675
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  DesignerMasterStyle = 3
+  object GIS: TGIS_ViewerWnd
+    Touch.InteractiveGestures = [Zoom, Pan]
+    BigExtentMargin = -5
+    RestrictedDrag = False
+    SelectionColor = claRed
+    BackgroundColor = claWhite
+    HiRes = True
+    EditorChangeEvent = GISEditorChangeEvent
+    TapSimpleEvent = GISTapSimpleEvent
+    Align = Client
+    Size.Width = 555.000000000000000000
+    Size.Height = 442.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+  end
+  object ToolBar1: TToolBar
+    Size.Width = 675.000000000000000000
+    Size.Height = 48.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    object btnMeasureLine: TSpeedButton
+      Align = Left
+      Size.Width = 113.000000000000000000
+      Size.Height = 48.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Measure line'
+      OnClick = btnMeasureLineClick
+    end
+    object btnMeasurePol: TSpeedButton
+      Align = Left
+      Position.X = 113.000000000000000000
+      Size.Width = 144.000000000000000000
+      Size.Height = 48.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Measure polygon'
+      OnClick = btnMeasurePolClick
+    end
+    object btnClear: TSpeedButton
+      Align = Left
+      Position.X = 257.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 48.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Clear'
+      OnClick = btnClearClick
+    end
+  end
+  object Panel1: TPanel
+    Align = Right
+    Position.X = 555.000000000000000000
+    Position.Y = 48.000000000000000000
+    Size.Width = 120.000000000000000000
+    Size.Height = 442.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 5
+    object edtArea: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      TabOrder = 0
+      TextSettings.Font.Family = 'Default'
+      Position.X = 8.000000000000000000
+      Position.Y = 99.000000000000000000
+      Size.Width = 105.000000000000000000
+      Size.Height = 32.000000000000000000
+      Size.PlatformDefault = False
+      StyledSettings = [Style, FontColor]
+    end
+    object edtLength: TEdit
+      Touch.InteractiveGestures = [LongTap, DoubleTap]
+      TabOrder = 1
+      ReadOnly = True
+      Position.X = 8.000000000000000000
+      Position.Y = 48.000000000000000000
+      Size.Width = 105.000000000000000000
+      Size.Height = 32.000000000000000000
+      Size.PlatformDefault = False
+      StyledSettings = [Family, Style, FontColor]
+    end
+    object lblLength: TLabel
+      Position.X = 12.000000000000000000
+      Position.Y = 24.000000000000000000
+      Text = 'Length'
+    end
+    object lblArea: TLabel
+      Position.X = 12.000000000000000000
+      Position.Y = 81.000000000000000000
+      Text = 'Area'
+    end
+    object btnMetrical: TButton
+      Position.X = 9.000000000000000000
+      Position.Y = 136.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      Text = 'metrical'
+      OnClick = btnMetricalClick
+    end
+    object btnImperial: TButton
+      Position.X = 8.000000000000000000
+      Position.Y = 168.000000000000000000
+      Size.Width = 83.000000000000000000
+      Size.Height = 25.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+      Text = 'imperial'
+      OnClick = btnImperialClick
+    end
+  end
+end

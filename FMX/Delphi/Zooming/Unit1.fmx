@@ -1,0 +1,118 @@
+object Form3: TForm3
+  Left = 0
+  Top = 0
+  Caption = 'TatukGIS Samples - Zooming'
+  ClientHeight = 480
+  ClientWidth = 682
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  DesignerMasterStyle = 0
+  object ToolBar1: TToolBar
+    Size.Width = 682.000000000000000000
+    Size.Height = 33.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+    object btnFullExtent: TButton
+      Align = MostLeft
+      Hint = 'Full extent'
+      ImageIndex = 0
+      Margins.Left = 5.000000000000000000
+      Margins.Top = 5.000000000000000000
+      Margins.Right = 5.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Position.X = 5.000000000000000000
+      Position.Y = 5.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 23.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 1
+      Text = 'Full Extent '
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = btnFullExtentClick
+    end
+    object btnZoom: TButton
+      Align = Left
+      Hint = 'Zoom mode'
+      ImageIndex = 1
+      Margins.Left = 5.000000000000000000
+      Margins.Top = 5.000000000000000000
+      Margins.Right = 5.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Position.X = 95.000000000000000000
+      Position.Y = 5.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 23.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      Text = 'Zoom'
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = btnZoomClick
+    end
+    object btnDrag: TButton
+      Align = Left
+      Hint = 'Drag mode'
+      ImageIndex = 2
+      Margins.Left = 5.000000000000000000
+      Margins.Top = 5.000000000000000000
+      Margins.Right = 5.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Position.X = 185.000000000000000000
+      Position.Y = 5.000000000000000000
+      Size.Width = 80.000000000000000000
+      Size.Height = 23.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 3
+      Text = 'Drag'
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = btnDragClick
+    end
+  end
+  object StatusBar1: TStatusBar
+    Position.Y = 458.000000000000000000
+    ShowSizeGrip = True
+    Size.Width = 682.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    object Label1: TLabel
+      Position.X = 8.000000000000000000
+      Position.Y = 2.000000000000000000
+      Size.Width = 265.000000000000000000
+      Size.Height = 17.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'Use mouse wheel to zoom in/zoom out'
+    end
+  end
+  object GIS: TGIS_ViewerWnd
+    Touch.InteractiveGestures = [Zoom, Pan]
+    CursorForDrag = crDefault
+    CursorForEdit = crDefault
+    CursorForSelect = crDefault
+    CursorForUserDefined = crDefault
+    CursorForZoom = crDefault
+    CursorForZoomEx = crDefault
+    CursorForCameraPosition = crDefault
+    CursorForCameraRotation = crDefault
+    CursorForCameraXYZ = crDefault
+    CursorForCameraXY = crDefault
+    CursorForCameraZoom = crDefault
+    CursorForSunPosition = crDefault
+    CursorFor3DSelect = crDefault
+    DelayedUpdate = 700
+    ProgressiveUpdate = 2500
+    BackgroundColor = claWhite
+    HiRes = True
+    SelectionColor = claRed
+    Align = Client
+    Size.Width = 682.000000000000000000
+    Size.Height = 425.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 4
+    OnMouseWheel = GISMouseWheel
+  end
+end
