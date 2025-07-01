@@ -1,7 +1,5 @@
 //=============================================================================
 // This source code is a part of TatukGIS Developer Kernel.
-// DK11.24.0.17147-Unstable4daily30
-// (c)2000-2018 TatukGIS. ALL RIGHTS RESERVED.
 //=============================================================================
 //
 //  How to add layer to the map.

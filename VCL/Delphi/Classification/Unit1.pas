@@ -40,7 +40,7 @@ type
     cmbClasses: TComboBox;
     cmbRenderType: TComboBox;
     lblRender: TLabel;
-    Panel1: TPanel;
+    pnlParamsBasic: TPanel;
     lblStartColor: TLabel;
     pnlStartColor: TPanel;
     lblEndColor: TLabel;
@@ -58,13 +58,17 @@ type
     Label1: TLabel;
     btnOpen: TButton;
     dlgFileOpen: TOpenDialog;
-    cbxColorRamp: TCheckBox;
-    cmbColorRamps: TComboBox;
     edtManualBreaks: TEdit;
     btnAddManualBreak: TButton;
     lblManual: TLabel;
-    cbxColorRampName: TCheckBox;
     cbxForceStatisticsCalculation: TCheckBox;
+    pnlParamsColorRamp: TPanel;
+    cbxColorRampName: TCheckBox;
+    cbxColorRamp: TCheckBox;
+    cmbColorRamps: TComboBox;
+    Label2: TLabel;
+    cmbColormapMode: TComboBox;
+    cbxReverse: TCheckBox;
     procedure cmbFieldsChange(Sender: TObject);
     procedure cmbMethodsChange(Sender: TObject);
     procedure cmbClassesChange(Sender: TObject);
@@ -80,14 +84,15 @@ type
     procedure FormShow(Sender: TObject);
     procedure btnAddManualBreakClick(Sender: TObject);
     procedure cbxForceStatisticsCalculationClick(Sender: TObject);
-    procedure cbxColorRampNameClick(Sender: TObject);
+    procedure cbxReverseClick(Sender: TObject);
+    procedure cmbColormapModeChange(Sender: TObject);
   private
     { Private declarations }
     procedure fillCmbFields ;
     procedure fillCmbColorRamps ;
     procedure doClassify(Sender: TObject) ;
     function  getLayer : TGIS_Layer ;
-
+    procedure setColorRampControls( const _enable : Boolean ) ;
   public
     { Public declarations }
   end;
@@ -259,6 +264,14 @@ begin
   doClassify( Sender ) ;
 end;
 
+procedure TfrmClassification.setColorRampControls( const _enable : Boolean ) ;
+begin
+  cbxColorRampName.Enabled := _enable ;
+  cmbColorRamps.Enabled := _enable ;
+  cmbColormapMode.Enabled := _enable ;
+  cbxReverse.Enabled := _enable ;
+end;
+
 procedure TfrmClassification.cmbFieldsChange(Sender: TObject);
 begin
   doClassify( Sender ) ;
@@ -338,7 +351,8 @@ begin
   if not TryStrToFloat( edtInterval.Text, f ) then
     edtInterval.Text := '100' ;
 
-  cmbColorRamps.ItemIndex := cmbColorRamps.Items.IndexOf('GreenBlue') ;
+  cmbColorRamps.ItemIndex := cmbColorRamps.Items.IndexOf(TGIS_ColorRampNames.GreenBlue) ;
+  cmbColormapMode.ItemIndex := cmbColormapMode.Items.IndexOf( GIS_COLORMAPMODE_CONTINUOUS ) ;
 
   method := cmbMethods.Items[cmbMethods.ItemIndex] ;
 
@@ -368,6 +382,8 @@ begin
     hideStdDev ;
     hideClasses ;
     hideManual ;
+
+    cmbColorRamps.ItemIndex := cmbColorRamps.Items.IndexOf( TGIS_ColorRampNames.BrownGreen) ;
   end
   else if ( method = GIS_CLASSIFY_METHOD_SD ) or
           ( method = GIS_CLASSIFY_METHOD_SDC ) then
@@ -377,6 +393,8 @@ begin
     hideManual ;
 
     showStdDev ;
+
+    cmbColorRamps.ItemIndex := cmbColorRamps.Items.IndexOf( TGIS_ColorRampNames.BrownGreen ) ;
   end
   else if method = GIS_CLASSIFY_METHOD_UNQ then
   begin
@@ -385,7 +403,9 @@ begin
     hideStdDev ;
     hideManual ;
 
-    cmbColorRamps.ItemIndex := cmbColorRamps.Items.IndexOf('Unique')
+    cmbColorRamps.ItemIndex := cmbColorRamps.Items.IndexOf( TGIS_ColorRampNames.Unique ) ;
+    cmbColormapMode.ItemIndex := cmbColormapMode.Items.IndexOf( GIS_COLORMAPMODE_DISCRETE ) ;
+    cbxColorRamp.Checked := True ;
   end
   else begin
     hideInterval ;
@@ -421,14 +441,7 @@ end;
 
 procedure TfrmClassification.cbxColorRampClick(Sender: TObject);
 begin
-  cmbColorRamps.Enabled := cbxColorRamp.Checked or cbxColorRampName.Checked ;
-
-  doClassify( Sender ) ;
-end;
-
-procedure TfrmClassification.cbxColorRampNameClick(Sender: TObject);
-begin
-  cmbColorRamps.Enabled := cbxColorRamp.Checked or cbxColorRampName.Checked ;
+  setColorRampControls( cbxColorRamp.Checked ) ;
 
   doClassify( Sender ) ;
 end;
@@ -444,7 +457,17 @@ begin
   doClassify( Sender ) ;
 end;
 
+procedure TfrmClassification.cbxReverseClick(Sender: TObject);
+begin
+  doClassify( Sender ) ;
+end;
+
 procedure TfrmClassification.cmbClassesChange(Sender: TObject);
+begin
+  doClassify( Sender ) ;
+end;
+
+procedure TfrmClassification.cmbColormapModeChange(Sender: TObject);
 begin
   doClassify( Sender ) ;
 end;
@@ -469,6 +492,7 @@ var
   class_break_str  : String ;
   class_break_val  : Double ;
   colormap_mode    : TGIS_ColorMapMode ;
+  ramp_name        : String ;
 begin
   if cmbMethods.ItemIndex <= 0 then exit ;
 
@@ -498,6 +522,8 @@ begin
   try
     // set common properties
     classifier.Target := cmbFields.Items[ cmbFields.ItemIndex ] ;
+    { NumClasses property is automatically calculated for methods:
+      DefinedInterval, Quartile, StandardDeviation(s) }
     classifier.NumClasses := cmbClasses.ItemIndex + 1 ;
     classifier.StartColor := TGIS_Color.FromBGR( pnlStartColor.Color ) ;
     classifier.EndColor := TGIS_Color.FromBGR( pnlEndColor.Color ) ;
@@ -563,31 +589,26 @@ begin
       classifier.AddClassBreak(class_break_val) ;
     end;
 
-    if cbxColorRampName.Checked then begin
-      if cmbColorRamps.Text = 'None' then
-        classifier.ColorRampName := ''
+    if cbxColorRamp.Checked and ( cmbColorRamps.Text <> 'None' ) then begin
+      // colormap mode
+      if cmbColormapMode.Items[cmbColormapMode.ItemIndex] = GIS_COLORMAPMODE_CONTINUOUS then
+        colormap_mode := TGIS_ColorMapMode.Continuous
       else
-        classifier.ColorRampName := GisColorRampList.Items[cmbColorRamps.ItemIndex].Name ;
-    end;
+        colormap_mode := TGIS_ColorMapMode.Discrete ;
 
-    // NumClasses property is automatically calculated for methods:
-    // DefinedInterval, Quartile, StandardDeviation(s)
-    if cbxColorRamp.Checked and (cmbColorRamps.Text <> 'None') then begin
-      if method = GIS_CLASSIFY_METHOD_UNQ then
-        colormap_mode := TGIS_ColorMapMode.Discrete
+      // ramp can be assigned directly (ColorRamp) or by name (ColorRampName)
+      ramp_name := cmbColorRamps.Items[cmbColorRamps.ItemIndex] ;
+      if cbxColorRampName.Checked then
+        classifier.ColorRampName := ramp_name
       else
-        colormap_mode := TGIS_ColorMapMode.Continuous ;
+        classifier.ColorRamp := GisColorRampList.ByName( ramp_name ) ;
 
-      classifier.EstimateNumClasses;
-      classifier.ColorRamp :=
-        GisColorRampList.Items[cmbColorRamps.ItemIndex].RealizeColorMap(
-          colormap_mode,
-          classifier.NumClasses,
-          False
-        ) ;
+      classifier.ColorRamp.DefaultColorMapMode := colormap_mode ;
+      classifier.ColorRamp.DefaultReverse := cbxReverse.Checked ;
     end
-    else
+    else begin
       classifier.ColorRamp := nil ;
+    end ;
 
     // vector-only params
     if classifier is TGIS_ClassificationVector then begin

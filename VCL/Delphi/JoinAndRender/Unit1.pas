@@ -1,6 +1,5 @@
 //=============================================================================
 // This source code is a part of TatukGIS Developer Kernel.
-// (c)2000-2025 TatukGIS. ALL RIGHTS RESERVED.
 //=============================================================================
 {
   How to provide a join to external database and how to cutom rendering.

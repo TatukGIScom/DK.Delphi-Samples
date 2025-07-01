@@ -1,8 +1,6 @@
 //=============================================================================
 // This source code is a part of TatukGIS Developer Kernel.
-// (c)2000-2025 TatukGIS. ALL RIGHTS RESERVED.
 //=============================================================================
-
 //
 //  How to use hydrology toolset.
 //
@@ -231,8 +229,8 @@ void __fastcall TForm1::btnFlowAccumulationClick(TObject *Sender)
 	classifier->Method = TGIS_ClassificationMethod::GeometricalInterval ;
 	classifier->Band = "1" ;
 	classifier->NumClasses = 5 ;
-	classifier->ColorRamp = TGIS_Utils::GisColorRampList->ByName( "Bathymetry2" )
-	  ->RealizeColorMap( TGIS_ColorMapMode::Continuous, 0, True ) ;
+	classifier->ColorRamp = TGIS_Utils::GisColorRampList->ByName( TGIS_ColorRampNames::Bathymetry2) ;
+	classifier->ColorRamp->DefaultReverse = True ;
 
 	if (classifier->MustCalculateStatistics())
 	  flowacc->Statistics->Calculate() ;
@@ -341,8 +339,8 @@ void __fastcall TForm1::btnBasinClick(TObject *Sender)
 	  basins->Statistics->Calculate() ;
 	classifier->EstimateNumClasses() ;
 
-	classifier->ColorRamp = TGIS_Utils::GisColorRampList->ByName( "UniquePastel" )
-	  ->RealizeColorMap( TGIS_ColorMapMode::Discrete, classifier->NumClasses ) ;
+	classifier->ColorRampName = TGIS_ColorRampNames::UniquePastel ;
+	classifier->ColorRamp->DefaultColorMapMode = TGIS_ColorMapMode::Discrete ;
 
 	classifier->Classify() ;
   }
@@ -427,8 +425,8 @@ void __fastcall TForm1::btnVectorizeClick(TObject *Sender)
 	  basins_vec->Statistics->Calculate() ;
 	classifier->EstimateNumClasses() ;
 
-	classifier->ColorRamp = TGIS_Utils::GisColorRampList->ByName( "Unique" )
-	  ->RealizeColorMap( TGIS_ColorMapMode::Discrete, classifier->NumClasses ) ;
+	classifier->ColorRampName = TGIS_ColorRampNames::Unique ;
+	classifier->ColorRamp->DefaultColorMapMode = TGIS_ColorMapMode::Discrete ;
 	classifier->Classify() ;
   }
   __finally

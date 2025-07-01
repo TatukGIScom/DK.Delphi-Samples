@@ -1,8 +1,6 @@
 //=============================================================================
 // This source code is a part of TatukGIS Developer Kernel.
-// (c)2000-2025 TatukGIS. ALL RIGHTS RESERVED.
 //=============================================================================
-
 //
 //  Reclassification.
 //
@@ -100,7 +98,7 @@ void __fastcall TfrmReclassification::ApplyUniqueStyle(TGIS_LayerPixel* _lp, Ans
   try {
 	classifier->Method = TGIS_ClassificationMethod::Unique;
 	classifier->EstimateNumClasses();
-	classifier->ColorRamp = GisColorRampList()->ByName(_colorRampName)->RealizeColorMap(TGIS_ColorMapMode::Discrete, classifier->NumClasses);
+	classifier->ColorRampName = _colorRampName ;
 
 	if (classifier->MustCalculateStatistics()) {
 	  _lp->Statistics->Calculate();
@@ -117,7 +115,7 @@ void __fastcall TfrmReclassification::ApplyNaturalBreaksStyle(TGIS_LayerPixel* _
   TGIS_ClassificationPixel *classifier = new TGIS_ClassificationPixel(_lp);
   try {
 	classifier->Method = TGIS_ClassificationMethod::NaturalBreaks;
-	classifier->ColorRamp = GisColorRampList()->ByName(_colorRampName)->RealizeColorMap(TGIS_ColorMapMode::Discrete);
+	classifier->ColorRampName = _colorRampName ;
 
 	if (classifier->MustCalculateStatistics()) {
 	  _lp->Statistics->Calculate();

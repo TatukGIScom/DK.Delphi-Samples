@@ -15,9 +15,9 @@ object frmClassification: TfrmClassification
   TextHeight = 13
   object GIS: TGIS_ViewerWnd
     Left = 300
-    Top = 70
+    Top = 105
     Width = 984
-    Height = 691
+    Height = 656
     CursorForDrag = crDefault
     CursorForEdit = crDefault
     CursorForSelect = crDefault
@@ -44,9 +44,9 @@ object frmClassification: TfrmClassification
   end
   object GIS_Legend: TGIS_ControlLegend
     Left = 0
-    Top = 70
+    Top = 105
     Width = 300
-    Height = 691
+    Height = 656
     GIS_Viewer = GIS
     Options = [AllowMove, AllowActive, AllowExpand, AllowParams, AllowSelect, ShowSubLayers, AllowParamsVisible]
     Align = alLeft
@@ -347,7 +347,7 @@ object frmClassification: TfrmClassification
       OnClick = cbxForceStatisticsCalculationClick
     end
   end
-  object Panel1: TPanel
+  object pnlParamsBasic: TPanel
     Left = 0
     Top = 35
     Width = 1284
@@ -516,9 +516,45 @@ object frmClassification: TfrmClassification
       OnChange = validateEdit
       ExplicitHeight = 21
     end
+  end
+  object pnlParamsColorRamp: TPanel
+    Left = 0
+    Top = 70
+    Width = 1284
+    Height = 35
+    Align = alTop
+    TabOrder = 4
+    object Label2: TLabel
+      AlignWithMargins = True
+      Left = 406
+      Top = 11
+      Width = 78
+      Height = 20
+      Margins.Left = 6
+      Margins.Top = 10
+      Margins.Right = 0
+      Align = alLeft
+      Caption = 'Colormap mode:'
+      ExplicitHeight = 13
+    end
+    object cbxColorRampName: TCheckBox
+      AlignWithMargins = True
+      Left = 108
+      Top = 7
+      Width = 127
+      Height = 21
+      Hint = 'Check to create classification fields'
+      Margins.Top = 6
+      Margins.Right = 6
+      Margins.Bottom = 6
+      Align = alLeft
+      Caption = 'Use ColorRampName'
+      Enabled = False
+      TabOrder = 0
+    end
     object cbxColorRamp: TCheckBox
       AlignWithMargins = True
-      Left = 826
+      Left = 4
       Top = 7
       Width = 95
       Height = 21
@@ -528,14 +564,12 @@ object frmClassification: TfrmClassification
       Margins.Bottom = 6
       Align = alLeft
       Caption = 'Use ColorRamp'
-      Checked = True
-      State = cbChecked
-      TabOrder = 6
+      TabOrder = 1
       OnClick = cbxColorRampClick
     end
     object cmbColorRamps: TComboBox
       AlignWithMargins = True
-      Left = 930
+      Left = 244
       Top = 7
       Width = 150
       Height = 21
@@ -545,7 +579,8 @@ object frmClassification: TfrmClassification
       Margins.Bottom = 6
       Align = alLeft
       Style = csDropDownList
-      TabOrder = 7
+      Enabled = False
+      TabOrder = 2
       OnChange = cmbColorRampsChange
       Items.Strings = (
         'Select ...'
@@ -559,30 +594,50 @@ object frmClassification: TfrmClassification
         'Percentile?'
         'Box?')
     end
-    object cbxColorRampName: TCheckBox
+    object cmbColormapMode: TComboBox
       AlignWithMargins = True
-      Left = 690
+      Left = 487
       Top = 7
-      Width = 127
+      Width = 80
+      Height = 21
+      Hint = 'Choose number of classes'
+      Margins.Top = 6
+      Margins.Right = 6
+      Margins.Bottom = 6
+      Align = alLeft
+      Style = csDropDownList
+      Enabled = False
+      ItemIndex = 0
+      TabOrder = 3
+      Text = 'Continuous'
+      OnChange = cmbColormapModeChange
+      Items.Strings = (
+        'Continuous'
+        'Discrete')
+    end
+    object cbxReverse: TCheckBox
+      AlignWithMargins = True
+      Left = 576
+      Top = 7
+      Width = 67
       Height = 21
       Hint = 'Check to create classification fields'
       Margins.Top = 6
       Margins.Right = 6
       Margins.Bottom = 6
       Align = alLeft
-      Caption = 'Use ColorRampName'
-      Checked = True
-      State = cbChecked
-      TabOrder = 8
-      OnClick = cbxColorRampNameClick
+      Caption = 'Reverse'
+      Enabled = False
+      TabOrder = 4
+      OnClick = cbxReverseClick
     end
   end
   object dlgColor: TColorDialog
-    Left = 8
-    Top = 80
+    Left = 16
+    Top = 712
   end
   object dlgFileOpen: TOpenDialog
-    Left = 56
-    Top = 80
+    Left = 80
+    Top = 712
   end
 end

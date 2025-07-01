@@ -1,6 +1,5 @@
 ﻿//=============================================================================
 // This source code is a part of TatukGIS Developer Kernel.
-// (c)2000-2025 TatukGIS. ALL RIGHTS RESERVED.
 //=============================================================================
 unit Unit1;
 
@@ -262,7 +261,7 @@ begin
   GIS.Add( hydro_dem ) ;
 
   // applying the layer symbology
-  color_ramp := TGIS_Utils.GisColorRampList.ByName( 'YellowGreen' ) ;
+  color_ramp := TGIS_Utils.GisColorRampList.ByName( TGIS_ColorRampNames.YellowGreen ) ;
   color_map := color_ramp.RealizeColorMap( TGIS_ColorMapMode.Continuous, 0, True ) ;
   hydro_dem.GenerateRampEx( hydro_dem.MinHeight, hydro_dem.MaxHeight, color_map, nil ) ;
   hydro_dem.Params.Pixel.GridShadow := True ;
@@ -330,8 +329,8 @@ begin
     classifier.Method := TGIS_ClassificationMethod.GeometricalInterval ;
     classifier.Band := '1' ;
     classifier.NumClasses := 5 ;
-    classifier.ColorRamp := TGIS_Utils.GisColorRampList.ByName( 'Bathymetry2' )
-      .RealizeColorMap( TGIS_ColorMapMode.Continuous, 0, True ) ;
+    classifier.ColorRamp := TGIS_Utils.GisColorRampList.ByName( TGIS_ColorRampNames.Bathymetry2 ) ;
+    classifier.ColorRamp.DefaultReverse := True ;
 
     classifier.Classify ;
     flowacc.Params.Pixel.ShowLegend := True ;
@@ -437,7 +436,8 @@ begin
     classifier.Method := TGIS_ClassificationMethod.Unique ;
     classifier.Band := GIS_BAND_GRID ;
     classifier.ShowLegend := False ;
-    classifier.ColorRampName := 'UniquePastel' ;
+    classifier.ColorRampName := TGIS_ColorRampNames.UniquePastel ;
+    classifier.ColorRamp.DefaultColorMapMode := TGIS_ColorMapMode.Discrete ;
 
     classifier.Classify ;
   finally
@@ -517,7 +517,9 @@ begin
     classifier.Method := TGIS_ClassificationMethod.Unique ;
     classifier.Field := HYDRO_FIELD_BASIN ;
     classifier.ShowLegend := False ;
-    classifier.ColorRampName := 'Unique' ;
+    classifier.ColorRampName := TGIS_ColorRampNames.Unique ;
+    classifier.ColorRamp.DefaultColorMapMode := TGIS_ColorMapMode.Discrete ;
+
 
     classifier.Classify ;
   finally
