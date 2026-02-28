@@ -1,0 +1,61 @@
+object Form1: TForm1
+  Left = 200
+  Top = 120
+  Margins.Left = 5
+  Margins.Top = 5
+  Margins.Right = 5
+  Margins.Bottom = 5
+  Caption = 'Rotated rectangles overlap test - TatukGIS DK11 Sample'
+  ClientHeight = 473
+  ClientWidth = 592
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  OldCreateOrder = True
+  Position = poScreenCenter
+  OnCreate = FormCreate
+  PixelsPerInch = 144
+  TextHeight = 13
+  object GIS: TGIS_ViewerWnd
+    Left = 0
+    Top = 0
+    Width = 592
+    Height = 473
+    Cursor = 18
+    CursorForDrag = crDefault
+    CursorForEdit = crDefault
+    CursorForSelect = crDefault
+    CursorForUserDefined = crDefault
+    CursorForZoom = crDefault
+    CursorForZoomEx = crDefault
+    CursorForCameraPosition = crDefault
+    CursorForCameraRotation = crDefault
+    CursorForCameraXYZ = crDefault
+    CursorForCameraXY = crDefault
+    CursorForCameraZoom = crDefault
+    CursorForSunPosition = crDefault
+    CursorFor3DSelect = crDefault
+    Align = alClient
+    Ctl3D = True
+    ParentColor = False
+    ParentCtl3D = False
+    TabOrder = 0
+    AutoStyle = False
+    KeepScale = False
+    IncrementalPaint = False
+    DelayedUpdate = 700
+    ProgressiveUpdate = 2500
+    SelectionTransparency = 100
+    BorderStyle = bsNone
+    AfterPaintEvent = GISAfterPaintEvent
+  end
+  object Timer1: TTimer
+    Interval = 16
+    OnTimer = Timer1Timer
+    Left = 792
+    Top = 492
+  end
+end

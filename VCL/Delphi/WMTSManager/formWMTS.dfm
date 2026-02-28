@@ -60,33 +60,14 @@ object frmWMTS: TfrmWMTS
         'http://garden.gis.vt.edu/arcgis/rest/services/VBMP2011/VBMP2011_' +
         'Infrared_WGS/MapServer/WMTS/1.0.0/WMTSCapabilities.xml'
       
-        'http://geodata.nationaalgeoregister.nl/tiles/service/wmts/bgtsta' +
-        'ndaard?VERSION=1.0.0&request=GetCapabilities'
-      
-        'http://geodata.nationaalgeoregister.nl/tiles/service/wmts/brtach' +
-        'tergrondkaart?REQUEST=getcapabilities&amp;VERSION=1.0.0'
-      
         'http://gis.oregonmetro.gov/services/wmts/1.0.0/WMTSGetCapabiliti' +
         'es.xml'
-      
-        'http://kortforsyningen.kms.dk/orto_foraar?SERVICE=WMTS&request=G' +
-        'etCapabilities'
-      
-        'http://kortforsyningen.kms.dk/orto_foraar?VERSION=1.0.0&LAYER=or' +
-        'to_foraar&request=GetCapabilities&SERVICE=WMTS&login=qgistest&pa' +
-        'ssword=qgistestpw'
       
         'http://maps.columbus.gov/arcgis/rest/services/Imagery/Imagery201' +
         '3/MapServer/WMTS/1.0.0/WMTSCapabilities.xml'
       
         'https://mapy.geoportal.gov.pl/wss/service/PZGIK/ORTO/WMTS/Standa' +
-        'rdResolution'
-      
-        'http://maps.wien.gv.at/wmts/1.0.0/WMTSCapabilities.xml?request=G' +
-        'etCapabilities'
-      'http://tileserver.maptiler.com/wmts'
-      'http://www.basemap.at/wmts/1.0.0/WMTSCapabilities.xml'
-      'http://www.wien.gv.at/wmts/1.0.0/WMTSCapabilities.xml')
+        'rdResolution')
   end
   object btn18: TButton
     Left = 599
