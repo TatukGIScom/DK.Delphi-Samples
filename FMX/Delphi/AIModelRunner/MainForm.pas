@@ -129,6 +129,14 @@ implementation
 
 procedure TAIModelRunnerForm.FormCreate(Sender: TObject);
 begin
+  {$IFNDEF GIS_PYTHON4DELPHI}
+    ShowMessage(
+      '1. Install a working Python 3.x environment on your system (tested using Python 3.9).'#13+
+      '2. Install the Python4Delphi package in RAD Studio.'#13+
+      '3. Add "GIS_PYTHON4DELPHI" to Conditional Defines in Project Options.'
+    );
+  {$ENDIF}
+
   InitBusyUI;
   PythonWorker := PythonWorkerDefault;
   ModelDictionary := TDictionary<string, TGIS_AIModelCustom>.Create;
