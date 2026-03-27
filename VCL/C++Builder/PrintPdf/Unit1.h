@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 
-#ifndef Unit19H
-#define Unit19H
+#ifndef Unit1H
+#define Unit1H
 //---------------------------------------------------------------------------
 #include <System.Classes.hpp>
 #include <Vcl.Controls.hpp>
@@ -17,7 +17,7 @@
 #include "VCL.GisViewerWnd.hpp"
 #include <Vcl.Dialogs.hpp>
 //---------------------------------------------------------------------------
-class TForm19 : public TForm
+class TForm1 : public TForm
 {
 __published:	// IDE-managed Components
 	TToolBar *ToolBar1;
@@ -46,9 +46,9 @@ __published:	// IDE-managed Components
 	   TGIS_PrintManager *_printmanager, bool &_lastpage);
 private:	// User declarations
 public:		// User declarations
-	__fastcall TForm19(TComponent* Owner);
+	__fastcall TForm1(TComponent* Owner);
 };
 //---------------------------------------------------------------------------
-extern PACKAGE TForm19 *Form19;
+extern PACKAGE TForm1 *Form1;
 //---------------------------------------------------------------------------
 #endif

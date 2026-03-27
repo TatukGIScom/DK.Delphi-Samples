@@ -3,7 +3,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include "Unit19.h"
+#include "Unit1.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma link "VCL.GisControlLegend"
@@ -11,14 +11,14 @@
 #pragma link "VCL.GisViewerWnd"
 #pragma resource "*.dfm"
 String PdfFileName;
-TForm19 *Form19;
+TForm1 *Form1;
 //---------------------------------------------------------------------------
-__fastcall TForm19::TForm19(TComponent* Owner)
+__fastcall TForm1::TForm1(TComponent* Owner)
 	: TForm(Owner)
 {
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm19::FormCreate(TObject *Sender)
+void __fastcall TForm1::FormCreate(TObject *Sender)
 {
   // open a file
   GIS->Open( GisSamplesDataDirDownload() + "\\World\\Countries\\Poland\\DCW\\poland.ttkproject" ) ;
@@ -26,28 +26,28 @@ void __fastcall TForm19::FormCreate(TObject *Sender)
   //PdfFileName = '';
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm19::btnFullExtentClick(TObject *Sender)
+void __fastcall TForm1::btnFullExtentClick(TObject *Sender)
 {
   // set drag mode
   GIS->FullExtent() ;
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TForm19::btnZoomClick(TObject *Sender)
+void __fastcall TForm1::btnZoomClick(TObject *Sender)
 {
   // set zoom mode
   GIS->Mode = TGIS_ViewerMode::Zoom ;
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TForm19::btnDragClick(TObject *Sender)
+void __fastcall TForm1::btnDragClick(TObject *Sender)
 {
   // set drag mode
   GIS->Mode = TGIS_ViewerMode::Drag ;
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TForm19::Button1Click(TObject *Sender)
+void __fastcall TForm1::Button1Click(TObject *Sender)
 {
 	TGIS_PrintManager *pm;
 	TGIS_TemplatePrint *tp;
@@ -158,13 +158,13 @@ void __fastcall TForm19::Button1Click(TObject *Sender)
 	} ;
 }
 //---------------------------------------------------------------------------
-int __fastcall TForm19::inch(TGIS_Printer *_printer, double _value)
+int __fastcall TForm1::inch(TGIS_Printer *_printer, double _value)
 {
   return Ceil( _value * _printer->PPI ) ;
 }
 
 //---------------------------------------------------------------------------
-void __fastcall TForm19::PrintPage(TObject *_sender,
+void __fastcall TForm1::PrintPage(TObject *_sender,
 	   TGIS_PrintManager *_printmanager, bool &_lastpage)
 {
   TRect r;
@@ -295,7 +295,7 @@ void __fastcall TForm19::PrintPage(TObject *_sender,
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TForm19::BeforePrintPage(TObject *_sender,
+void __fastcall TForm1::BeforePrintPage(TObject *_sender,
 	   TGIS_PrintManager *_printmanager, bool &_lastpage)
 {
 	TGIS_PrintManager *pm ;
