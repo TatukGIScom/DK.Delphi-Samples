@@ -1,0 +1,127 @@
+object CustomAIModelForm: TCustomAIModelForm
+  Left = 0
+  Top = 0
+  Caption = 'Create Custom Model'
+  ClientHeight = 288
+  ClientWidth = 408
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
+  DesignerMasterStyle = 0
+  object CancelButton: TButton
+    Anchors = [akRight, akBottom]
+    Position.X = 318.000000000000000000
+    Position.Y = 258.000000000000000000
+    TabOrder = 5
+    Text = 'Cancel'
+    OnClick = CancelButtonClick
+  end
+  object ChooseModelButton: TButton
+    Anchors = [akTop, akRight]
+    Position.X = 371.000000000000000000
+    Position.Y = 73.000000000000000000
+    Size.Width = 29.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    Text = '...'
+    OnClick = ChooseModelButtonClick
+  end
+  object ChooseScriptButton: TButton
+    Anchors = [akTop, akRight]
+    Position.X = 371.000000000000000000
+    Position.Y = 121.000000000000000000
+    Size.Width = 29.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    Text = '...'
+    OnClick = ChooseScriptButtonClick
+  end
+  object Label1: TLabel
+    Position.X = 8.000000000000000000
+    Position.Y = 55.000000000000000000
+    Text = 'Choose Model'
+    TabOrder = 9
+  end
+  object Label2: TLabel
+    Position.X = 8.000000000000000000
+    Position.Y = 103.000000000000000000
+    Text = 'Choose Script'
+    TabOrder = 7
+  end
+  object Label3: TLabel
+    Position.X = 8.000000000000000000
+    Position.Y = 151.000000000000000000
+    Size.Width = 345.000000000000000000
+    Size.Height = 17.000000000000000000
+    Size.PlatformDefault = False
+    Text = 'Required Modules (one per line)'
+    TabOrder = 4
+  end
+  object ModelPathMemo: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    ReadOnly = True
+    Position.X = 8.000000000000000000
+    Position.Y = 73.000000000000000000
+    Size.Width = 360.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 12
+    Viewport.Width = 356.000000000000000000
+    Viewport.Height = 18.000000000000000000
+  end
+  object OkButton: TButton
+    Anchors = [akRight, akBottom]
+    Position.X = 230.000000000000000000
+    Position.Y = 258.000000000000000000
+    TabOrder = 1
+    Text = 'OK'
+    OnClick = OkButtonClick
+  end
+  object RequiredModulesMemo: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Position.X = 8.000000000000000000
+    Position.Y = 176.000000000000000000
+    Size.Width = 360.000000000000000000
+    Size.Height = 72.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 11
+    Viewport.Width = 356.000000000000000000
+    Viewport.Height = 68.000000000000000000
+  end
+  object ScriptPathMemo: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    ReadOnly = True
+    Position.X = 8.000000000000000000
+    Position.Y = 121.000000000000000000
+    Size.Width = 360.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 6
+    Viewport.Width = 356.000000000000000000
+    Viewport.Height = 18.000000000000000000
+  end
+  object Label4: TLabel
+    Position.X = 8.000000000000000000
+    Position.Y = 8.000000000000000000
+    Text = 'Model Name'
+    TabOrder = 8
+  end
+  object ModelNameMemo: TMemo
+    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+    DataDetectorTypes = []
+    Position.X = 8.000000000000000000
+    Position.Y = 26.000000000000000000
+    Size.Width = 360.000000000000000000
+    Size.Height = 22.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 10
+    Viewport.Width = 356.000000000000000000
+    Viewport.Height = 18.000000000000000000
+  end
+end
