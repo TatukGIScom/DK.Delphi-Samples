@@ -2,8 +2,34 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to draw on viewer canvas.
+  RotatedRect sample — demonstrates custom drawing on the viewer canvas with rotation (Delphi/VCL).
+
+  What the sample shows:
+    - Loading a base map layer into the GIS viewer
+    - Using the PaintExtraEvent hook to draw custom shapes on top of layers
+    - Drawing a rotated rectangle on the viewer canvas
+    - Updating the rotation angle in real-time using a timer
+    - Converting between screen pixel coordinates and map coordinates
+    - Rendering graphics directly to the TGIS_RendererAbstract canvas
+    - Drawing filled rectangles with color and outline styling
+    - Handling map rotation and extent changes
+    - Creating dynamic overlay graphics (non-persistent)
+    - Continuous map invalidation for animation effects
+    - Working with the GIS.AfterPaintEvent callback hook
+
+  Key TatukGIS API concepts shown here:
+    TGIS_ViewerWnd              - main visual map control
+    AfterPaintEvent             - hook called after all layers rendered
+    TGIS_RendererAbstract       - abstract renderer for custom drawing
+    Canvas drawing methods      - CanvasDrawRectangle, line, and fill
+    ScreenToMap / MapToScreen   - coordinate system conversion
+    InvalidateWholeMap          - trigger map redraw
+    Rotation angle              - numeric angle in degrees/radians
+    Timer-based animation       - periodic update using TTimer
+    Overlay graphics            - temporary drawings on top of base map
+    Map extent tracking         - handling pan/zoom changes
 }
+
 unit Unit1;
 
 interface

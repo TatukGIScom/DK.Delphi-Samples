@@ -3,7 +3,31 @@
 //=============================================================================
 
 //
-//  How to do operations on pixel layer.
+//  PixelOperations sample — demonstrates basic raster pixel manipulation and analysis (C++Builder/VCL).
+//
+//  What the sample shows:
+//    - Loading a DEM (Digital Elevation Model) raster layer (ArcInfo ADF format) into the viewer
+//    - Creating a hillshade visualization from elevation data via TGIS_LayerPixel.Hillshade
+//    - Generating contour lines (isolines) from raster elevation data via TGIS_Topology.ContourLines
+//    - Creating a slope map showing steepness analysis from DEM
+//    - Creating an aspect map showing downhill direction (N, NE, E, etc.) from DEM
+//    - Querying individual pixel values at clicked locations
+//    - Applying colour ramps to raster layers for visual analysis
+//    - Displaying layer metadata and pixel statistics
+//    - Using a legend control to show the rendered layer and styling
+//    - Handling raster layer rendering via TGIS_LayerPixel
+//    - Opening custom raster files via file dialog
+//
+//  Key TatukGIS API concepts shown here:
+//    TGIS_ViewerWnd              - main visual map control
+//    TGIS_LayerPixel             - raster/pixel layer for DEM data
+//    TGIS_LayerADF               - ArcInfo Grid format loader
+//    TGIS_LayerPixel.Hillshade   - shaded relief rendering from elevation
+//    TGIS_Topology.ContourLines  - extract isolines from raster elevation
+//    TGIS_LayerPixel.Slope       - compute slope steepness from DEM
+//    TGIS_LayerPixel.Aspect      - compute flow direction aspect from DEM
+//    TGIS_Params                 - rendering parameters and colour ramps
+//    TGIS_ControlLegend          - legend panel for layer display
 //
 //  Check project\options\directories in a case of any problems during compilation
 //---------------------------------------------------------------------------

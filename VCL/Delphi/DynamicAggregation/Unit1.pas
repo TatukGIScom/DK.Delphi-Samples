@@ -2,7 +2,13 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to add layers to the map.
+  DynamicAggregation sample — demonstrates TGIS_DynamicAggregatorFactory for real-time point
+  clustering on a GIS layer.
+
+  Loads a TatukGIS project (Aggregation.ttkproject) containing a "cities" point layer.  A left
+  panel offers three controls: Aggregation method (Off or a factory-registered name), Radius, and
+  Threshold.  Changing any control calls changeAggregation which installs or removes the selected
+  TGIS_DynamicAggregator on the layer via TGIS_DynamicAggregatorFactory.CreateInstance.
 }
 unit Unit1;
 
@@ -71,22 +77,27 @@ implementation
 uses
   GisRegistredLayers ;
 
+{ Resets the default radius for the chosen method, then applies the new aggregator. }
 procedure TForm1.cbxMethodChange(Sender: TObject);
 begin
   readDefaultValues ;
   changeAggregation;
 end;
 
+{ Re-applies the aggregator with the newly selected radius. }
 procedure TForm1.cbxRadiusChange(Sender: TObject);
 begin
   changeAggregation;
 end;
 
+{ Re-applies the aggregator with the newly selected threshold. }
 procedure TForm1.cbxThreshholdChange(Sender: TObject);
 begin
   changeAggregation;
 end;
 
+{ Installs or removes the selected TGIS_DynamicAggregator on the "cities" layer,
+  applies the current Radius and Threshold, and redraws the map. }
 procedure TForm1.changeAggregation;
 var
   dyn_agg_name : String;
@@ -111,6 +122,8 @@ begin
   GIS.InvalidateWholeMap;
 end;
 
+{ Sets a sensible default radius when the method changes: index 0 (5 pt) for ShapeReduction,
+  index 3 (40 pt) for all other methods. }
 procedure TForm1.readDefaultValues;
 begin
   if cbxMethod.Items[cbxMethod.ItemIndex].Equals('ShapeReduction') then
@@ -120,6 +133,8 @@ begin
 
 end;
 
+{ Opens the project, populates the method combo with all registered aggregator names, and
+  sets initial selections with Radius and Threshold disabled. }
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   GIS.Open(TGIS_Utils.GisSamplesDataDirDownload + '/Samples/Aggregation/Aggregation.ttkproject');

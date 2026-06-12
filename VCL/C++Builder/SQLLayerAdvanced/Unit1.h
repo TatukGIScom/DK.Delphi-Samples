@@ -34,6 +34,10 @@
 #include "Vcl.GisControlLegend.hpp"
 
 //---------------------------------------------------------------------------
+/* SQLLayerAdvanced sample — demonstrates advanced SQL database layer operations and styling.
+   Creates and attaches vector layers from spatial SQL databases (SQLite, PostGIS, etc.), applies
+   layer styles from persistent style repositories, manages project definitions, and queries the database
+   for available styles and projects. Shows TGIS_LayerSQL instantiation, spatial queries, and schema browsing. */
 class TForm1 : public TForm
 {
 __published:	// IDE-managed Components

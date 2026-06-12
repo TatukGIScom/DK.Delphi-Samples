@@ -1,9 +1,3 @@
-//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
-{
-  How to provide WFS Layer support.
-}
 program WfsManager;
 
 uses
@@ -20,3 +14,4 @@ begin
   Application.CreateForm(TfrmWFS, frmWFS);
   Application.Run;
 end.
+

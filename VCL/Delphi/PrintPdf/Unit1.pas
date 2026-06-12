@@ -1,3 +1,36 @@
+{
+  PrintPdf Sample — Demonstrates PDF output from map printing with custom page content
+  and export to PDF format.
+
+  Key concepts illustrated:
+    - PDF export: rendering maps directly to PDF files
+    - Print manager: orchestrating multi-page PDF generation
+    - Custom print events: hooking into page rendering pipeline
+    - Legend and scale: including map elements in PDF output
+    - Page layout: customizing what appears on each printed page
+    - Template-less printing: programmatic page setup vs. template files
+
+  User workflow:
+    1. Load a map project or shapefile
+    2. Navigate map using zoom/drag controls
+    3. Choose PDF export options via RadioGroup
+    4. Click "Print PDF" button
+    5. PDF is generated and saved to file
+
+  PDF customization:
+    - BeforePrintPage event: set up page before rendering
+    - PrintPage event: add custom content to each page
+    - Legend auto-included on pages
+    - Scale bar for map reference
+    - Configurable margins and page orientation
+
+  Key API:
+    - TGIS_PrintManager: orchestrates PDF generation
+    - BeforePrintPage/PrintPage events: page content hooks
+    - PDF file output format
+    - TGIS_ControlScale: embedded scale bar
+    - TGIS_ControlLegend: embedded legend
+}
 unit Unit1;
 
 interface

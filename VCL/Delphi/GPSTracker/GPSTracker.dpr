@@ -1,9 +1,3 @@
-//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
-{
-   TatukGIS sample - How to GPS NMEA Unit
-}
 program GPSTracker;
 
 uses
@@ -18,3 +12,4 @@ begin
   Application.CreateForm(TfrmMain, frmMain);
   Application.Run;
 end.
+

@@ -1,11 +1,11 @@
-//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
-
-//
-// Sample CGM Viewer
-//
-//  Check project\options\directories in a case of any problems during compilation
+/*
+ * CGMViewer sample — demonstrates rendering CGM (Computer Graphics Metafile) symbol files
+ * as point markers using SymbolList.
+ *
+ * A FileListBox shows *.cgm files from the Symbols directory.  Selecting one renders it
+ * centred on a crosshair layer sized to fit two-thirds of the smaller viewer dimension.
+ * Button1 rotates the marker by 90° each click.
+ */
 //---------------------------------------------------------------------------
 
 #ifndef Unit1H
@@ -38,11 +38,11 @@ __published:	// IDE-managed Components
         TToolBar *ToolBar1;
         TToolButton *ToolButton1;
         TButton *Button1;
-        void __fastcall FormCreate(TObject *Sender);
-        void __fastcall FormResize(TObject *Sender);
-        void __fastcall DirectoryListBox1Change(TObject *Sender);
-        void __fastcall FileListClick(TObject *Sender);
-        void __fastcall Button1Click(TObject *Sender);
+        void __fastcall FormCreate(TObject *Sender);            /* Create crosshair layer; navigate to Symbols dir */
+        void __fastcall FormResize(TObject *Sender);            /* Redraw symbol at new size */
+        void __fastcall DirectoryListBox1Change(TObject *Sender); /* Sync FileListBox to selected directory */
+        void __fastcall FileListClick(TObject *Sender);         /* Redraw symbol on CGM file selection */
+        void __fastcall Button1Click(TObject *Sender);          /* Rotate symbol by 90 degrees */
 
 private:	// User declarations
     TGIS_Shape  *shp  ;

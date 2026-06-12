@@ -1,10 +1,3 @@
-//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
-{
-  How to utilize TatukGIS online services (tiles, geocoding, routing and
-  isochrone).
-}
 program OnlineServices;
 
 uses
@@ -18,3 +11,4 @@ begin
   Application.CreateForm(TfrmMain, frmMain);
   Application.Run;
 end.
+

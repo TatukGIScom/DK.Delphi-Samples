@@ -2,8 +2,38 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to provide basic Client-Server solution (Client side).
-  Based on Indy demo
+  Client Unit - Client-side component of distributed GIS architecture.
+  Demonstrates TCP/IP network communication with geographic data streaming.
+
+  Key concepts illustrated:
+    - Indy components: TIdTCPClient for network communication
+    - Asynchronous connection: non-blocking socket connection to server
+    - Geographic data reception: deserialize map data from network stream
+    - Layer visualization: display received GIS data in map viewer
+    - Real-time updates: receive continuous position/data updates
+    - Error handling: connection failure and data validation
+
+  Technical approach:
+    - TIdTCPClient component manages network connection
+    - Connect to server: localhost:5555 (configurable)
+    - Receive data thread: background reception without blocking UI
+    - Data parsing: deserialize TGIS_Layer objects from network stream
+    - Viewer display: add received layers to map for visualization
+    - Status feedback: show connection state and received data count
+
+  Code structure:
+    - TForm1: main client form with viewer and status display
+    - FormCreate: initialize components and set defaults
+    - btnConnect_Click: initiate connection to server
+    - btnDisconnect_Click: close server connection
+    - ReceiveThread: background thread for data reception
+    - UpdateDisplay: refresh map with received data
+
+  Network protocol:
+    - Port: 5555 (TCP/IP)
+    - Format: TatukGIS binary layer serialization
+    - Asynchronous: multi-packet reception with buffering
+    - Error recovery: reconnect on connection loss
 }
 unit Unit1;
 

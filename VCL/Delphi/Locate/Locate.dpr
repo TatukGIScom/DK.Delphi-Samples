@@ -1,10 +1,3 @@
-//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
-{
-  How to locate object based on mouse position
-}
-
 program Locate;
 
 uses
@@ -18,3 +11,4 @@ begin
   Application.CreateForm(TForm1, Form1);
   Application.Run;
 end.
+

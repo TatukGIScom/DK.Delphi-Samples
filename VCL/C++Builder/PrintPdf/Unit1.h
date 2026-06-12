@@ -1,3 +1,34 @@
+//=============================================================================
+// This source code is a part of TatukGIS Developer Kernel.
+//=============================================================================
+//
+// PrintPdf sample — demonstrates printing maps and exporting to PDF (C++Builder/VCL).
+//
+// What the sample shows:
+//   - Loading a map dataset into TGIS_ViewerWnd
+//   - Configuring print layout and page setup parameters
+//   - Selecting paper size, orientation (portrait/landscape)
+//   - Adding map frame with specific dimensions to print page
+//   - Including scale bar, north arrow, legend, and title elements
+//   - Setting print resolution (DPI) for output quality
+//   - Previewing layout before printing/exporting
+//   - Exporting map to PDF file via TGIS_ExportPDF
+//   - Printing directly to physical printer
+//   - Supporting multiple page sizes (Letter, A4, A3, etc.)
+//   - Managing margins and safe areas on print page
+//   - Preserving map symbology and layer visibility in output
+//
+// Key TatukGIS API concepts shown here:
+//   TGIS_ViewerWnd              - main visual map control
+//   TGIS_PrintManager           - print job management
+//   TGIS_Printer                - printer output interface
+//   TGIS_ExportPDF              - PDF export engine
+//   TGIS_ControlLegend          - legend for print output
+//   TGIS_ControlScale           - scale bar element
+//   Page setup                  - orientation, size, margins
+//   Print templates             - layout definitions
+//   Export resolution           - DPI settings
+//   Georeferenced output        - coordinate grid overlay
 //---------------------------------------------------------------------------
 
 #ifndef Unit1H

@@ -25,6 +25,47 @@
 #include "GisLayerPixel.hpp"
 #include "GisTypesUI.hpp"
 
+/*
+  ShowHint Sample — Demonstrates dynamic tooltips showing feature attributes at cursor position.
+
+  Key concepts illustrated:
+    - Real-time feature detection under cursor (GIS.Locate)
+    - Dynamic hint display with attribute field values
+    - Hint timing and appearance customization (Application.HintHidePause, HintColor)
+    - Screen coordinate to map coordinate conversion (ScreenToMap)
+    - Feature flashing/highlighting on hover
+    - Multiple hint layers support
+    - Cursor position tracking (GISMouseMove)
+    - Field name selection via configuration (hintField, hintLayer)
+
+  User workflow:
+    1. Move mouse over map
+    2. When cursor over feature: hint shows selected attribute value
+    3. Click "Hints" button to toggle hints on/off
+    4. Tooltip disappears after mouse pause or on mouse leave
+    5. Different colors for hints vs. standard VCL tooltips
+
+  Hint display:
+    - Shows attribute from configurable field (e.g., NAME, POPULATION)
+    - Follows cursor closely
+    - Automatically hides when cursor moves away from feature
+    - Customizable color and timing
+    - Layer-specific hints (hintLayer) for multi-layer maps
+
+  Key API:
+    - GIS.Locate: find shape at cursor position with tolerance
+    - Shape.GetField: retrieve attribute value by field name
+    - Application.HintHidePause: control hint duration
+    - Screen coordinate to map: ScreenToMap method
+    - Shape.Flash: visual highlight when hint appears
+
+  Configuration:
+    - hintField: attribute field name to display (e.g., "NAME")
+    - hintLayer: which layer to show hints for
+    - hintDisplay: toggle hints on/off
+    - hintColor: custom hint background color
+*/
+
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
 {
@@ -49,12 +90,12 @@ __published:	// IDE-managed Components
           int Y);
 private:	// User declarations
 public:		// User declarations
-	String      hintField;          //name of field to display
-	String      hintLayer;          // name of hint layer  
+	String      hintField;          // Field name to display in hint (e.g., "NAME")
+	String      hintLayer;          // Which layer to show hints for
 
-    Boolean     hintDisplay;        //display map hints flag
-    TColor      hintColor;          //map hints color
-    TColor      hintColorStd;       //standard hint color
+    Boolean     hintDisplay;        // True = hints enabled, False = hints disabled
+    TColor      hintColor;          // Custom hint background color
+    TColor      hintColorStd;       // Standard VCL hint color (for fallback)
 
   __fastcall TForm1(TComponent* Owner);
 };

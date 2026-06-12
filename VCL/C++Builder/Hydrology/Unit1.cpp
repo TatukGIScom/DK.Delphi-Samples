@@ -1,11 +1,23 @@
 //=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
+// Hydrology sample — TatukGIS DK C++Builder
+//
+// Demonstrates the complete DEM-based hydrological analysis pipeline provided
+// by the TGIS_Hydrology toolset, executed step by step via UI buttons.
+//
+// Workflow (10 steps):
+//   1. Sink              — detect depressions/flat areas in the raw DEM
+//   2. Fill              — condition the DEM by raising sinks
+//   3. FlowDirection     — D8 flow-direction codes (power-of-two, 1–128)
+//   4. FlowAccumulation  — upstream-cell count per cell
+//   5. AddOutlets        — place two hardcoded pour points on high-acc cells
+//   6. Watershed         — label cells by the outlet they drain toward
+//   7. Basin             — partition DEM into auto-detected drainage basins
+//   8. StreamOrder       — Strahler hierarchical ordering of stream cells
+//   9. Vectorize         — GridToPolygon (basins) + StreamToPolyline (streams)
+//  10. 3D               — drape stream layer on conditioned DEM in 3D viewer
+//
+// Data: World/Countries/Poland/DEM/Bytowski_County.tif
 //=============================================================================
-//
-//  How to use hydrology toolset.
-//
-//  Check project\options\directories in a case of any problems during compilation
-//---------------------------------------------------------------------------
 
 #include <vcl.h>
 #pragma hdrstop
@@ -30,6 +42,12 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 }
 
 //---------------------------------------------------------------------------
+/*
+ * Progress callback used by TGIS_Hydrology and TGIS_GridToPolygon.
+ * _pos == 0  : initialise the progress bar (set range 0–100).
+ * _pos < 0   : reset bar to zero (operation finished or aborted).
+ * _pos > 0   : update bar position to _pos.
+ */
 void __fastcall TForm1::doBusyEvent(TObject *_sender, int _pos, int _end, bool &_abort)
 {
   if (_pos < 0)
@@ -100,6 +118,12 @@ void __fastcall TForm1::FormClose(TObject *Sender, TCloseAction &Action)
 }
 //---------------------------------------------------------------------------
 
+/*
+ * Initialises the form: loads the Bytowski County DEM, stores a reference
+ * and its full extent as the analysis region, disables antialias and hillshade
+ * on the raw layer, then creates the shared TGIS_Hydrology toolset and wires
+ * up the BusyEvent progress callback.
+ */
 void __fastcall TForm1::FormShow(TObject *Sender)
 {
   GIS->Mode = TGIS_ViewerMode::Zoom ;
@@ -122,6 +146,12 @@ void __fastcall TForm1::FormShow(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/*
+ * Step 1 — Identify DEM problems.
+ * Runs TGIS_Hydrology::Sink on the raw DEM to produce a grid where non-zero
+ * cells mark sinks (isolated depressions) and flat areas that would prevent
+ * proper flow routing. Colours the result in red for easy identification.
+ */
 void __fastcall TForm1::btnSinkClick(TObject *Sender)
 {
   btnSink->Enabled= False;
@@ -146,6 +176,12 @@ void __fastcall TForm1::btnSinkClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/*
+ * Step 2 — Condition the DEM for flow routing.
+ * Calls TGIS_Hydrology::Fill to raise depressions and flatten problematic
+ * areas, producing a hydrologically conditioned DEM. Applies a YellowGreen
+ * colour ramp with hillshade (GridShadow) for terrain context.
+ */
 void __fastcall TForm1::btnFillSinksClick(TObject *Sender)
 {
   btnFillSinks->Enabled = False ;
@@ -176,6 +212,12 @@ void __fastcall TForm1::btnFillSinksClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/*
+ * Step 3 — Compute D8 flow directions.
+ * Runs TGIS_Hydrology::FlowDirection on the conditioned DEM to assign each
+ * cell a power-of-two direction code (1=E, 2=SE, 4=S … 128=NE). Uses a turbo
+ * colour ramp with one zone per code for visual clarity.
+ */
 void __fastcall TForm1::btnFlowDirectionClick(TObject *Sender)
 {
   btnFlowDirection->Enabled = False ;
@@ -207,6 +249,12 @@ void __fastcall TForm1::btnFlowDirectionClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/*
+ * Step 4 — Accumulate upstream drainage area.
+ * Calls TGIS_Hydrology::FlowAccumulation to count the number of upstream cells
+ * draining into each cell. Applies a geometric-interval classification with the
+ * Bathymetry2 colour ramp (reversed) to reveal the river-network hierarchy.
+ */
 void __fastcall TForm1::btnFlowAccumulationClick(TObject *Sender)
 {
   btnFlowAccumulation->Enabled = False ;
@@ -249,6 +297,12 @@ void __fastcall TForm1::btnFlowAccumulationClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/*
+ * Step 5 — Place watershed outlet points (pour points).
+ * Creates a point vector layer and adds two hardcoded coordinates that fall
+ * on high-accumulation cells, representing the points where catchment runoff
+ * is captured. These outlets are used in the subsequent Watershed step.
+ */
 void __fastcall TForm1::btnAddOutletsClick(TObject *Sender)
 {
   btnAddOutlets->Enabled = False ;
@@ -281,6 +335,12 @@ void __fastcall TForm1::btnAddOutletsClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/*
+ * Step 6 — Delineate catchment areas per outlet.
+ * Calls TGIS_Hydrology::Watershed with the flow-direction grid and the outlet
+ * vector layer (GIS_FIELD_UID as the ID field) to label every DEM cell with
+ * the ID of the outlet it drains toward. Each catchment is coloured distinctly.
+ */
 void __fastcall TForm1::btnWatershedClick(TObject *Sender)
 {
   btnWatershed->Enabled = False ;
@@ -308,6 +368,13 @@ void __fastcall TForm1::btnWatershedClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/*
+ * Step 7 — Partition the DEM into topographic basins.
+ * Calls TGIS_Hydrology::Basin with a threshold of 1 % of the maximum
+ * accumulated flow to identify independent drainage basins automatically.
+ * Applies a unique-value classification using the UniquePastel colour ramp
+ * so each basin has a distinct fill colour.
+ */
 void __fastcall TForm1::btnBasinClick(TObject *Sender)
 {
   btnBasin->Enabled = False ;
@@ -355,6 +422,12 @@ void __fastcall TForm1::btnBasinClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/*
+ * Step 8 — Compute Strahler stream order.
+ * Calls TGIS_Hydrology::StreamOrder on the flow-direction and accumulation grids
+ * to classify each stream cell by its hierarchical order (1 = headwater, higher
+ * = trunk). Styled with a Blues colour ramp so higher-order streams appear darker.
+ */
 void __fastcall TForm1::btnStreamOrderStrahlerClick(TObject *Sender)
 {
   btnStreamOrderStrahler->Enabled = False ;
@@ -382,6 +455,14 @@ void __fastcall TForm1::btnStreamOrderStrahlerClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/*
+ * Step 9 — Convert raster results to vector layers.
+ * Two vectorisation operations run in sequence:
+ *   1. TGIS_GridToPolygon converts the basin raster to polygon shapes —
+ *      classified by unique basin ID with the Unique colour ramp.
+ *   2. TGIS_Hydrology::StreamToPolyline converts the stream-order raster to
+ *      polylines — width and colour scaled by Strahler order via RENDERER.
+ */
 void __fastcall TForm1::btnVectorizeClick(TObject *Sender)
 {
   btnVectorize->Enabled = False ;
@@ -464,6 +545,14 @@ void __fastcall TForm1::btnVectorizeClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/*
+ * Step 10 — Toggle 3D terrain visualisation.
+ * When switching to 3D, activates the conditioned DEM, sets ScaleZ=1 and
+ * NormalizedZ=Range so elevation is proportional, hides the basin polygon
+ * overlay, drapes the stream-polyline layer (labels hidden, Layer3D=Off so it
+ * floats on the surface), enables viewer lighting and shadow shading, then
+ * turns on GIS->View3D. Pressing again restores the 2D flat view.
+ */
 void __fastcall TForm1::btn3DClick(TObject *Sender)
 {
   if (GIS->View3D)

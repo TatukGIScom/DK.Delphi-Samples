@@ -2,7 +2,47 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to manage Paint events.
+  PaintEvents Sample — Demonstrates map rendering customization through paint event hooks
+  that allow drawing custom graphics at different stages of the rendering pipeline.
+
+  Key concepts illustrated:
+    - Five paint event hooks at different rendering stages:
+      * BeforePaintRendererEvent: before the map renderer starts drawing (background setup)
+      * BeforePaintEvent: before GDI canvas drawing (old-style canvas)
+      * PaintExtraEvent: after base layers, for overlay graphics
+      * AfterPaintEvent: after all rendering completes (final overlays)
+      * AfterPaintRendererEvent: after renderer finishes (renderer-specific cleanup)
+    - Multiple renderer backends supported:
+      * GDI32: basic Windows GDI
+      * GDI+: higher-quality anti-aliased rendering
+      * Direct2D: hardware-accelerated modern rendering
+      * Skia: high-performance cross-platform rendering
+    - Canvas types: TCanvas (GDI), TGIS_GdipGraphics (GDI+), TDirect2DCanvas (Direct2D), ISkCanvas (Skia)
+    - Renderer selection: switching between backends at runtime
+    - Custom overlays: drawing borders, backgrounds, text, and other graphics
+
+  User workflow:
+    1. Load a shapefile (California counties)
+    2. Choose a renderer backend (GDI, GDI+, Direct2D, Skia)
+    3. Enable paint event checkboxes to see custom graphics at each stage
+    4. Observe how graphics layer on top of map:
+       - Red borders at different distances (10, 40, 70, 100 pixels)
+       - Background color filling
+       - Text overlays showing event name
+    5. Click "Test Print Bitmap" to test rendering with events
+
+  Paint event sequence:
+    1. BeforePaintRendererEvent - fill background before any map rendering
+    2. BeforePaintEvent - draw on GDI canvas (legacy)
+    3. [Map layers render here]
+    4. PaintExtraEvent - draw overlay graphics after layers
+    5. AfterPaintEvent - final GDI canvas drawing
+    6. AfterPaintRendererEvent - renderer-specific final drawing
+
+  Renderer compatibility:
+    - Each renderer has different canvas APIs
+    - Code must cast to correct canvas type and handle each renderer
+    - TGIS_RendererAbstract provides abstraction (CanvasPen, CanvasBrush, etc.)
 }
 unit Unit1;
 
@@ -115,33 +155,56 @@ uses
   Vcl.GisRendererGdiPlus,
   Vcl.GisRendererGdi32 ;
 
+{
+  FormCreate
+  Initializes the sample:
+    1. Loads California counties shapefile
+    2. Populates renderer selector with available backends
+    3. Sets up paint event hooks
+}
 procedure TForm1.FormCreate(Sender: TObject);
 var
   ll : TGIS_LayerSHP ;
   name : String ;
   i : integer ;
 begin
-  // add layer
+  { Load the California counties shapefile }
   ll := TGIS_LayerSHP.Create ;
   ll.Path := TGIS_Utils.GisSamplesDataDirDownload + '\World\Countries\USA\States\California\Counties.shp' ;
   GIS.Add(ll) ;
+
+  { Fit the viewport to show all counties }
   GIS.FullExtent ;
   center_ptg := GIS.CenterPtg ;
 
+  { Populate the renderer dropdown with all available backends }
   cbRenderer.Items.Clear ;
   for i := 0 to RendererManager.Names.Count-1 do
     cbRenderer.Items.Add(RendererManager.Names[i]);
+
+  { Select the current renderer in the dropdown }
   cbRenderer.ItemIndex := RendererManager.Names.IndexOf(GIS.Renderer.ClassName);
 end;
 
+{
+  GISAfterPaintEvent
+  Called after all map rendering completes on a GDI canvas.
+  This is the final opportunity to draw on the VCL TCanvas.
+  Draws a blue rectangle 70 pixels from each edge.
+}
 procedure TForm1.GISAfterPaintEvent(_sender, _canvas: TObject);
 var
   canvasVcl : TCanvas ;
 begin
+  { Cast the generic canvas object to a VCL TCanvas }
   canvasVcl := TCanvas(_canvas);
+
+  { Configure pen for drawing the border rectangle }
   canvasVcl.Pen.Color := TGIS_Color.Blue.ToBGR ;
   canvasVcl.Pen.Width := 1;
-  canvasVcl.Brush.Style := bsClear;
+  canvasVcl.Brush.Style := bsClear;  { No fill, just outline }
+
+  { Draw a blue rectangle border 70 pixels inset from viewport edges }
   canvasVcl.Rectangle(Rect(70, 70, GIS.Width-70, GIS.Height-70));
 end ;
 
@@ -157,14 +220,25 @@ begin
   rdr.CanvasDrawRectangle(Rect(100, 100, GIS.Width-100, GIS.Height-100));
 end ;
 
+{
+  GISBeforePaintEvent
+  Called before any map layer rendering on a GDI canvas.
+  This is the first opportunity to draw background graphics on VCL TCanvas.
+  Draws a blue rectangle 40 pixels from each edge (innermost rectangle).
+}
 procedure TForm1.GISBeforePaintEvent(_sender, _canvas: TObject);
 var
   canvasVcl  : TCanvas ;
 begin
+  { Cast generic canvas object to VCL TCanvas }
   canvasVcl := TCanvas(_canvas);
+
+  { Configure pen for the border rectangle }
   canvasVcl.Pen.Color := TGIS_Color.Blue.ToBGR ;
   canvasVcl.Pen.Width := 1;
-  canvasVcl.Brush.Style := bsClear;
+  canvasVcl.Brush.Style := bsClear;  { Outline only }
+
+  { Draw a blue rectangle 40 pixels inset (drawn before map layers) }
   canvasVcl.Rectangle(Rect(40, 40, GIS.Width-40, GIS.Height-40));
 end ;
 
@@ -214,6 +288,13 @@ begin
   rdr.CanvasDrawRectangle(Rect(10, 10, GIS.Width-10, GIS.Height-10));
 end ;
 
+{
+  GISPaintExtraEvent
+  Called after map layers render but before final post-processing.
+  Uses renderer-agnostic canvas interface for drawing overlays.
+  Draws text overlay showing "PaintExtra" event name.
+  This is the most important event for custom map overlays and annotations.
+}
 procedure TForm1.GISPaintExtraEvent(_sender: TObject;
   _renderer: TGIS_RendererAbstract; _mode: TGIS_DrawMode);
 var
@@ -221,6 +302,7 @@ var
   pt  : TPoint ;
   ptc : TPoint ;
 begin
+  { Text to display identifying this paint event }
   txt := 'PaintExtra' ;
   _renderer.CanvasFont.Name := 'Courier New' ;
   _renderer.CanvasFont.Size := 24 ;

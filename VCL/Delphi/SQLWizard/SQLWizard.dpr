@@ -1,10 +1,3 @@
-//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
-{
-  How to provide SQL Layer support.
-}
-
 program SQLWizard;
 
 uses
@@ -20,3 +13,4 @@ begin
   Application.CreateForm(TfrmLayerSQL, frmLayerSQL);
   Application.Run;
 end.
+

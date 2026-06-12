@@ -1,3 +1,17 @@
+// HelloDK - TatukGIS Developer Kernel (DK11) introductory sample.
+//
+// Demonstrates the core DK workflow:
+//   1. Opening a vector Shapefile into the map viewer.
+//   2. Switching the viewer interaction mode: Zoom / Drag / Select.
+//   3. Creating an in-memory editable vector layer with a transparent polygon style.
+//   4. Building a polygon shape programmatically by adding explicit vertices.
+//   5. Click-to-select a feature using screen-to-map coordinate conversion
+//      and spatial proximity search (GIS.Locate).
+//   6. Spatial containment query using the DE-9IM matrix string "T*****FF*"
+//      combined with a SQL WHERE filter to find world features whose label
+//      starts with 's' and that are geometrically contained within the
+//      user-created polygon.
+
 unit Unit1;
 
 interface
@@ -27,14 +41,25 @@ uses
   GisUtils;
 
 type
+  { HelloDK sample — introductory demonstration of core TatukGIS DK workflows.
+    Opens a world shapefile, creates an in-memory vector layer with a polygon, performs spatial containment
+    queries using DE-9IM topology predicates, and switches between interaction modes (Zoom, Drag, Select).
+    Demonstrates screen-to-map coordinate conversion, feature location via GIS.Locate(), and SQL filtering. }
   TMainForm = class(TForm)
     ToolBar1: TToolBar;
+    // "Open project" button - loads the sample world shapefile
     btnOpen: TSpeedButton;
+    // The central GIS map viewer control
     GIS: TGIS_ViewerWnd;
+    // "Zooming" button - enables rubber-band zoom interaction
     btnZoom: TSpeedButton;
+    // "Selecting" button - enables click-to-select interaction
     btnSelect: TSpeedButton;
+    // "Dragging" button - enables pan/drag interaction
     btnDrag: TSpeedButton;
+    // "Create Shape" button - adds an editable layer with a sample polygon
     btnCreate: TSpeedButton;
+    // "Find Shape" button - runs DE-9IM spatial containment query
     btnFind: TSpeedButton;
     procedure btnOpenClick(Sender: TObject);
     procedure btnZoomClick(Sender: TObject);
@@ -57,62 +82,90 @@ implementation
 
 {$R *.dfm}
 
+// "Open project" button click event.
+// Opens the WorldDCW world Shapefile from the DK sample data directory and
+// loads it into the viewer. The viewer auto-zooms to the full extent of
+// the loaded data.
 procedure TMainForm.btnOpenClick(Sender: TObject);
 begin
   GIS.Open(TGIS_Utils.GisSamplesDataDirDownload() + '\World\WorldDCW\world.shp');
 end;
 
-// button "Add Shape" click event
+// "Create Shape" button click event.
+// Creates a new in-memory TGIS_LayerVector named 'edit layer', gives it a
+// transparent fill with a blue outline, then adds a single quadrilateral
+// polygon to it. This layer is not backed by a file - it exists only while
+// the application is running.
 procedure TMainForm.btnCreateClick(Sender: TObject);
 var
   ll  : TGIS_LayerVector ;
   shp : TGIS_Shape ;
 begin
-  // lets find if such layer already exists
+  // Guard: if the edit layer already exists, do nothing (idempotent)
   ll := TGIS_LayerVector( GIS.Get( 'edit layer' ) );
   if ll <> nil then
     exit ;
 
-  // create a new layer and add it to the viewer
+  // Create a new in-memory vector layer and register it with the viewer
   ll := TGIS_LayerVector.Create ;
   ll.Name := 'edit layer' ;
-  ll.CS := GIS.CS ; // same coordinate system as a viewer
+  // Inherit the viewer's coordinate system so coordinates are interpreted correctly
+  ll.CS := GIS.CS ;
 
-  // in a previous sample we created a solid polygon
-  // to make it nicer we need it to be transparent
+  // Style: transparent fill (Clear pattern) with a solid blue outline,
+  // so the underlying world layer remains visible through the polygon
   ll.Params.Area.OutlineColor := TGIS_Color.Blue ;
   ll.Params.Area.Pattern := TGIS_BrushStyle.Clear ;
+
+  // Register the layer with the viewer; it will appear on top of existing layers
   GIS.Add( ll );
 
-  // create a new shape and immediately add it to the layer
-  // create a shape and add it to polygon
+  // Create a new Polygon shape inside the layer
   shp := ll.CreateShape( TGIS_ShapeType.Polygon ) ;
 
-  // add some veritices
-
-  // we group operation together
+  // Lock(Extent) batches vertex additions so the bounding box is recalculated
+  // only once when Unlock is called, improving performance for bulk edits
   shp.Lock( TGIS_Lock.Extent ) ;
-  shp.AddPart ; // shape can have multiple parts like islands, holes
 
+  // AddPart starts the first ring of the polygon; a shape can have multiple
+  // parts (e.g., islands or holes in a multi-polygon)
+  shp.AddPart ;
 
+  // Add the four corner vertices of the polygon (coordinates in the map's CS)
   shp.AddPoint( TGIS_Utils.GisPoint( 10, 10 ) );
   shp.AddPoint( TGIS_Utils.GisPoint( 10, 80 ) );
   shp.AddPoint( TGIS_Utils.GisPoint( 80, 90 ) );
   shp.AddPoint( TGIS_Utils.GisPoint( 90, 10 ) );
 
-  shp.Unlock ; // unlock operation, close shape if necessary
+  // Unlock finalises the shape geometry: recalculates extents and closes
+  // the polygon ring automatically if the first and last points differ
+  shp.Unlock ;
 
-  // and now refresh map
+  // Redraw the entire map canvas to show the newly added polygon
   GIS.InvalidateWholeMap ;
 end;
 
-// button "Drag" click event
+// "Dragging" button click event.
+// Switches the viewer to Drag mode, allowing the user to pan the map
+// by clicking and dragging with the mouse.
 procedure TMainForm.btnDragClick(Sender: TObject);
 begin
   GIS.Mode := TGIS_ViewerMode.Drag;
 end;
 
-// button "Add Shape" click event
+// "Find Shape" button click event.
+// Uses DE-9IM (Dimensionally Extended 9-Intersection Model) spatial
+// relationship to find all world features that are fully contained inside
+// the polygon created by btnCreateClick.
+//
+// The DE-9IM matrix "T*****FF*" encodes the "contains" relationship:
+//   - 'T' at position [0]: interiors must intersect (non-empty)
+//   - "FF" at positions [6,7]: the query shape's boundary and exterior
+//     must NOT intersect the target shape's interior - i.e. the target
+//     lies entirely within the query polygon.
+//
+// An additional SQL LIKE filter restricts results to features whose
+// 'label' field starts with the letter 's'.
 procedure TMainForm.btnFindClick(Sender: TObject);
 var
   ll     : TGIS_LayerVector ;
@@ -120,59 +173,68 @@ var
   lv     : TGIS_LayerVector ;
   tmpshp : TGIS_Shape ;
 begin
-  // lets find if such layer already exists
+  // The edit layer must exist (created by btnCreateClick) to provide
+  // the selection polygon; exit early if it has not been created yet
   ll := TGIS_LayerVector( GIS.Get( 'edit layer') );
   if ll = nil then
     exit ;
 
-  // lets get a layer with world shape
-  // names are constructed based on layer name
+  // Retrieve the world layer - its name is derived from the filename ('world')
   lv := TGIS_LayerVector( GIS.Get( 'world' ) );
 
-  // deselect all shapes on the map
+  // Clear any previous selection on the world layer before applying the new one
   lv.DeselectAll;
 
-  // and we need a created shape, with we want
-  // to use as selection shape
-  selshp := ll.GetShape(1); // just a first shape form the layer
+  // Retrieve the first (and only) shape from the edit layer to use as
+  // the spatial query boundary
+  selshp := ll.GetShape(1);
 
-  // for file based layer we should pin shape to memory
-  // otherwise it should be discarded
+  // MakeEditable pins the shape into memory so it survives the subsequent
+  // iteration; file-backed shapes are otherwise evicted from cache
   selshp := selshp.MakeEditable ;
 
-
-  // we group operations together
+  // Lock the viewer to batch all selection redraws into a single repaint
   GIS.Lock;
-  // so now we search for all shapes with DE9-IM relationship
-  // which labels starts with 's' (with use of SQL syntax)
-  // in this case we will fine "T*****FF*" contains relationship
-  // which means that we will find only shapes inside the polygon
+
+  // Loop over all shapes in the world layer whose bounding box overlaps
+  // selshp.Extent, whose 'label' field matches the SQL pattern 's%', AND
+  // whose DE-9IM relationship with selshp satisfies "T*****FF*" (Contains)
   for tmpshp in lv.Loop( selshp.Extent, 'label LIKE ''s%''', selshp, 'T*****FF*' ) do
   begin
     tmpshp.IsSelected := True ;
   end ;
-  // unlock operation, close shape if necessary
+
+  // Unlock releases the batched repaint and triggers a single screen refresh
   GIS.Unlock;
 
-  // and now refresh map
+  // Force a full map redraw to show the newly selected shapes highlighted
   GIS.InvalidateWholeMap;
 end;
 
- // button "Select" click event
+// "Selecting" button click event.
+// Switches the viewer to Select mode. In this mode, mouse clicks on the map
+// are handled by GISTapSimpleEvent to toggle shape selection.
 procedure TMainForm.btnSelectClick(Sender: TObject);
 begin
   GIS.Mode := TGIS_ViewerMode.Select;
 end;
 
-// button "Zoom" click event
+// "Zooming" button click event.
+// Switches the viewer to Zoom mode. In this mode the left mouse button
+// draws a rubber-band rectangle to zoom into a region; the right button
+// zooms out.
 procedure TMainForm.btnZoomClick(Sender: TObject);
 begin
   GIS.Mode := TGIS_ViewerMode.Zoom;
 end;
 
-
-// map TapSimple event
-// event passes X, Y coordinates
+// TapSimple event handler - fired on every single mouse click on the viewer.
+// When the viewer is in Select mode, this converts the click position from
+// screen pixels to map coordinates, finds the nearest shape within a
+// tolerance of 5 pixels, and toggles its selection state.
+//
+// Parameters:
+//   X, Y  - screen pixel coordinates of the mouse click (top-left origin)
 procedure TMainForm.GISTapSimpleEvent(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
@@ -181,30 +243,34 @@ var
   precision : Double ;
   lv        : TGIS_LayerVector ;
 begin
-  // ignore clicking if mode is other then select
+  // Ignore taps when the viewer is not in Select mode
   if GIS.Mode <> TGIS_ViewerMode.Select then
     exit ;
 
-   lv := TGIS_LayerVector( GIS.Get('world') );
-  //deselect all shapes on the layer
-   lv.DeselectAll;
-  // convert screen coordinates to map coordinates
+  // Get the world layer to manage its selection state
+  lv := TGIS_LayerVector( GIS.Get('world') );
+
+  // Clear any previously selected shapes before applying the new selection
+  lv.DeselectAll;
+
+  // Convert screen pixel coordinates to geographic map coordinates.
+  // ScreenToMap accounts for the current zoom level and pan offset.
   ptg := GIS.ScreenToMap( Point( Round(X), Round(Y) ) );
 
-  // calculate precision of location as 5 pixels
+  // Compute the hit-test tolerance: 5 screen pixels expressed in map units.
+  // Dividing by Zoom converts pixels to the map's coordinate unit.
   precision := 5 / GIS.Zoom ;
 
-
-  // let's try to locate a selected shape on the map
+  // Search all layers for the topmost shape within 'precision' of the click point
   shp := TGIS_Shape( GIS.Locate( ptg, precision ) );
 
-  // not found?
+  // If no shape was found near the click point, do nothing
   if shp = nil then exit ;
 
-  // mark shape as selected
+  // Toggle selection: clicking a selected shape deselects it, and vice versa
   shp.IsSelected := not shp.IsSelected ;
 
-  // and refresh a map
+  // Repaint the map to reflect the updated selection highlight
   GIS.InvalidateWholeMap ;
 end;
 

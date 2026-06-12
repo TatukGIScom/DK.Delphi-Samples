@@ -1,9 +1,3 @@
-//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
-{
-  How to use field properties of a layer.
-}
 program Fields;
 
 uses
@@ -17,3 +11,4 @@ begin
   Application.CreateForm(TForm1, Form1);
   Application.Run;
 end.
+

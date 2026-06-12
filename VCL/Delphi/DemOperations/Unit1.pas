@@ -2,7 +2,23 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to provide basic dem operations.
+  DemOperations sample - demonstrates terrain analysis derived from a DEM raster.
+
+  The sample opens an ADF elevation grid and lets the user choose from the
+  following TGIS_DemGenerator operations:
+    Hillshade      - simulates sun illumination to produce a shaded relief image
+    Slope          - steepness at each cell (degrees or percent)
+    Slope Hydro    - hydrologically corrected slope
+    Aspect         - compass direction of the downslope face
+    TRI            - Terrain Ruggedness Index
+    TPI            - Topographic Position Index
+    Roughness      - local surface roughness
+    Total Curvature - profile or plan curvature
+    Matrix Gain    - local gain matrix
+    Flow Dir       - D8 flow direction
+
+  A custom hillshade implementation (changeDEM) is also provided to demonstrate
+  the TGIS_LayerPixel.GridOperationEvent callback mechanism.
 }
 
 unit Unit1;
@@ -124,6 +140,7 @@ uses
   GisAllLayers,
   GisRtl ;
 
+{ Resets the viewer to show the full spatial extent of all loaded layers. }
 procedure TForm1.btnFullExtentClick(Sender: TObject);
 begin
   if GIS.View3D then
@@ -132,47 +149,85 @@ begin
     GIS.FullExtent ;
 end;
 
+{ Creates an output grid layer matching the source DEM, instantiates the
+  DEM operation selected in cbDemOperation, runs TGIS_DemGenerator.Process,
+  and adds the result layer to the viewer. }
+{ btnGenerateClick - Core DEM analysis algorithm dispatcher
+
+  Algorithm pipeline:
+    1. Retrieve source DEM layer from viewer (lp)
+    2. Create output raster layer (ld) with same extent and dimensions
+    3. Select appropriate TGIS_DemOperation subclass based on user choice
+    4. Create TGIS_DemGenerator engine
+    5. Process source DEM through selected operation, writing result to output layer
+    6. Update viewer to display result
+    7. Progress reported via doBusyEvent callback
+
+  Operation selection (10 types):
+    - Hillshade: sun illumination shaded relief (parameters: z-factor, azimuth, altitude)
+    - Slope: steepness in degrees or percent
+    - SlopeHydro: hydrologically corrected slope
+    - Aspect: compass direction of downslope (0-360°)
+    - TRI: Terrain Ruggedness Index
+    - TPI: Topographic Position Index
+    - Roughness: local surface roughness
+    - TotalCurvature: profile or plan curvature
+    - MatrixGain: local gain matrix
+    - FlowDir: D8 flow direction encoding
+
+  Output handling:
+    - Output layer created with same spatial reference as input
+    - Named "out_<operation>" to avoid conflicts
+    - Previous output of same name deleted to avoid duplication
+    - GridShadow disabled on output to show computed values
+}
 procedure TForm1.btnGenerateClick(Sender: TObject);
 var
-  lp  : TGIS_LayerPixel ;
-  ld  : TGIS_LayerPixel ;
-  dem : TGIS_DemGenerator ;
-  dop : TGIS_DemOperation ;
-  sm  : TGIS_DemSlopeMode ;
-  cm  : TGIS_DemTotalCurvatureMode ;
+  lp  : TGIS_LayerPixel ;  { Source DEM layer from viewer }
+  ld  : TGIS_LayerPixel ;  { Output layer to hold result }
+  dem : TGIS_DemGenerator ; { DEM processing engine }
+  dop : TGIS_DemOperation ; { Selected operation (Hillshade, Slope, etc.) }
+  sm  : TGIS_DemSlopeMode ; { Slope calculation mode (Degrees or Percent) }
+  cm  : TGIS_DemTotalCurvatureMode ; { Curvature type (Profile or Plan) }
 begin
-  lp := TGIS_LayerPixel( GIS.Items[0] ); ;
+  { Get source DEM layer }
+  lp := TGIS_LayerPixel( GIS.Items[0] );
 
+  { Create output layer with identical spatial properties }
   ld := TGIS_LayerPixel.Create ;
   ld.Name := 'out_' ;
-  ld.CS := lp.CS ;
+  ld.CS := lp.CS ;  { Preserve coordinate system }
+  { Build layer: empty, with same extent and dimensions as source }
   ld.Build( True, lp.CS, lp.Extent, lp.BitWidth, lp.BitHeight ) ;
 
+  { Create DEM processing engine }
   dem := TGIS_DemGenerator.Create ;
   try
+    { Instantiate the selected DEM operation based on combobox selection }
     case cbDemOperation.ItemIndex of
-      {Hillshade }
+      {Hillshade: sun illumination parameters}
       0 : begin
             dop := TGIS_DemOperationHillShade.Create(
-                      DotStrToFloat( eZFactor.Text ),
-                      DotStrToFloat( eAzimuth.Text ),
-                      DotStrToFloat( eAltitude.Text),
-                      cbCombined.Checked
+                      DotStrToFloat( eZFactor.Text ),   { Z-factor: elevation exaggeration }
+                      DotStrToFloat( eAzimuth.Text ),   { Azimuth: light direction (0-360°) }
+                      DotStrToFloat( eAltitude.Text),   { Altitude: light angle above horizon }
+                      cbCombined.Checked                { Combined: overlay original with hillshade }
                     ) ;
           end ;
-      {Slope     }
+      {Slope: steepness calculation}
       1 : begin
+            { Select slope output unit: degrees or percent }
             case cbSlopeMode.ItemIndex of
-              0 : sm := TGIS_DemSlopeMode.Degrees ;
-              1 : sm := TGIS_DemSlopeMode.Percent
+              0 : sm := TGIS_DemSlopeMode.Degrees ;     { Rise/run in degrees (0-90) }
+              1 : sm := TGIS_DemSlopeMode.Percent       { Rise/run percentage (0-∞) }
             else  sm := TGIS_DemSlopeMode.Degrees ;
             end;
             dop := TGIS_DemOperationSlope.Create(
                       sm,
-                      DotStrToFloat( eScale.Text )
+                      DotStrToFloat( eScale.Text )      { Scale factor for output }
                     ) ;
           end ;
-      {SlopeHydro}
+      {SlopeHydro: hydrologically corrected slope}
       2 : begin
             case cbSlopeMode.ItemIndex of
               0 : sm := TGIS_DemSlopeMode.Degrees ;
@@ -184,47 +239,56 @@ begin
                       DotStrToFloat( eScale.Text )
                     ) ;
           end ;
-      {Aspect    }
+      {Aspect: compass direction of downslope face}
       3 : dop := TGIS_DemOperationAspect.Create( chkAngleAzimuth.Checked ) ;
-      {TRI       }
+      {TRI: Terrain Ruggedness Index (local elevation variance)}
       4 : dop := TGIS_DemOperationTRI.Create ;
-      {TPI       }
+      {TPI: Topographic Position Index (relative elevation)}
       5 : dop := TGIS_DemOperationTPI.Create ;
-      {Roughness }
+      {Roughness: local surface roughness measure}
       6 : dop := TGIS_DemOperationRoughness.Create ;
-      {TotalCurvature}
+      {TotalCurvature: profile or plan curvature}
       7 : begin
             case cbCurvatureMode.ItemIndex of
-              0 : cm := TGIS_DemTotalCurvatureMode.Profile ;
-              1 : cm := TGIS_DemTotalCurvatureMode.Plan
+              0 : cm := TGIS_DemTotalCurvatureMode.Profile ; { Along-slope curvature }
+              1 : cm := TGIS_DemTotalCurvatureMode.Plan      { Cross-slope curvature }
             else  cm := TGIS_DemTotalCurvatureMode.Profile ;
             end;
             dop := TGIS_DemOperationTotalCurvature.Create( cm ) ;
           end;
-      {MatrixGain}
+      {MatrixGain: local gain matrix computation}
       8 : dop := TGIS_DemOperationMatrixGain.Create ;
-      { Flow dir}
+      {FlowDir: D8 flow direction encoding (1,2,4,8,16,32,64,128)}
       9 : dop := TGIS_DemOperationFlowDir.Create
-    else  dop := TGIS_DemOperation.Create ;
+    else
+      dop := TGIS_DemOperation.Create ;  { Fallback: base operation }
     end;
 
+    { Set output layer name to include operation description }
     ld.Name := 'out_' + dop.Description ;
+
+    { Remove any previous output of same name to avoid conflicts }
     if GIS.Get( ld.Name ) <> nil then
       GIS.Delete( ld.Name ) ;
 
-    ld.Params.Pixel.GridShadow := False ;
-    GIS.Add( ld ) ;
+    { Configure output layer for result display }
+    ld.Params.Pixel.GridShadow := False ;  { Disable shading, show computed values }
+    GIS.Add( ld ) ;  { Add output layer to viewer }
+
     try
+      { Execute the DEM operation: read from lp, write to ld, report progress via callback }
       dem.Process( lp, lp.Extent, ld, dop, doBusyEvent ) ;
     finally
-      FreeObject( dop ) ;
+      FreeObject( dop ) ;  { Clean up operation }
     end;
-    GIS.InvalidateWholeMap ;
+
+    GIS.InvalidateWholeMap ;  { Refresh display with result }
   finally
-    FreeObject( dem ) ;
+    FreeObject( dem ) ;  { Clean up DEM generator }
   end ;
 end;
 
+{ Switches the viewer interaction mode to zoom. }
 procedure TForm1.btnZoomClick(Sender: TObject);
 begin
   if GIS.View3D then
@@ -234,6 +298,9 @@ begin
 end;
 
 
+{ Attaches or detaches the custom changeDEM hillshade callback on the source
+  layer when the checkbox state changes.  When attached, the built-in grid
+  rendering is replaced by the manual hillshade computation. }
 procedure TForm1.cbCustomOperationClick(Sender: TObject);
 var
   ll : TGIS_LayerPixel ;
@@ -254,6 +321,8 @@ begin
   GIS.InvalidateWholeMap ;
 end;
 
+{ Shows or hides the parameter sub-panels that are relevant to the currently
+  selected DEM operation (e.g. hillshade params, slope mode, curvature mode). }
 procedure TForm1.cbDemOperationChange(Sender: TObject);
 begin
   gbHillShadeParams.Visible := False ;
@@ -278,11 +347,13 @@ begin
   btnGenerate.Top := gbMain.Top + 260 ;
 end;
 
+{ Toggles the viewer between 2-D map view and 3-D perspective view. }
 procedure TForm1.btn1Click(Sender: TObject);
 begin
   GIS.View3D := not GIS.View3D ;
 end;
 
+{ Switches the viewer interaction mode to pan/drag. }
 procedure TForm1.btnDragClick(Sender: TObject);
 begin
   if GIS.View3D then
@@ -291,6 +362,7 @@ begin
     GIS.Mode := TGIS_ViewerMode.Drag ;
 end;
 
+{ Initialises the open-file filter and loads the default sample DEM on startup. }
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   dlgFileOpen.Filter := GisSupportedFiles( [ TGIS_FileType.All ] , false);
@@ -301,6 +373,8 @@ begin
   cbDemOperationChange( Sender ) ;
 end;
 
+{ Reports DEM processing progress on the progress bar.  Shows and updates the
+  bar while _end > 0, and hides it when the operation completes. }
 procedure TForm1.doBusyEvent(_sender: TObject; _pos, _end: Integer;
   var _abort: Boolean);
 begin
@@ -317,6 +391,8 @@ begin
   Application.ProcessMessages ;
 end;
 
+{ Updates the grid shadow angle on the source layer as the track bar position
+  changes, giving an interactive sun-position preview. }
 procedure TForm1.tbShadowAngleChange(Sender: TObject);
 var
   ll : TGIS_LayerPixel ;
@@ -329,6 +405,7 @@ begin
     GIS.InvalidateWholeMap;
 end;
 
+{ Opens a file dialog and loads the chosen raster file into the viewer. }
 procedure TForm1.ToolButton1Click(Sender: TObject);
 begin
   if not dlgFileOpen.Execute then exit ;
@@ -336,6 +413,12 @@ begin
   GIS.Open( dlgFileOpen.FileName ) ;
 end;
 
+{ Custom GridOperationEvent callback that computes a hillshade value for every
+  cell using a 3x3 neighbourhood (Horn's algorithm).  The function reads the
+  nine-cell window from _source, calculates the cosine of the sun incidence
+  angle (cang), and writes the shaded value (1..255) to _output.  Cells that
+  contain the layer's NoData value are passed through unchanged.
+  Returns True to indicate the output grid is valid. }
 function TForm1.changeDEM(
          _layer : TObject        ;
   const _extent : TGIS_Extent    ;

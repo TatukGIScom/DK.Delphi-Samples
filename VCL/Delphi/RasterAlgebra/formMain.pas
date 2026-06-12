@@ -1,3 +1,14 @@
+{
+  RasterAlgebra sample - demonstrates how to apply mathematical expressions to
+  raster layers using TGIS_RasterAlgebra to produce derived pixel or grid outputs.
+
+  The sample loads a pixel image, a grid (DEM), or a vector layer into the viewer,
+  then evaluates a user-supplied formula cell-by-cell to build a new result layer.
+  Supported formula examples:
+    Pixel inversion : RGB(255 - pixel.R, 255 - pixel.G, 255 - pixel.B)
+    Grid thresholding: IF(grid < AVG(grid), MIN(grid), MAX(grid))
+    Vector rasterize : IF(NODATA(vector.GIS_UID), RGB(0,255,0), RGB(255,0,0))
+}
 unit formMain;
 
 interface
@@ -68,6 +79,8 @@ const
   SAMPLE_RESULT : String = 'Result' ;
 
 
+{ Reports raster algebra execution progress on the progress bar.
+  _pos = 0 initializes the bar; _pos = -1 resets it after completion. }
 procedure TfrmMain.doBusyEvent(
       _sender : TObject ;
       _pos    : Integer ;
@@ -90,6 +103,8 @@ begin
 end ;
 
 
+{ Applies a blue-lime-red colour ramp to the grid layer _l, mapping the
+  layer's full value range to the ramp and disabling the default grid shadow. }
 procedure TfrmMain.applyRamp(
   const _l : TGIS_LayerPixel
 ) ;
@@ -107,6 +122,8 @@ begin
 end ;
 
 
+{ Closes the viewer, loads a JPEG aerial photo as a pixel layer, and sets a
+  default colour-inversion formula for the raster algebra expression field. }
 procedure TfrmMain.btnOpenPixelClick(Sender: TObject);
 var
   path : String ;
@@ -126,6 +143,8 @@ begin
 end;
 
 
+{ Closes the viewer, loads an ADF elevation grid, applies a colour ramp, and
+  sets a default threshold formula that clamps values to MIN or MAX. }
 procedure TfrmMain.btnOpenGridClick(Sender: TObject);
 var
   path : String ;
@@ -147,6 +166,9 @@ begin
 end;
 
 
+{ Closes the viewer, loads a TIGER shapefile as a vector layer, and sets a
+  default formula that rasterizes features green where data exists and red
+  where no data is present. }
 procedure TfrmMain.btnOpenVectorClick(Sender: TObject);
 var
   path : String ;
@@ -169,6 +191,11 @@ begin
 end;
 
 
+{ Builds an output pixel or grid layer whose dimensions match the highest-
+  resolution source layer, registers all viewer layers with a TGIS_RasterAlgebra
+  engine, and evaluates the formula entered in edtFormula.  The result layer
+  "Result" replaces any previous run.  A colour ramp is applied automatically
+  when the output is a grid. }
 procedure TfrmMain.btnExecuteClick(Sender: TObject);
 var
   src : TGIS_LayerPixel ;

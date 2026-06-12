@@ -1,10 +1,13 @@
 //=============================================================================
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
-//
-//  How to direct write file.
-//
-//  Check project\options\directories in a case of any problems during compilation
+/*
+ * DirectWrite sample - demonstrates five sequential low-level write techniques on TGIS_LayerSHP:
+ * Build (AddShape loop + SaveData), ImportLayerEx (spatial CONTAINS filter), MergeLayerEx
+ * (DISJOINT filter), TGIS_LayerVectorDirectWriteHelper (sequential high-performance write), and
+ * TGIS_LayerVectorMergeHelper (batch-commit write).  Buttons unlock in sequence; output files go
+ * into a numbered Shapes{n} directory.
+ */
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
@@ -23,6 +26,8 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 {
 }
 //---------------------------------------------------------------------------
+/* Creates a new SHP layer via Build(), opens the cities source, copies structure and coordinate
+   system, loops all shapes with AddShape, then saves data. */
 void __fastcall TForm1::btnBuildClick(TObject *Sender)
 {
   TGIS_LayerSHP *lv ;
@@ -30,11 +35,18 @@ void __fastcall TForm1::btnBuildClick(TObject *Sender)
   TGIS_Shape *shp ;
   TGIS_LayerVectorEnumerator *loop1 ;
 
+  /* Close any previously opened layers. */
   GIS->Close();
 
+  /* Technique 1: Build + AddShape loop. Create a new shapefile layer. */
   lv = new TGIS_LayerSHP ;
 
   try{
+      /* Build creates a new empty shapefile with:
+         - file path for output
+         - initial extent (can be updated as shapes are added)
+         - shape type (Point, Polyline, Polygon, etc.)
+         - dimension type (XY, XYZ, XYM, XYZM) */
       lv->Build( ( "Shapes" + IntToStr( number ) + "\\build.shp" ),
                    GisExtent( -180, -90, 180, 90 ),
                    TGIS_ShapeType::Point,
@@ -42,14 +54,18 @@ void __fastcall TForm1::btnBuildClick(TObject *Sender)
                );
       lv->Open() ;
 
+      /* Open the source cities layer to copy from. */
       ll = new TGIS_LayerSHP ;
       try {
         ll->Path = GisSamplesDataDirDownload() + "\\World\\WorldDCW\\cities.shp" ;
         ll->Open() ;
         int cnt = ll->Items->Count ;
+        /* Copy the field structure (name, type, width) from source to destination. */
         lv->ImportStructure( ll ) ;
+        /* Copy the coordinate system from source so geometry is compatible. */
         lv->CS = ll->CS ;
-        loop1 = ll->Loop()->GetEnumerator(); // (GIS->VisibleExtent, "", 0, "", True)->GetEnumerator();
+        /* Iterate all shapes from the source layer and add them to the new layer. */
+        loop1 = ll->Loop()->GetEnumerator();
         while (loop1->MoveNext()) {
           lv->AddShape( loop1->Current, True);
         };
@@ -58,17 +74,21 @@ void __fastcall TForm1::btnBuildClick(TObject *Sender)
         delete loop1 ;
         delete ll ;
       }
+      /* Flush all pending writes to disk and finalize the shapefile. */
       lv->SaveData() ;
   } catch(...) {
 
   }
 
+  /* Display the newly created layer in the viewer. */
   GIS->Add( lv ) ;
   GIS->FullExtent() ;
   GIS->InvalidateWholeMap() ;
 }
 //---------------------------------------------------------------------------
 
+/* Imports a spatially filtered subset of cities using ImportLayerEx with a CONTAINS WKT polygon
+   (European bounding box); the imported layer is displayed in green. */
 void __fastcall TForm1::btnImportLayerClick(TObject *Sender)
 {
   TGIS_LayerSHP *ll ;
@@ -100,6 +120,8 @@ void __fastcall TForm1::btnImportLayerClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Merges cities outside the European polygon using MergeLayerEx with a DISJOINT relation;
+   the merged layer is displayed in green. */
 void __fastcall TForm1::btnMergeLayerClick(TObject *Sender)
 {
   TGIS_LayerSHP *ll ;
@@ -131,6 +153,8 @@ void __fastcall TForm1::btnMergeLayerClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Writes all cities to a new SHP using TGIS_LayerVectorDirectWriteHelper
+   (Build -> AddShape loop -> Close) for high-performance sequential writing. */
 void __fastcall TForm1::btnDirectWriteClick(TObject *Sender)
 {
   TGIS_LayerSHP *lv ;
@@ -183,6 +207,8 @@ void __fastcall TForm1::btnDirectWriteClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Writes all cities to a new SHP using TGIS_LayerVectorMergeHelper with Commit() per shape for
+   batch-commit writing; resets all buttons on completion. */
 void __fastcall TForm1::btnDirectMergeClick(TObject *Sender)
 {
   TGIS_LayerSHP *lv ;
@@ -240,6 +266,7 @@ void __fastcall TForm1::btnDirectMergeClick(TObject *Sender)
 
 //---------------------------------------------------------------------------
 
+/* Finds the next unused Shapes{n} directory number and creates it as the output destination. */
 void __fastcall TForm1::FormCreate(TObject *Sender)
 {
   number = 0 ;

@@ -1,10 +1,27 @@
 //=============================================================================
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
-
-//
-//  How to use JoinADO.
-//
+/*
+ * JoinAndRender sample - demonstrates joining external database tables to
+ * vector layers and rendering features using dynamic styling based on joined data.
+ *
+ * What the sample shows:
+ *   - Loading a world country shapefile and connecting to an external ADO database
+ *     containing attribute data (population, economic indicators) indexed by country
+ *   - Creating a database join between layer features and external data via common key
+ *   - Rendering vector shapes with dynamic colors/patterns based on joined field values
+ *   - Using custom rendering expressions (FIELD:<name>) for field-driven styling
+ *   - Switching between different database columns for rendering via UI combo box
+ *   - Performing zoom and pan operations on the styled map
+ *
+ * Key TatukGIS API concepts shown here:
+ *   TGIS_ViewerWnd    - main visual map control
+ *   TGIS_LayerSHP     - vector shapefile layer with external data join
+ *   TGIS_LayerVector  - base class supporting rendering expressions
+ *   Database joins    - ODBC/ADO connections for external attribute access
+ *   TGIS_Params       - layer styling (area color, transparency, etc.)
+ *   FIELD expressions - dynamic rendering based on feature attributes
+ */
 //  Check project\options\directories in a case of any problems during compilation
 //---------------------------------------------------------------------------
 
@@ -38,6 +55,10 @@
 #include <Data.DB.hpp>
 #include <Data.Win.ADODB.hpp>
 //---------------------------------------------------------------------------
+/* JoinAndRender sample — demonstrates joining layer attributes with external databases and applying
+   data-driven styling to map features. Joins a vector layer with an OleDb table, then applies colors,
+   line styles, and outline properties based on joined attribute values. Users can select different
+   data fields to control feature appearance in real-time. */
 class TForm1 : public TForm
 {
 __published:	// IDE-managed Components

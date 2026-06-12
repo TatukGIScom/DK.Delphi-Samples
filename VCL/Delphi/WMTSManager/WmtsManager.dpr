@@ -1,9 +1,3 @@
-//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
-{
-  How to provide WMTS Layer support.
-}
 program WMTSManager;
 
 uses
@@ -20,3 +14,4 @@ begin
   Application.CreateForm(TfrmWMTS, frmWMTS);
   Application.Run;
 end.
+

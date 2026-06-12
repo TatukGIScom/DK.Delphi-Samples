@@ -2,7 +2,32 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to provide editing functionality.
+  SimpleEdit Sample — Demonstrates interactive vector shape editing with a comprehensive
+  editing toolbar and multi-form editor.
+
+  Key concepts illustrated:
+    - Creating and editing vector shapes (points, polylines, polygons)
+    - Vertex-level editing: adding, deleting, and moving individual vertices
+    - Part management: adding and deleting multi-part geometries
+    - Undo/Redo: tracking and reversing edit operations
+    - Snap-to-grid: aligning vertices to a grid for cleaner geometry
+    - Winding number: managing polygon ring orientation
+    - Layer selection: switching between editable layers
+    - Save/Revert: persisting or discarding edits
+    - Print functionality: outputting maps
+    - Editor tools dialog: configuring advanced editing options
+
+  User interaction modes:
+    - Zoom: rubber-band zoom
+    - Drag: pan/scroll the map
+    - Select: click to select a shape for editing
+    - Edit: enter vertex editing mode on the selected shape
+    - Add Shape: create new shapes in the active layer
+
+  Multi-form architecture:
+    - MainForm: central editor interface with toolbar and map viewer
+    - InfoForm: displays attribute data for selected shapes
+    - ToolsForm: advanced editor configuration options
 }
 unit MainForm;
 
@@ -47,42 +72,42 @@ uses
 
 type
   TfrmMain = class(TForm)
-    tlbMain: TToolBar;
-    GIS: TGIS_ViewerWnd;
-    stsBar: TStatusBar;
-    cmbLayer: TComboBox;
-    dlgPrint: TPrintDialog;
-    mnuPopup: TPopupMenu;
-    mnuAddPart: TMenuItem;
-    mnuDeletePart: TMenuItem;
-    cmbSnap: TComboBox;
-    ToolButton1: TToolButton;
+    tlbMain: TToolBar;                      { Toolbar hosting navigation and editing buttons }
+    GIS: TGIS_ViewerWnd;                    { Main map viewer control - shows layers and allows editing }
+    stsBar: TStatusBar;                     { Status bar showing cursor position and mode information }
+    cmbLayer: TComboBox;                    { Dropdown to select which layer to edit }
+    dlgPrint: TPrintDialog;                 { Print dialog for map output }
+    mnuPopup: TPopupMenu;                   { Right-click context menu for part management }
+    mnuAddPart: TMenuItem;                  { Context menu: Add a new part to multi-part geometry }
+    mnuDeletePart: TMenuItem;               { Context menu: Delete selected part }
+    cmbSnap: TComboBox;                     { Dropdown to select snap mode (none, grid, vertices) }
+    ToolButton1: TToolButton;               { Separator }
     ImageList1: TImageList;
-    btnSave: TToolButton;
-    btnPrint: TToolButton;
-    ToolButton2: TToolButton;
-    btnFullExtent: TToolButton;
-    btnZoom: TToolButton;
-    btnDrag: TToolButton;
-    btnSelect: TToolButton;
-    btnEdit: TToolButton;
-    ToolButton3: TToolButton;
-    btnAddShape: TToolButton;
-    ToolButton4: TToolButton;
-    btnUndo: TToolButton;
-    btnRedo: TToolButton;
-    btnRevert: TToolButton;
-    btnDelete: TToolButton;
-    btnWinding: TToolButton;
-    ToolButton5: TToolButton;
-    btnShowInfo: TToolButton;
-    btnAutoCenter: TToolButton;
-    ToolButton6: TToolButton;
-    btnNewStyle: TToolButton;
-    btnEditorTools: TToolButton;
-    N1: TMenuItem;
-    Endedit1: TMenuItem;
-    ToolButton7: TToolButton;
+    btnSave: TToolButton;                   { Save edits to file }
+    btnPrint: TToolButton;                  { Print the map }
+    ToolButton2: TToolButton;               { Separator }
+    btnFullExtent: TToolButton;             { Zoom to show all layers }
+    btnZoom: TToolButton;                   { Activate rubber-band zoom mode }
+    btnDrag: TToolButton;                   { Activate pan/drag mode }
+    btnSelect: TToolButton;                 { Activate select mode for picking shapes }
+    btnEdit: TToolButton;                   { Activate edit mode for vertex editing }
+    ToolButton3: TToolButton;               { Separator }
+    btnAddShape: TToolButton;               { Create a new shape }
+    ToolButton4: TToolButton;               { Separator }
+    btnUndo: TToolButton;                   { Undo last edit operation }
+    btnRedo: TToolButton;                   { Redo last undone operation }
+    btnRevert: TToolButton;                 { Discard all edits to current shape }
+    btnDelete: TToolButton;                 { Delete selected shape }
+    btnWinding: TToolButton;                { Toggle polygon winding number correction }
+    ToolButton5: TToolButton;               { Separator }
+    btnShowInfo: TToolButton;               { Toggle attribute info panel visibility }
+    btnAutoCenter: TToolButton;             { Toggle auto-center on selected shape }
+    ToolButton6: TToolButton;               { Separator }
+    btnNewStyle: TToolButton;               { Open style editor for current layer }
+    btnEditorTools: TToolButton;            { Open advanced editor tools dialog }
+    N1: TMenuItem;                          { Menu separator }
+    Endedit1: TMenuItem;                    { Menu item: end editing }
+    ToolButton7: TToolButton;               { Separator }
     procedure FormCreate(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure GISMouseUp(Sender: TObject; Button: TMouseButton;
@@ -122,16 +147,16 @@ type
     procedure Endedit1Click(Sender: TObject);
   private
     { Private declarations }
-    vkControl : Boolean ;
-    editLayer : TGIS_Layer ;
-    menuPos   : TGIS_Point ;
-    procedure endEdit ;
+    vkControl : Boolean ;                   { Flag indicating if Ctrl key is pressed }
+    editLayer : TGIS_Layer ;                { Reference to the currently editable layer }
+    menuPos   : TGIS_Point ;                { Map coordinate where right-click context menu was invoked }
+    procedure endEdit ;                     { Finalizes editing on current shape }
 
   private
-    oEditorHelper : TGIS_EditorHelper ;
-    procedure doNotifyChanges(Sender: TObject);
-    procedure doEditorToolChange(Sender: TObject);
-    procedure doNotifyAction(const prompt: String);
+    oEditorHelper : TGIS_EditorHelper ;     { Helper object managing undo/redo and edit state }
+    procedure doNotifyChanges(Sender: TObject);  { Called when shape is edited; updates UI }
+    procedure doEditorToolChange(Sender: TObject);  { Called when editor tool is changed }
+    procedure doNotifyAction(const prompt: String);  { Log and display edit action message }
 
   public
     { Public declarations }

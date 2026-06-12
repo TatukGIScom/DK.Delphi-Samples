@@ -2,7 +2,36 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to provide a join to external database and how to cutom rendering.
+  JoinAndRender sample — demonstrates attribute joining and data-driven feature styling.
+
+  What the sample shows:
+    - Joining vector layer attributes with external database table
+    - Loading data from external SQL database into memory
+    - Matching features with database records via common attribute key
+    - Applying fill colour based on joined attribute values
+    - Applying line colour based on joined attribute values
+    - Applying line style (solid/dashed/dotted) from database values
+    - Applying line width based on database field values
+    - Applying transparency/alpha blending based on attribute
+    - Switching between different data fields for styling via combo box
+    - Real-time colour gradient mapping from minimum to maximum value
+    - Interactive transparency control via trackbar slider
+    - Legend panel showing value-to-colour mapping
+    - Data-driven styling for thematic mapping
+
+  Key TatukGIS API concepts shown here:
+    TGIS_ViewerWnd          - main visual map control
+    TGIS_ControlLegend      - legend panel for style visualization
+    TGIS_LayerVector        - vector layer with attributes
+    TGIS_Params             - feature styling and rendering
+    TGIS_Params.Pen         - line colour, width, style properties
+    TGIS_Params.Brush       - fill colour and transparency
+    OleDb connection        - external database connection
+    TGIS_LayerVector.Open() - open vector data source
+    Attribute join          - match records by common key
+    TGIS_Color              - colour value from database
+    Thematic mapping        - value-based feature classification
+    Legend rendering        - style-to-value visualization
 }
 
 unit Unit1;

@@ -20,6 +20,8 @@ TfrmMain *frmMain;
 const UnicodeString SAMPLE_RESULT = "Result";
 //---------------------------------------------------------------------------
 
+/* Reports raster algebra execution progress on the progress bar.
+   _pos = 0 initializes the bar; _pos = -1 resets it after completion. */
 void __fastcall TfrmMain::doBusyEvent(TObject *_sender, int _pos, int _end, bool &_abort)
 {
 	switch (_pos)
@@ -41,6 +43,8 @@ void __fastcall TfrmMain::doBusyEvent(TObject *_sender, int _pos, int _end, bool
 }
 //---------------------------------------------------------------------------
 
+/* Applies a blue-lime-red colour ramp to grid layer _l, mapping its full
+   value range to the ramp and disabling the default grid shadow. */
 void __fastcall TfrmMain::applyRamp(TGIS_LayerPixel *_l)
 {
 	_l->GenerateRamp(
@@ -61,6 +65,8 @@ __fastcall TfrmMain::TfrmMain(TComponent* Owner)
 {
 }
 //---------------------------------------------------------------------------
+/* Closes the viewer, loads a JPEG aerial photo as a pixel layer, and sets a
+   default colour-inversion formula for the raster algebra expression field. */
 void __fastcall TfrmMain::btnOpenPixelClick(TObject *Sender)
 {
 	GIS->Close();
@@ -77,6 +83,8 @@ void __fastcall TfrmMain::btnOpenPixelClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Closes the viewer, loads an ADF elevation grid, applies a colour ramp, and
+   sets a default threshold formula that clamps values to MIN or MAX. */
 void __fastcall TfrmMain::btnOpenGridClick(TObject *Sender)
 {
 	GIS->Close();
@@ -95,6 +103,9 @@ void __fastcall TfrmMain::btnOpenGridClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Closes the viewer, loads a TIGER shapefile as a vector layer, and sets a
+   default formula that rasterizes features green where data exists and red
+   where no data is present. */
 void __fastcall TfrmMain::btnOpenVectorClick(TObject *Sender)
 {
 	GIS->Close();
@@ -112,6 +123,11 @@ void __fastcall TfrmMain::btnOpenVectorClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Builds an output pixel or grid layer whose dimensions match the highest-
+   resolution source layer, registers all viewer layers with a TGIS_RasterAlgebra
+   engine, and evaluates the formula entered in edtFormula.  The result layer
+   "Result" replaces any previous run.  A colour ramp is applied automatically
+   when the output is a grid. */
 void __fastcall TfrmMain::btnExecuteClick(TObject *Sender)
 {
 	if (GIS->IsEmpty)

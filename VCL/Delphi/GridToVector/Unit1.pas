@@ -1,3 +1,14 @@
+{
+  GridToVector sample - demonstrates raster-to-vector conversion using
+  TGIS_GridToPolygon and TGIS_GridToPoint.
+
+  Two source datasets are available:
+    - Land Cover TIFF (Corine CLC2018, Luxembourg): converted to polygons or points.
+    - DEM grid (elevation.grd): colourised with a blue-lime-red ramp, then vectorised.
+
+  Common parameters (tolerance, ignore-NoData, point spacing) control both operations.
+  Clicking a generated shape shows its attributes in the attribute control.
+}
 unit Unit1;
 
 interface
@@ -7,7 +18,7 @@ uses
   System.SysUtils,
   System.Types,
 
-  GisLicense,
+  //GisLicense,
 
   Vcl.Forms,
   VCL.ComCtrls,
@@ -80,6 +91,8 @@ const
   LV_NAME = 'vector' ;
   LV_FIELD = 'value' ;
 
+{ Reports rasterisation progress on the progress bar.
+  _pos == 0 initialises the bar; _pos == -1 resets it; otherwise the bar is updated. }
 procedure TfrmGridToVector.doBusyEvent(
       _sender: TObject ;
       _pos   : Integer ;
@@ -103,6 +116,7 @@ begin
   Application.ProcessMessages ;
 end;
 
+{ Loads the Corine Land Cover 2018 TIFF for Luxembourg and sets default tolerance/spacing values. }
 procedure TfrmGridToVector.btnLandCoverClick(Sender: TObject);
 var
   path : String ;
@@ -115,6 +129,7 @@ begin
 
 end;
 
+{ Loads an elevation grid, applies a blue-lime-red HSL colour ramp, and sets default tolerance/spacing values. }
 procedure TfrmGridToVector.btnDemClick(Sender: TObject);
 var
   path : String ;
@@ -146,6 +161,9 @@ begin
   edtPointSpacing.Text := '200' ;
 end;
 
+{ Converts the source raster to a point vector layer using TGIS_GridToPoint
+  with the tolerance, point-spacing, and ignore-NoData settings.
+  Points are styled as small black circles with 75% transparency. }
 procedure TfrmGridToVector.btnGridToPointsClick(Sender: TObject);
 var
   lp : TGIS_LayerPixel ;
@@ -185,6 +203,9 @@ begin
   GIS.InvalidateWholeMap ;
 end;
 
+{ Converts the source raster to a polygon vector layer using TGIS_GridToPolygon
+  with tolerance, split-shapes, and ignore-NoData settings.
+  Output is added with 50% transparency and a black outline. }
 procedure TfrmGridToVector.btnGridToPolygonClick(Sender: TObject);
 var
   lp : TGIS_LayerPixel ;
@@ -224,12 +245,14 @@ begin
   GIS.InvalidateWholeMap ;
 end;
 
+{ Loads the Land Cover dataset by default and sets the viewer to select mode on startup. }
 procedure TfrmGridToVector.FormShow(Sender: TObject);
 begin
   btnLandCoverClick( Sender ) ;
   GIS.Mode := TGIS_ViewerMode.Select ;
 end;
 
+{ Locates the shape under the mouse cursor, selects it, and shows its attributes. }
 procedure TfrmGridToVector.GISMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
@@ -248,6 +271,7 @@ begin
   GIS_ControlAttributes.ShowShape( shp ) ;
 end;
 
+{ Zooms out centred on the cursor position on mouse-wheel-down. }
 procedure TfrmGridToVector.GISMouseWheelDown(Sender: TObject;
   Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
 var
@@ -260,6 +284,7 @@ begin
   GIS.ZoomBy( 1/2, pt.X, pt.Y ) ;
 end;
 
+{ Zooms in centred on the cursor position on mouse-wheel-up. }
 procedure TfrmGridToVector.GISMouseWheelUp(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
 var

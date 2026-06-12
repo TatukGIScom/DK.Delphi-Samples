@@ -2,7 +2,32 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to override OnPaintShapeLabel.
+  PaintLabel sample — demonstrates customizing label rendering and appearance (Delphi/VCL).
+
+  What the sample shows:
+    - Loading a shapefile layer (countries/cities) with predefined labels
+    - Implementing custom label painting via OnPaintShapeLabel event handler
+    - Modifying label text dynamically based on feature attributes
+    - Customizing label font, size, color, and style per feature
+    - Adding custom icons or symbols alongside labels
+    - Controlling label positioning and offset from feature geometry
+    - Filtering labels based on zoom level or feature attributes
+    - Adding borders, outlines, or shadows to label text
+    - Handling label collision detection and placement
+    - Rotating labels to match feature orientation (e.g., road labels)
+    - Using TGIS_PaintShapeLabelEventArgs to access rendering context
+
+  Key TatukGIS API concepts shown here:
+    TGIS_ViewerWnd              - main visual map control
+    TGIS_LayerVector            - vector layer with label data
+    OnPaintShapeLabel           - event triggered during label rendering
+    TGIS_PaintShapeLabelEventArgs - rendering context for custom drawing
+    TGIS_Params.Labels          - label configuration and appearance
+    Label text                  - feature attribute used for label content
+    Label position              - offset and alignment from geometry
+    Font and color              - label typography customization
+    Label rotation              - orientation based on feature direction
+    Collision detection         - overlap prevention for label placement
 }
 
 unit Unit1;

@@ -2,7 +2,53 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 
-//
+/*
+  View3D Sample — Demonstrates 3D visualization of vector data with terrain models.
+
+  Key concepts illustrated:
+    - 3D rendering mode: TGIS_Control3D for three-dimensional visualization
+    - Elevation models (DEM grids) as terrain base
+    - Vector layer 3D visualization (buildings, features)
+    - 2D/3D mode switching with RotationAngle property
+    - 3D navigation: mouse drag rotation, mouse wheel zoom
+    - Renderer selection (GDI+, Direct2D, Skia for 3D)
+    - Texture mapping: apply bitmaps to 3D features
+    - 3D layer styling: color, height exaggeration, transparency
+    - Legend and scale display in 3D mode
+    - Building roofs/walls rendering with textures
+    - Extent and zoom controls in 3D
+    - Navigation mode switching (rotate, pan, zoom)
+    - Refresh modes: fast rendering vs. high-quality
+
+  User workflow:
+    1. Load a DEM (terrain/elevation model)
+    2. Load vector layer (buildings, roads, features)
+    3. Click "2D/3D" toggle to switch to 3D mode
+    4. Drag mouse to rotate the 3D view
+    5. Use mouse wheel to zoom in/out
+    6. Select 3D mode (Perspective, Orthographic)
+    7. Apply textures to buildings (roof/walls)
+    8. Toggle walls/roof rendering
+    9. Use legend to control layer visibility
+
+  3D visualization features:
+    - Perspective projection: realistic 3D view with vanishing point
+    - Orthographic projection: parallel projection (no perspective)
+    - Rotation: interactive rotation around vertical axis
+    - Elevation exaggeration: scale height values for visibility
+    - Texture mapping: bitmap textures on 3D surfaces
+    - Lighting: directional light with ambient/diffuse shading
+
+  Key API:
+    - TGIS_Control3D: 3D viewer control
+    - RotationAngle: rotation around vertical axis
+    - ViewerMode: switch between 2D and 3D
+    - Refresh rates: fast mode vs. high-quality mode
+    - Texture application: bitmap textures on vector geometries
+    - 3D extent: viewport fitting in 3D space
+    - Navigation modes: rotation sensitivity and speed
+*/
+
 //  How to create 3D View.
 //
 //  Check project\options\directories in a case of any problems during compilation

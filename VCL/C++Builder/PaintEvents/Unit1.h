@@ -1,7 +1,36 @@
 //=============================================================================
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
-
+//
+// PaintEvents sample — demonstrates custom shape and label rendering via paint events (C++Builder/VCL).
+//
+// What the sample shows:
+//   - Loading a shapefile layer (polygons, polylines, or points)
+//   - Implementing PaintShapeEvent to override default shape rendering
+//   - Implementing PaintShapeLabelEvent to customize label appearance
+//   - Implementing PaintExtraEvent for overlay graphics above all layers
+//   - Using the rendering context (canvas) to draw custom geometries
+//   - Modifying shape color, fill, or outline based on attributes
+//   - Drawing alternative symbols or icons per feature
+//   - Adding dynamic labels with custom fonts and styling
+//   - Creating heatmaps or graduated symbol visualizations
+//   - Drawing annotations or callout boxes on the map
+//   - Responding to zoom level for scale-dependent drawing
+//   - Using the renderer's native API for high-performance custom drawing
+//   - Triggering redraws with InvalidateWholeMap
+//
+// Key TatukGIS API concepts shown here:
+//   TGIS_ViewerWnd              - main visual map control with event hooks
+//   PaintShapeEvent             - per-shape custom rendering callback
+//   PaintShapeLabelEvent        - label rendering customization
+//   PaintExtraEvent             - overlay drawing above all layers
+//   TGIS_RendererAbstract       - abstract renderer interface
+//   TGIS_LayerVector            - vector layer providing shapes
+//   TGIS_Shape                  - individual shape to be rendered
+//   Canvas methods              - CanvasDrawRectangle, CanvasDrawEllipse, etc.
+//   ScreenToMap / MapToScreen   - coordinate system conversions
+//   InvalidateWholeMap          - force map refresh
+//   Shape attributes            - accessing feature data for styling
 //
 //  How to override OnPaintShapeLabel.
 //

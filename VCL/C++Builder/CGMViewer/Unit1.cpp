@@ -1,10 +1,11 @@
-//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
-//
-// Sample CGM Viewer
-//
-//  Check project\options\directories in a case of any problems during compilation
+/*
+ * CGMViewer sample — demonstrates rendering CGM (Computer Graphics Metafile) symbol files
+ * as point markers using SymbolList.
+ *
+ * A FileListBox shows *.cgm files from the Symbols directory.  Selecting one renders it
+ * centred on a crosshair layer sized to fit two-thirds of the smaller viewer dimension.
+ * Button1 rotates the marker by 90° each click.
+ */
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
@@ -24,6 +25,8 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 }
 //---------------------------------------------------------------------------
 
+/* Loads the selected CGM file into SymbolList, sizes it to fit two-thirds of the smaller
+   viewer dimension (aspect-ratio preserved), and invalidates the map. */
 void TForm1::drawSymbol()
 {
   int w,h ;
@@ -50,6 +53,8 @@ void TForm1::drawSymbol()
 }
 //---------------------------------------------------------------------------
 
+/* Creates the crosshair vector layer (horizontal line, vertical line, centre point) on startup
+   and navigates the FileListBox to the Symbols directory. */
 void __fastcall TForm1::FormCreate(TObject *Sender)
 {
   TGIS_LayerVector  *ll  ;
@@ -79,18 +84,21 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Redraws the symbol at the new size whenever the form is resized. */
 void __fastcall TForm1::FormResize(TObject *Sender)
 {
   drawSymbol() ;
 }
 //---------------------------------------------------------------------------
 
+/* Synchronises the FileListBox to the directory selected in DirectoryListBox1. */
 void __fastcall TForm1::DirectoryListBox1Change(TObject *Sender)
 {
   FileList->Directory = DirectoryListBox1->Directory ;
 }
 //---------------------------------------------------------------------------
 
+/* Redraws the symbol when a different CGM file is selected in the file list. */
 void __fastcall TForm1::FileListClick(TObject *Sender)
 {
   StatusBar1->SimpleText = FileList->FileName ;
@@ -98,6 +106,7 @@ void __fastcall TForm1::FileListClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Rotates the displayed symbol by 90° (π/2 radians) each click. */
 void __fastcall TForm1::Button1Click(TObject *Sender)
 {
   // rotate symbol

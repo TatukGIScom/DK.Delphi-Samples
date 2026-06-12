@@ -1,11 +1,19 @@
 //=============================================================================
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
-
-//
-//  Example of dem operations.
-//
-//  Check project\options\directories in a case of any problems during compilation
+/*
+ * DemOperations sample - demonstrates terrain analysis derived from a DEM raster.
+ *
+ * The sample opens an ADF elevation grid and lets the user choose from the
+ * following TGIS_DemGenerator operations:
+ *   Hillshade, Slope, Slope Hydro, Aspect, TRI, TPI, Roughness,
+ *   Total Curvature, Matrix Gain, Flow Dir.
+ *
+ * A custom hillshade implementation (changeDEM) demonstrates the
+ * TGIS_LayerPixel GridOperationEvent callback mechanism.
+ *
+ * Check project\options\directories in case of any problems during compilation.
+ */
 //---------------------------------------------------------------------------
 
 #ifndef Unit1H
@@ -79,23 +87,29 @@ __published:	// IDE-managed Components
 	TGroupBox          *gbCurvature ;
 	TToolButton        *btn1;
 	TToolButton        *btn2 ;
-	void __fastcall btnFullExtentClick(TObject *Sender);
-	void __fastcall btnZoomClick(TObject *Sender);
-	void __fastcall cbCustomOperationClick(TObject *Sender);
-	void __fastcall btnGenerateClick(TObject *Sender);
-	void __fastcall cbDemOperationChange(TObject *Sender);
-	void __fastcall btn1Click(TObject *Sender);
-	void __fastcall btnDragClick(TObject *Sender);
-	void __fastcall FormCreate(TObject *Sender);
-	void __fastcall GISBusyEvent(TObject *_sender, int _pos, int _end, bool &_abort);
-	double __fastcall trunc( double d );
-	void __fastcall tbShadowAngleChange(TObject *Sender);
-	void __fastcall ToolButton1Click(TObject *Sender);
+	void __fastcall btnFullExtentClick(TObject *Sender);    /* Reset map to full extent */
+	void __fastcall btnZoomClick(TObject *Sender);          /* Switch viewer to zoom mode */
+	void __fastcall cbCustomOperationClick(TObject *Sender);/* Attach/detach custom GridOperationEvent callback */
+	void __fastcall btnGenerateClick(TObject *Sender);      /* Run the selected DEM operation */
+	void __fastcall cbDemOperationChange(TObject *Sender);  /* Show/hide operation-specific parameter panels */
+	void __fastcall btn1Click(TObject *Sender);             /* Open file dialog and load raster */
+	void __fastcall btnDragClick(TObject *Sender);          /* Switch viewer to pan/drag mode */
+	void __fastcall FormCreate(TObject *Sender);            /* Load default sample DEM on startup */
+	void __fastcall GISBusyEvent(TObject *_sender, int _pos, int _end, bool &_abort); /* Progress bar update */
+	double __fastcall trunc( double d );                    /* Helper: truncate double to integer value */
+	void __fastcall tbShadowAngleChange(TObject *Sender);   /* Update grid shadow angle from track bar */
+	void __fastcall ToolButton1Click(TObject *Sender);      /* Toggle 3D perspective view */
 
 
 private:	// User declarations
 public:		// User declarations
 	__fastcall TForm1(TComponent* Owner);
+	/* Custom GridOperationEvent callback that computes a hillshade value for
+	   every cell using a 3x3 neighbourhood (Horn's algorithm).  Reads the
+	   nine-cell window from _source, calculates the cosine of the sun
+	   incidence angle, and writes the shaded value (1..255) to _output.
+	   Cells containing NoData are passed through unchanged.
+	   Returns true to indicate the output grid is valid. */
 	bool __fastcall changeDEM( TObject* _layer,
 							   const TGIS_Extent &_extent,
 							   const TGIS_GridArray _source,

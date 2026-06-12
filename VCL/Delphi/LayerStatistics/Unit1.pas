@@ -1,3 +1,48 @@
+{
+  LayerStatistics Sample — Demonstrates statistical computation on vector, grid (DEM),
+  and raster (pixel/image) layers with predefined and custom statistical functions.
+
+  Key concepts illustrated:
+    - Statistical analysis: computing descriptive statistics on layers
+    - Multiple layer types: vector attributes, grid values, pixel/image data
+    - Predefined statistics sets:
+      * Basic: Average, Count, Max, Min, Sum
+      * Standard: includes Median, StdDev, Variance, CountMissings, Range
+      * All: complete set of all available statistics
+    - Custom selections: choosing individual statistical functions
+    - Bessel correction: adjustment for sample variance vs. population variance
+    - Fast mode: optimized computation for large datasets
+    - Progress tracking: visual feedback during statistics computation
+    - Results management: save/load statistics to files
+
+  User workflow:
+    1. Select layer type (Vector, Grid, Pixel, or Custom file)
+    2. Choose statistics set (Basic, Standard, All) or select custom functions
+    3. Check options:
+       - "Fast Statistics": optimized computation
+       - "Use Bessel Correction": statistical bias adjustment
+    4. Click "Calculate statistics"
+    5. View results in memo (count, min, max, average, etc.)
+    6. Save/load results to .csv or other formats
+
+  Layer types:
+    - Vector: shapefile attributes (numeric fields)
+    - Grid: Digital Elevation Model (elevation values)
+    - Pixel: raster image (color channel values)
+    - Custom: any supported GIS data file
+
+  Statistical functions:
+    - Positional: Min, Max, Median
+    - Aggregate: Sum, Count, Average
+    - Spread: StandardDeviation, Variance, Range
+    - Missing data: CountMissings
+
+  Advanced features:
+    - TGIS_StatisticsAbstract: abstract statistics engine
+    - Layer-specific implementations: vector vs. raster
+    - Function selector: choose statistics to compute
+    - Results export: save calculations for later use
+}
 unit Unit1;
 
 interface

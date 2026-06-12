@@ -1,10 +1,3 @@
-//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
-{
-   How to attach bitmaps to shapes.
-   Good results only under Windows NT/2000/XP.
-}
 program BitmapFill;
 
 uses
@@ -18,3 +11,4 @@ begin
   Application.CreateForm(TForm1, Form1);
   Application.Run;
 end.
+

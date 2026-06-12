@@ -44,7 +44,7 @@ uses
   GisRegistredLayers,
   GisFunctions,
   CustomModelForm,
-  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs,
+  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Effects, FMX.Filter.Effects,
   FMX.Memo.Types, FMX.ScrollBox, FMX.Memo, FMX.Controls.Presentation, FMX.Objects,
   FMX.StdCtrls, FMX.GisControlLegend, FMX.GisViewerWnd, FMX.GisViewerBmp, FMX.ListBox;
 
@@ -72,6 +72,7 @@ type
     OpenButton: TButton;
     ResetButton: TButton;
     dlgFileOpen: TOpenDialog;
+    Label1: TLabel;
 
     // Form Lifecycle
     procedure FormCreate(Sender: TObject);
@@ -147,6 +148,7 @@ begin
   // GisSamplesDataDirDownload('AI.1') call downloads AI models onto your PC.
   // Around ~200mb. It may take a while...
   GIS.Open(TGIS_Utils.GisSamplesDataDirDownload('AI.1') + 'Samples\AI\Images\marina.tiff');
+  //PythonWorker.Python.SetPythonDllPath('<path to python dll>');
 end;
 
 procedure TAIModelRunnerForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -800,6 +802,8 @@ end;
 //=============================================================================
 
 procedure TAIModelRunnerForm.InitBusyUI;
+var
+  ColorEffect: TFillRGBEffect;
 begin
   FBusyOverlay := TRectangle.Create(Self);
   FBusyOverlay.Parent := GIS;
@@ -812,6 +816,11 @@ begin
   FSpinner.Parent := FBusyOverlay;
   FSpinner.Align := TAlignLayout.Center;
   FSpinner.Enabled := False;
+
+  // Apply the color effect to the spinner
+  ColorEffect := TFillRGBEffect.Create(FSpinner);
+  ColorEffect.Parent := FSpinner;
+  ColorEffect.Color := TAlphaColors.White;
 end;
 
 procedure TAIModelRunnerForm.ShowBusy(const Msg: string = '');

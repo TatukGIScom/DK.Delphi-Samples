@@ -1,9 +1,3 @@
-//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
-{
-  How to show map hints : data fields from shape file
-}
 program ShowHint;
 
 uses
@@ -19,3 +13,4 @@ begin
   Application.CreateForm(TfrmHints, frmHints);
   Application.Run;
 end.
+

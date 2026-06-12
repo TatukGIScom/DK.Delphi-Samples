@@ -2,10 +2,13 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 
-//
-//  How to direct write file.
-//
-//  Check project\options\directories in a case of any problems during compilation
+/*
+ * DirectWrite sample - demonstrates five sequential low-level write techniques on TGIS_LayerSHP:
+ * Build (AddShape loop + SaveData), ImportLayerEx (spatial CONTAINS filter), MergeLayerEx
+ * (DISJOINT filter), TGIS_LayerVectorDirectWriteHelper (sequential high-performance write), and
+ * TGIS_LayerVectorMergeHelper (batch-commit write).  Buttons unlock in sequence; output files go
+ * into a numbered Shapes{n} directory.
+ */
 //---------------------------------------------------------------------------
 
 #ifndef Unit1H
@@ -30,6 +33,10 @@
 
 
 //---------------------------------------------------------------------------
+/* Main form for the DirectWrite sample.
+   Demonstrates five sequential write techniques for creating and populating
+   vector layers: BuildLayer, AddShape loop, SaveData, ImportLayerEx, and
+   MergeLayerEx operations. */
 class TForm1 : public TForm
 {
 __published:	// IDE-managed Components
@@ -41,12 +48,12 @@ __published:	// IDE-managed Components
 	TButton *btnDirectMerge;
 	TButton *btnBuild;
 	TButton *btnDirectWrite ;
-	void __fastcall btnBuildClick(TObject *Sender);
-	void __fastcall btnImportLayerClick(TObject *Sender);
-	void __fastcall btnMergeLayerClick(TObject *Sender);
-	void __fastcall btnDirectWriteClick(TObject *Sender);
-	void __fastcall btnDirectMergeClick(TObject *Sender);
-	void __fastcall FormCreate(TObject *Sender);
+	void __fastcall btnBuildClick(TObject *Sender);       /* Build SHP + AddShape loop + SaveData */
+	void __fastcall btnImportLayerClick(TObject *Sender);  /* ImportLayerEx with CONTAINS polygon */
+	void __fastcall btnMergeLayerClick(TObject *Sender);   /* MergeLayerEx with DISJOINT relation */
+	void __fastcall btnDirectWriteClick(TObject *Sender);  /* TGIS_LayerVectorDirectWriteHelper sequential write */
+	void __fastcall btnDirectMergeClick(TObject *Sender);  /* TGIS_LayerVectorMergeHelper batch-commit write */
+	void __fastcall FormCreate(TObject *Sender);           /* Find next unused Shapes{n} directory */
 private:	// User declarations
   int number ;
   bool exist ;

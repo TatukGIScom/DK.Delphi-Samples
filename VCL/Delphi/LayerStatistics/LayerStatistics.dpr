@@ -13,3 +13,4 @@ begin
   Application.CreateForm(TfrmStatistics, frmStatistics);
   Application.Run;
 end.
+

@@ -1,3 +1,11 @@
+/*
+ * GridToVector sample — demonstrates raster-to-vector conversion using
+ * TGIS_GridToPolygon (raster to polygon) and TGIS_GridToPoint (raster to point).
+ *
+ * Two source datasets are available:
+ *   Land Cover TIFF (Corine CLC2018, Luxembourg) and a DEM grid (elevation.grd).
+ * Common parameters (tolerance) control the vectorisation quality.
+ */
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
@@ -18,6 +26,7 @@ __fastcall TForm10::TForm10(TComponent* Owner)
 }
 //---------------------------------------------------------------------------
 
+/* Loads the Land Cover dataset by default and sets the viewer to select mode on startup. */
 void __fastcall TForm10::FormShow(TObject *Sender)
 {
   btnLandCoverClick( Sender ) ;
@@ -25,6 +34,7 @@ void __fastcall TForm10::FormShow(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Loads the Corine Land Cover 2018 TIFF for Luxembourg and sets default tolerance value. */
 void __fastcall TForm10::btnLandCoverClick(TObject *Sender)
 {
   UnicodeString path = TGIS_Utils::GisSamplesDataDirDownload() +
@@ -34,6 +44,7 @@ void __fastcall TForm10::btnLandCoverClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Loads an elevation grid, applies a blue-lime-red colour ramp, and sets default tolerance value. */
 void __fastcall TForm10::btnDemClick(TObject *Sender)
 {
   UnicodeString path = TGIS_Utils::GisSamplesDataDirDownload() +
@@ -58,6 +69,8 @@ void __fastcall TForm10::btnDemClick(TObject *Sender)
   edtTolerance->Text = "10" ;
 }
 //---------------------------------------------------------------------------
+/* Reports rasterisation progress on the progress bar.
+   _pos < 0 fills to max; _pos == 0 initialises; otherwise updates the position. */
 void __fastcall TForm10::doBusyEvent(TObject *_sender, int _pos, int _end, bool &_abort)
 {
   if (_pos < 0)
@@ -78,6 +91,9 @@ void __fastcall TForm10::doBusyEvent(TObject *_sender, int _pos, int _end, bool 
   Application->ProcessMessages();
 }
 
+/* Converts the source raster to a polygon vector layer using TGIS_GridToPolygon
+   with the tolerance and split-shapes settings.  Any existing result is removed first.
+   The output is added with 50% transparency and a black outline. */
 void __fastcall TForm10::btnGenerateClick(TObject *Sender)
 {
   TGIS_LayerPixel *lp = (TGIS_LayerPixel*)(  GIS->Items->Items[0] ) ;
@@ -113,6 +129,7 @@ void __fastcall TForm10::btnGenerateClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Locates the shape under the cursor, selects it, and shows its attributes in the attribute control. */
 void __fastcall TForm10::GISMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
           int X, int Y)
 {
@@ -130,6 +147,7 @@ void __fastcall TForm10::GISMouseDown(TObject *Sender, TMouseButton Button, TShi
 }
 //---------------------------------------------------------------------------
 
+/* Zooms out centred on the cursor position on mouse-wheel-down. */
 void __fastcall TForm10::GISMouseWheelDown(TObject *Sender, TShiftState Shift, TPoint &MousePos,
           bool &Handled)
 {
@@ -140,7 +158,7 @@ void __fastcall TForm10::GISMouseWheelDown(TObject *Sender, TShiftState Shift, T
 }
 //---------------------------------------------------------------------------
 
-
+/* Zooms in centred on the cursor position on mouse-wheel-up. */
 void __fastcall TForm10::GISMouseWheelUp(TObject *Sender, TShiftState Shift, TPoint &MousePos,
           bool &Handled)
 {

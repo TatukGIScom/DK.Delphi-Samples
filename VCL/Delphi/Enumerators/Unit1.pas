@@ -2,7 +2,31 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to use enumerators.
+  Enumerators sample — demonstrates spatial iteration using TGIS_LayerVector.Loop() enumerators.
+
+  What the sample shows:
+    - Loading a polygon shapefile (California Counties) into the GIS viewer
+    - Using nested Loop() enumerators to iterate through all shapes
+    - Outer Loop() visits every county polygon in the layer
+    - Inner Loop(extent, '', shape, '****T', true) counts topologically adjacent neighbors
+    - DE-9IM spatial relationship filter "****T" identifies touching/intersecting boundaries
+    - Creating a new COUNT field for storing neighbor count results
+    - Using MakeEditable to modify feature attributes during enumeration
+    - Rendering layer as 5-zone white-to-red color ramp keyed on COUNT field value
+    - Displaying COUNT values as labels on each county polygon
+    - Spatial indexing enabling efficient neighbor searches
+
+  Key TatukGIS API concepts shown here:
+    TGIS_ViewerWnd              - main visual map control
+    TGIS_LayerVector            - vector layer with spatial indexing and enumeration
+    TGIS_LayerVector.Loop()     - returns enumerator for spatial iteration
+    TGIS_LayerVectorEnumerator  - iterator supporting MoveNext and Current access
+    TGIS_Shape                  - individual geographic feature (county polygon)
+    TGIS_Shape.ProjectedExtent  - bounding box for spatial queries
+    TGIS_LayerVector.AddField() - create new attribute field in layer schema
+    TGIS_Shape.MakeEditable()   - enter edit mode to modify shape attributes
+    Params.Render.Expression    - value expression for color ramp rendering
+    DE-9IM relationships        - spatial topology predicates (T = touching/intersection)
 }
 unit Unit1;
 
@@ -73,6 +97,7 @@ implementation
 {$R *.DFM}
 
 
+{ Loads the California Counties shapefile and fits the viewer to its full extent. }
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   // add states layer
@@ -87,6 +112,7 @@ begin
   GIS.FullExtent ;
 end;
 
+{ Toggles the viewer between Drag and Select mode. }
 procedure TForm1.chkDragClick(Sender: TObject);
 begin
   // change viewer mode
@@ -99,6 +125,8 @@ begin
   end
 end;
 
+{ Counts topological neighbors for every county and renders the result as a 5-zone white-to-red
+  color ramp.  The COUNT field is added if it does not yet exist. }
 procedure TForm1.btnEnumerateClick(Sender: TObject);
 var
   shp         : TGIS_Shape ;
@@ -151,17 +179,20 @@ begin
   end ;
 end;
 
+{ Resets the viewer to the full map extent. }
 procedure TForm1.btnFullExtentClick(Sender: TObject);
 begin
   GIS.FullExtent ;
 end;
 
+{ Doubles the current zoom level. }
 procedure TForm1.btnZoomInClick(Sender: TObject);
 begin
   // change viewer zoom
   GIS.Zoom := GIS.Zoom * 2 ;
 end;
 
+{ Halves the current zoom level. }
 procedure TForm1.btnZoomOutClick(Sender: TObject);
 begin
   // change viewer zoom

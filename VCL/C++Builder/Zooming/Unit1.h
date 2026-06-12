@@ -25,6 +25,47 @@
 #include "GisTypesUI.hpp"
 
 //---------------------------------------------------------------------------
+/*
+  Zooming Sample — Demonstrates comprehensive viewer navigation and zoom control techniques.
+
+  Key concepts illustrated:
+    - Full extent zoom: fit entire map to viewport
+    - Zoom mode: rectangular selection to define zoom area
+    - Drag mode: pan/move the map
+    - Mouse wheel zoom: in/out with cursor anchor point
+    - Zoom anchoring: keeping cursor position fixed during zoom operations
+    - Zoom factor: viewport scaling via GIS.Zoom property
+    - Viewer mode switching: TGIS_ViewerMode::Zoom vs. Drag vs. Select
+    - Mouse event handling: wheel up/down with position tracking
+
+  User workflow:
+    1. Load a shapefile (California counties)
+    2. Click "Full Extent" to fit map to viewport
+    3. Click "Zoom" button, then draw rectangle to zoom into area
+    4. Click "Drag" button to pan/move the map
+    5. Use mouse wheel up/down to zoom in/out (cursor position is anchor point)
+    6. Status bar shows cursor coordinates in map units
+
+  Navigation modes:
+    - Full Extent: TGIS_ViewerWnd::FullExtent() fits all features
+    - Zoom Mode: draw rectangle, viewport zooms to that area
+    - Drag Mode: hold and move mouse to pan the view
+    - Wheel Zoom: scroll wheel in/out with cursor-anchored zoom center
+
+  Key API:
+    - TGIS_ViewerWnd::Mode: switch between navigation modes
+    - TGIS_ViewerWnd::Zoom: get/set current zoom factor
+    - TGIS_ViewerWnd::FullExtent(): fit viewport to all features
+    - TGIS_ViewerMode: enum for mode selection (Zoom, Drag, Select)
+    - GISMouseWheelUp/Down: handle mouse wheel events with position
+    - ScreenToMap: convert pixel coordinates to map coordinates
+
+  Mouse wheel behavior:
+    - Wheel up: zoom in (Zoom *= 1.5 or similar)
+    - Wheel down: zoom out (Zoom /= 1.5 or similar)
+    - Anchor point: current cursor position stays in same screen location
+    - Smooth navigation: cursor-relative zoom calculation
+*/
 class TForm1 : public TForm
 {
 __published:	// IDE-managed Components

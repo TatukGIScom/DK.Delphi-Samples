@@ -2,7 +2,32 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to provide UDF Layer support.
+  UDFLayerVector sample — demonstrates User-Defined Format (UDF) custom layer implementation (Delphi/VCL).
+
+  What the sample shows:
+    - Creating a custom User-Defined Format (UDF) vector layer class
+    - Implementing IGIS_LayerVectorUDF interface for custom data sources
+    - Reading feature data from a custom (non-standard) file format
+    - Parsing custom file structure into TatukGIS shape objects
+    - Defining attribute schema (fields and data types)
+    - Implementing spatial indexing for efficient feature access
+    - Creating geometric shapes (points, lines, polygons) from parsed data
+    - Setting coordinate system/CRS for the custom layer
+    - Registering custom UDF class with TatukGIS layer factory
+    - Adding UDF layer to viewer with standard rendering and interaction
+    - Supporting attribute queries and spatial searches on custom data
+
+  Key TatukGIS API concepts shown here:
+    TGIS_LayerVectorUDF          - base class for custom vector layer implementations
+    IGIS_LayerVectorUDF          - interface defining UDF layer contract
+    TGIS_LayerVector             - standard vector layer base class
+    TGIS_Shape / TGIS_ShapePoint - feature geometry objects
+    TGIS_Field                   - attribute field definition
+    TGIS_CoordinateSystem        - CRS assignment for custom layer
+    Spatial indexing             - bounding box tree for query optimization
+    Custom file format           - parsing and loading from non-standard sources
+    Layer factory                - registering custom UDF class
+    Attribute schema             - field definitions and data types
 }
 unit Unit1;
 

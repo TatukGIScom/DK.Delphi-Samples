@@ -2,7 +2,62 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 
-//
+/*
+  Viewer Sample — Full-featured GIS document viewer with layer management and file export.
+
+  Key concepts illustrated:
+    - Multi-window GIS application (main viewer + floating windows)
+    - Project file loading (.ttkproject, legacy .ttkgp)
+    - Layer management: load, remove, reorder, style
+    - Legend control: toggle layer visibility, nested groups
+    - Coordinate system display and control
+    - Zoom navigation: full extent, zoom box, pan modes
+    - Print preview and image export
+    - Layer editing in separate forms
+    - File I/O: open projects, append layers, export to various formats
+    - Batch layer operations (save all, export selections)
+    - Multi-renderer support (GDI, GDI+, Direct2D)
+    - Color picker for layer styling
+    - Status bar with coordinate display
+    - Tabbed or dockable layer/attribute panels
+
+  User workflow:
+    1. Open a project file (GIS.Open)
+    2. Browse layers in the legend panel
+    3. Toggle layer visibility by clicking in legend
+    4. Click legend items to select/highlight layers
+    5. Use zoom buttons or draw rectangles to zoom
+    6. Right-click layers for styling, editing, export options
+    7. Preview or print the map
+    8. Export map as image
+    9. Close project or append additional layers
+
+  Core features:
+    - File menu: Open projects, append layers, export, print, exit
+    - View menu: zoom modes (full extent, zoom box, pan), coordinate system
+    - Layer operations: add, remove, edit, style, reorder, visibility
+    - Legend: hierarchical display of layers and layer groups
+    - Coordinate system selector: change working projection
+    - Print preview: before/after print dialog
+    - Image export: save visible map as PNG, JPEG, BMP, GIF, TIFF
+    - Editor forms: separate window for editing layer properties
+
+  Key API:
+    - TGIS_ViewerWnd: main map viewer
+    - TGIS_ControlLegend: layer tree display and interaction
+    - TGIS_ControlCSSystem: coordinate system selector
+    - TGIS_LayerVector/TGIS_LayerPixel: vector and raster layers
+    - GisCreateLayer: auto-detect layer type from file
+    - TGIS_PixelExportManager: export viewer to image format
+    - PrintPreview: map printing with preview
+
+  Actions/Menu structure:
+    - File: Open, Append, Export, Print, Exit
+    - View: FullExtent, ZoomMode, DragMode, SelectMode, CoordSystem
+    - Layer: Add, Remove, Edit, Style
+    - Save: SaveToImage, SaveAll (layers)
+*/
+
 //  How to prepare small coverage previewer.
 //  Main window.
 //

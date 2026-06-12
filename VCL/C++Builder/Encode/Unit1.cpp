@@ -1,10 +1,10 @@
-//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
-
-//  How to encode SHP Layer
-//
-//  Check project\options\directories in a case of any problems during compilation
+/*
+ * Encode sample — demonstrates transparent layer encoding using ReadEvent and WriteEvent callbacks.
+ *
+ * A base world shapefile is loaded, then exported to a new file with an XOR cipher applied
+ * byte-by-byte (keyed on file position) via the write callback.  The encoded file can be
+ * re-opened: the same XOR callback in the read handler transparently decodes it on the fly.
+ */
 //---------------------------------------------------------------------------
 
 
@@ -23,12 +23,14 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 {
 }
 //---------------------------------------------------------------------------
+/* Closes all loaded layers. */
 void __fastcall TForm1::btnCloseAllClick(TObject *Sender)
 {
   GIS->Close() ;
 }
 
 //---------------------------------------------------------------------------
+/* Opens the base world shapefile (WorldDCW) with country name labels. */
 void __fastcall TForm1::btnOpenBaseClick(TObject *Sender)
 {
   TGIS_LayerSHP *ll ;
@@ -46,6 +48,7 @@ void __fastcall TForm1::btnOpenBaseClick(TObject *Sender)
 }
 
 //---------------------------------------------------------------------------
+/* Exports the base layer to encoded.shp via ImportLayer with an XOR write callback applied to every byte. */
 void __fastcall TForm1::btnEncodeClick(TObject *Sender)
 {
   TGIS_LayerVector *ls ;
@@ -74,6 +77,7 @@ void __fastcall TForm1::btnEncodeClick(TObject *Sender)
 }
 
 //---------------------------------------------------------------------------
+/* Opens the encoded shapefile with the ReadEvent wired so the XOR cipher is reversed on every read.  Layer is tinted green. */
 void __fastcall TForm1::btnOpenEncodedClick(TObject *Sender)
 {
   TGIS_LayerSHP *ll ;
@@ -93,7 +97,7 @@ void __fastcall TForm1::btnOpenEncodedClick(TObject *Sender)
 }
 
 //---------------------------------------------------------------------------
-// do decoding with incrementing XOR value
+/* Decodes each byte by XOR-ing it with (position + index) mod 256, reversing the encoding. */
 void __fastcall TForm1::doRead( TObject * _sender, int _pos, void *_buffer, int _count )
 {
   for( int i=0; i<_count; i++ ) {
@@ -102,7 +106,7 @@ void __fastcall TForm1::doRead( TObject * _sender, int _pos, void *_buffer, int 
 }
 
 //---------------------------------------------------------------------------
-// do encoding with incrementing XOR value
+/* Encodes each byte by XOR-ing it with (position + index) mod 256. */
 void __fastcall TForm1::doWrite( TObject * _sender, int _pos, void *_buffer, int _count )
 {
   for( int i=0; i<_count; i++ ) {

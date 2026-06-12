@@ -3,7 +3,7 @@ object AIModelRunnerForm: TAIModelRunnerForm
   Top = 0
   Caption = 'TatukGIS AI Model Runner'
   ClientHeight = 740
-  ClientWidth = 800
+  ClientWidth = 928
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
@@ -13,7 +13,7 @@ object AIModelRunnerForm: TAIModelRunnerForm
   object ToolBarDown: TToolBar
     Align = Bottom
     Position.Y = 696.000000000000000000
-    Size.Width = 800.000000000000000000
+    Size.Width = 928.000000000000000000
     Size.Height = 44.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 6
@@ -25,7 +25,6 @@ object AIModelRunnerForm: TAIModelRunnerForm
       StyleLookup = 'toolbuttonleft'
       TabOrder = 0
       Text = 'Select'
-      TextSettings.Trimming = None
       OnClick = actViewSelectModeExecute
     end
     object btnViewDragMode: TButton
@@ -37,7 +36,6 @@ object AIModelRunnerForm: TAIModelRunnerForm
       StyleLookup = 'toolbuttonmiddle'
       TabOrder = 1
       Text = 'Drag'
-      TextSettings.Trimming = None
       OnClick = actViewDragModeExecute
     end
     object btnViewZoomMode: TButton
@@ -49,7 +47,6 @@ object AIModelRunnerForm: TAIModelRunnerForm
       StyleLookup = 'toolbuttonmiddle'
       TabOrder = 3
       Text = 'Zoom'
-      TextSettings.Trimming = None
       OnClick = actViewZoomModeExecute
     end
     object btnZoomEx: TButton
@@ -61,7 +58,6 @@ object AIModelRunnerForm: TAIModelRunnerForm
       StyleLookup = 'toolbuttonmiddle'
       TabOrder = 4
       Text = 'ZoomEx'
-      TextSettings.Trimming = None
       OnClick = btnZoomExClick
     end
     object btnViewFullExtent: TButton
@@ -73,20 +69,18 @@ object AIModelRunnerForm: TAIModelRunnerForm
       StyleLookup = 'toolbuttonmiddle'
       TabOrder = 2
       Text = 'Full extent'
-      TextSettings.Trimming = None
       OnClick = actViewFullExtentExecute
     end
   end
   object RunModelButton: TButton
     Anchors = [akTop, akRight]
-    Position.X = 598.000000000000000000
-    Position.Y = 10.000000000000000000
+    Position.X = 727.000000000000000000
+    Position.Y = 8.000000000000000000
     Size.Width = 194.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1
     Text = 'Run Model'
-    TextSettings.Trimming = None
     OnClick = RunModelButtonClick
   end
   object GIS: TGIS_ViewerWnd
@@ -114,9 +108,9 @@ object AIModelRunnerForm: TAIModelRunnerForm
     SelectionColor = claRed
     Anchors = [akLeft, akTop, akRight, akBottom]
     Position.X = 152.000000000000000000
-    Position.Y = 40.000000000000000000
-    Size.Width = 640.000000000000000000
-    Size.Height = 552.000000000000000000
+    Position.Y = 38.000000000000000000
+    Size.Width = 769.000000000000000000
+    Size.Height = 554.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 3
   end
@@ -126,28 +120,27 @@ object AIModelRunnerForm: TAIModelRunnerForm
     Anchors = [akLeft, akRight, akBottom]
     Position.X = 8.000000000000000000
     Position.Y = 600.000000000000000000
-    Size.Width = 784.000000000000000000
+    Size.Width = 913.000000000000000000
     Size.Height = 88.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 2
-    Viewport.Width = 784.000000000000000000
-    Viewport.Height = 88.000000000000000000
+    Viewport.Width = 909.000000000000000000
+    Viewport.Height = 84.000000000000000000
   end
   object AddModelButton: TButton
-    Position.X = 296.000000000000000000
-    Position.Y = 10.000000000000000000
+    Position.X = 392.000000000000000000
+    Position.Y = 8.000000000000000000
     Size.Width = 136.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 0
-    Text = 'Add Model'
-    TextSettings.Trimming = None
+    Text = 'Add Custom Model...'
     OnClick = AddModelButtonClick
   end
   object rbRunLayer: TRadioButton
     IsChecked = True
-    Position.X = 456.000000000000000000
-    Position.Y = 10.000000000000000000
+    Position.X = 560.000000000000000000
+    Position.Y = 8.000000000000000000
     Size.Width = 68.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
@@ -155,8 +148,8 @@ object AIModelRunnerForm: TAIModelRunnerForm
     Text = 'Layer'
   end
   object rbRunViewer: TRadioButton
-    Position.X = 528.000000000000000000
-    Position.Y = 10.000000000000000000
+    Position.X = 636.000000000000000000
+    Position.Y = 8.000000000000000000
     Size.Width = 64.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
@@ -169,15 +162,15 @@ object AIModelRunnerForm: TAIModelRunnerForm
     StyledSettings = []
     Anchors = [akLeft, akTop, akBottom]
     Position.X = 8.000000000000000000
-    Position.Y = 40.000000000000000000
+    Position.Y = 38.000000000000000000
     Size.Width = 136.000000000000000000
-    Size.Height = 552.000000000000000000
+    Size.Height = 554.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 10
   end
   object ModelComboBox: TComboBox
-    Position.X = 152.000000000000000000
-    Position.Y = 10.000000000000000000
+    Position.X = 248.000000000000000000
+    Position.Y = 8.000000000000000000
     Size.Width = 136.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
@@ -192,29 +185,33 @@ object AIModelRunnerForm: TAIModelRunnerForm
     end
   end
   object OpenButton: TButton
-    Position.X = 8.000000000000000000
-    Position.Y = 10.000000000000000000
-    Size.Width = 65.000000000000000000
+    Position.X = 6.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 66.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 13
     Text = 'Open'
-    TextSettings.Trimming = None
     OnClick = OpenButtonClick
   end
   object ResetButton: TButton
-    Position.X = 79.000000000000000000
-    Position.Y = 10.000000000000000000
-    Size.Width = 65.000000000000000000
+    Position.X = 80.000000000000000000
+    Position.Y = 8.000000000000000000
+    Size.Width = 64.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 12
     Text = 'Reset'
-    TextSettings.Trimming = None
     OnClick = ResetButtonClick
   end
   object dlgFileOpen: TOpenDialog
     Left = 216
     Top = 104
+  end
+  object Label1: TLabel
+    Position.X = 165.000000000000000000
+    Position.Y = 10.000000000000000000
+    Text = 'Choose model:'
+    TabOrder = 16
   end
 end

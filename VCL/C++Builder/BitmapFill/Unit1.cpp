@@ -1,11 +1,10 @@
-//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
-//
-//  How to attach bitmaps to shapes.
-//  Good results only under Windows NT/2000/XP.
-//
-//  Check project\options\directories in a case of any problems during compilation
+/*
+ * BitmapFill sample — demonstrates per-shape bitmap fill using a custom PaintShapeEvent callback.
+ *
+ * Loads the California Counties shapefile and assigns one of five texture bitmaps to each county
+ * based on population density or raw population (selected via ComboStatistic).
+ * ComboLabels toggles county labels: none, FIPS code (CNTYIDFP), or name (NAME).
+ */
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
@@ -24,6 +23,7 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 }
 //---------------------------------------------------------------------------
 
+/* Loads the California Counties shapefile and wires up the custom paint callback on startup. */
 void __fastcall TForm1::FormCreate(TObject *Sender)
 {
   TGIS_LayerSHP *ll ;
@@ -42,6 +42,9 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Custom per-shape paint callback.  Assigns one of five texture bitmaps to the county fill
+   based on the active statistic (population density or raw population), then calls
+   _shape->Draw() to render it with a dark-grey outline. */
 void __fastcall TForm1::PaintShape( TObject * _sender, TGIS_Shape * _shape  )
 {
   double  population ;
@@ -92,6 +95,7 @@ void __fastcall TForm1::PaintShape( TObject * _sender, TGIS_Shape * _shape  )
 }
 //---------------------------------------------------------------------------
 
+/* Toggles county labels (none / FIPS code / name) and triggers a map redraw. */
 void __fastcall TForm1::ComboChange(TObject *Sender)
 {
   TGIS_LayerVector *ll  ;
@@ -117,18 +121,21 @@ void __fastcall TForm1::ComboChange(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Resets the map view to show all loaded layers. */
 void __fastcall TForm1::btnFullExtentClick(TObject *Sender)
 {
   GIS->FullExtent() ;
 }
 //---------------------------------------------------------------------------
 
+/* Doubles the current zoom level. */
 void __fastcall TForm1::btnZoomInClick(TObject *Sender)
 {
    GIS->Zoom = GIS->Zoom * 2 ;
 }
 //---------------------------------------------------------------------------
 
+/* Halves the current zoom level. */
 void __fastcall TForm1::btnZoomOutClick(TObject *Sender)
 {
    GIS->Zoom = GIS->Zoom / 2 ;

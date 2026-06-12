@@ -1,3 +1,20 @@
+/*
+ * Viewshed sample — demonstrates line-of-sight terrain analysis using TGIS_Viewshed.
+ *
+ * Loads a DEM (Digital Elevation Model) for San Bernardino, CA. The user clicks on the map
+ * to place observer points; TGIS_Viewshed.Generate computes visibility rasters from those points.
+ *
+ * Two output rasters are generated:
+ *   - Viewshed: Binary (visible/not-visible) or frequency (count of visible observers per cell)
+ *   - AGL (Above-Ground-Level): Minimum height needed for non-visible cells to become visible
+ *
+ * Key concepts illustrated:
+ *   - TGIS_Viewshed: Line-of-sight terrain analysis engine
+ *   - ObserverElevation: Can be read from DEM or provided as an offset
+ *   - CurvedEarth: Account for Earth's curvature and atmospheric refraction
+ *   - GenerateRamp: Color-map raster values for visualization
+ *   - Multi-observer viewshed: Compute visibility from multiple observer locations
+ */
 //---------------------------------------------------------------------------
 
 #ifndef Unit1H
@@ -13,6 +30,8 @@
 #include "GisSymbol.hpp"
 #include <Vcl.ComCtrls.hpp>
 //---------------------------------------------------------------------------
+/* Main form for the Viewshed sample.
+   Demonstrates line-of-sight terrain analysis via TGIS_Viewshed. */
 class TfrmMain : public TForm
 {
 __published:	// IDE-managed Components
@@ -30,17 +49,17 @@ __published:	// IDE-managed Components
 	TLabel *lblObserverElevation;
 	TEdit *edtObserverElevation;
     TStatusBar *StatusBar1;
-	void __fastcall FormCreate(TObject *Sender);
+	void __fastcall FormCreate(TObject *Sender);  /* Load DEM; create Observers layer with tower symbol */
 	void __fastcall GISMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
-          int X, int Y);
-	void __fastcall btnFullExtentClick(TObject *Sender);
-	void __fastcall btnResetClick(TObject *Sender);
-	void __fastcall rbtnZoomClick(TObject *Sender);
-	void __fastcall rbtnAddObserverClick(TObject *Sender);
-	void __fastcall rbtnViewshedBinaryClick(TObject *Sender);
-	void __fastcall rbtnAGLClick(TObject *Sender);
-	void __fastcall rbtnViewshedFreqClick(TObject *Sender);
-	void __fastcall GISMouseMove(TObject *Sender, TShiftState Shift, int X, int Y);
+          int X, int Y);  /* Add observer; generate viewshed and AGL rasters */
+	void __fastcall btnFullExtentClick(TObject *Sender);  /* Zoom to full extent */
+	void __fastcall btnResetClick(TObject *Sender);  /* Remove viewshed/AGL layers; revert observers */
+	void __fastcall rbtnZoomClick(TObject *Sender);  /* Switch to Zoom mode */
+	void __fastcall rbtnAddObserverClick(TObject *Sender);  /* Switch to UserDefined mode for adding observers */
+	void __fastcall rbtnViewshedBinaryClick(TObject *Sender);  /* Refresh layer for binary viewshed */
+	void __fastcall rbtnAGLClick(TObject *Sender);  /* Refresh layer for AGL display */
+	void __fastcall rbtnViewshedFreqClick(TObject *Sender);  /* Refresh layer for frequency viewshed */
+	void __fastcall GISMouseMove(TObject *Sender, TShiftState Shift, int X, int Y);  /* Show raster values at cursor */
 
 private:	// User declarations
 	TGIS_LayerPixel  *lTerrain;

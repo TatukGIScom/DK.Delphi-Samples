@@ -2,9 +2,40 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  Simple BIM viewer.
-  To read IFC files, please follow instructions from Deployment\ICF\Readme.txt
-  BIM support requires Enterprise license.
+  BIMViewer Sample — Demonstrates Building Information Model (BIM) visualization
+  and IFC (Industry Foundation Classes) file import with 2D/3D viewing.
+
+  Key concepts illustrated:
+    - BIM data import: loading IFC (Building Information Model) files
+    - Spatial model hierarchy: tree-view organization of building elements
+    - 2D/3D switching: toggle between plan view and 3D visualization
+    - Attribute display: showing building element properties in list view
+    - Feature visibility: toggling basemap, edges, and element groups
+    - 3D navigation: rotate, zoom, pan through building space
+    - Vector simplification: reducing complexity for large models
+    - Export functionality: saving BIM geometry to SHP or SQLite formats
+
+  User workflow:
+    1. Use "File > Open" to load IFC file
+    2. Spatial model hierarchy appears in tree view
+    3. Click elements in tree to select and view properties
+    4. Toggle 2D/3D view mode via menu
+    5. Configure visibility (basemap, edges, groups)
+    6. Export to SHP or SQLite if needed
+
+  BIM-specific features:
+    - TGIS_LayerWexBIM: WexBIM format support (lightweight BIM)
+    - TGIS_LayerIFC: IFC Industry Foundation Classes format
+    - Spatial hierarchy tree: building structure organization
+    - Attribute table: element properties and metadata
+    - 3D viewer: TGIS_Control3D for 3D visualization
+    - Basemap toggle: context map for geographic reference
+    - Edge rendering: wireframe display of building elements
+
+  License requirement: Enterprise license for IFC support
+  Data: IFC files (Building Information Models)
+
+  References: See Deployment\IFC\Readme.txt for IFC file setup
 }
 unit Forms.Main ;
 

@@ -1,10 +1,3 @@
-//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
-{
-  How to prepare small coverage previewer.
-  Main window.
-}
 program ttkGisViewer;
 
 uses
@@ -27,3 +20,4 @@ begin
   Application.CreateForm(TfEdit, fEdit);
   Application.Run;
 end.
+

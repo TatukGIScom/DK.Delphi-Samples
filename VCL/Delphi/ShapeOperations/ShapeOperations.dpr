@@ -1,9 +1,3 @@
-//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
-{
-  How to transform a shape geometry.
-}
 program ShapeOperations;
 
 uses
@@ -18,3 +12,4 @@ begin
   Application.CreateForm(TForm1, Form1);
   Application.Run;
 end.
+

@@ -2,7 +2,30 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to build minimap.
+  MiniMap sample — demonstrates creating a synchronized overview/minimap window (Delphi/VCL).
+
+  What the sample shows:
+    - Creating a second TGIS_ViewerWnd control as an overview minimap
+    - Loading the same dataset into both main viewer and minimap
+    - Synchronizing extent between viewers: changes in main view update minimap bounds
+    - Displaying a tracking rectangle in minimap showing the current main view extent
+    - Using a separate in-memory vector layer to hold the minimap bounds rectangle
+    - Drawing the bounds rectangle with distinctive styling (red outline, semi-transparent fill)
+    - Updating rectangle geometry when main view pans or zooms
+    - Using OnExtentChanged event to trigger minimap synchronization
+    - Handling mouse events in minimap to navigate the main view
+    - Scaling minimap to show full dataset extent while main view zooms freely
+    - Lock types: Projection (layer coordinate system) vs Extent (world coordinates)
+
+  Key TatukGIS API concepts shown here:
+    TGIS_ViewerWnd              - main visual map control + synchronized secondary control
+    TGIS_LayerVector            - vector layer for bounds rectangle
+    TGIS_Shape                  - polygon representing current main view bounds
+    TGIS_Params                 - styling parameters for bounds rectangle
+    OnExtentChanged             - event triggered when view pans/zooms
+    FullExtent                  - zoom to layer extent (for minimap)
+    VisibleExtent / SetExtent   - synchronize viewer extents programmatically
+    TGIS_Lock                   - coordinate system locking
 }
 unit Unit1;
 

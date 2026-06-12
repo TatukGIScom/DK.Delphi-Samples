@@ -1,10 +1,34 @@
 //=============================================================================
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
-
-//
-//  How to reproject the file.
-//
+/*
+ * Reproject sample — demonstrates coordinate system transformation and
+ * reprojetion of geospatial data.
+ *
+ * What the sample shows:
+ *   - Querying the CsProjList registry of all available map projections
+ *   - Building a projected coordinate system from components:
+ *     Geographic coordinate system (datum and ellipsoid)
+ *     Projection method (UTM, Mercator, etc.)
+ *     Units of measurement (meters, feet, etc.)
+ *   - Assigning a coordinate system to the viewer and layer
+ *   - Automatic coordinate transformation when rendering with a new CS
+ *   - Exporting reprojected data to a new shapefile
+ *
+ * User workflow:
+ *   1. Select a map projection from the dropdown (populated from TatukGIS
+ *      projection registry)
+ *   2. The viewer automatically reprojects and displays the data in the new CS
+ *   3. Click "Save As..." to export the reprojected layer to a new file
+ *
+ * Key TatukGIS API concepts shown here:
+ *   TGIS_CSProjList                    - global registry of map projections
+ *   TGIS_CSProjectedCoordinateSystem   - user-defined projection with datum, units
+ *   TGIS_CSGeographicCoordinateSystem  - geographic datum/ellipsoid (EPSG 4030)
+ *   GIS.CS property                    - assign CS and trigger automatic reprojection
+ *   TGIS_LayerVector.CS                - layer-specific coordinate system
+ *   GIS.FullExtent()                   - recalculate extent in new CS
+ */
 //  Check project\options\directories in a case of any problems during compilation
 //---------------------------------------------------------------------------
 
@@ -26,6 +50,10 @@
 #include "GisLayerSHP.hpp"
 #include "GisTypesUI.hpp"
 //---------------------------------------------------------------------------
+/* Reproject sample — demonstrates coordinate system transformation and reprojection of geospatial data.
+   Loads a shapefile and allows users to select a target map projection (e.g., UTM, Mercator, Geographic).
+   Reprojects the layer geometry and saves the result to a new file. Demonstrates TGIS_Projection
+   instantiation, spatial reference assignment, and layer coordinate transformation. */
 class TForm1 : public TForm
 {
 __published:	// IDE-managed Components

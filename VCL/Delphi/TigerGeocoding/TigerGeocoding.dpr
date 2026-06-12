@@ -1,9 +1,3 @@
-//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
-{
-  How to provide Geocoding using name standarization
-}
 program TigerGeocoding;
 
 uses
@@ -23,3 +17,4 @@ begin
   Application.CreateForm(TFormMatches, FormMatches);
   Application.Run;
 end.
+

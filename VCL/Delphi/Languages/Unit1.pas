@@ -2,7 +2,30 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to add multilanguage support.
+  Languages sample — demonstrates adding multilanguage/localization support (Delphi/VCL).
+
+  What the sample shows:
+    - Loading a TatukGIS project file (.ttkproject) that bundles layers and symbols
+    - Exposing language-specific labels/names from shapefile attributes
+    - Creating a dropdown control to switch between available languages
+    - Dynamically updating layer labels based on selected language
+    - Using TGIS_Shape.GetField to retrieve attribute values in different languages
+    - Switching label rendering between language fields (e.g., NAME_EN -> NAME_FR -> NAME_DE)
+    - Maintaining coordinate system and projection through language changes
+    - Displaying map features with localized text at multiple zoom levels
+    - Using TGIS_Params.Labels to configure label display and positioning
+    - Handling multilingual geodatabases with language fields per feature
+
+  Key TatukGIS API concepts shown here:
+    TGIS_ViewerWnd              - main visual map control
+    TGIS_LayerVector            - shapefile layer with language attributes
+    TGIS_Shape.GetField()       - read attribute value from feature
+    TGIS_Params.Labels          - label text and positioning
+    Label rendering             - text display at feature location
+    Attribute fields            - NAME_EN, NAME_FR, NAME_DE (language variants)
+    ComboBox selection          - language switching control
+    OnLabelDraw event           - customizing label appearance per language
+    Project file (.ttkproject)  - pre-configured layer definitions
 }
 
 unit Unit1;

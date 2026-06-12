@@ -2,7 +2,64 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to convert a project layers into sqlite equivalent.
+  project2sqlite Utility - Console-based converter for migrating TatukGIS
+  project layers from shapefiles to SQLite database storage.
+
+  Key concepts illustrated:
+    - Project migration: convert layers from one storage format to another
+    - Shapefile to SQLite: efficient file format conversion
+    - Database backend: centralize multiple layers in single database
+    - Project file update: .ttkproject references new database layers
+    - Batch conversion: process multiple project layers at once
+    - Data preservation: no data loss, attributes and geometry preserved
+    - Path configuration: embedded vs. relative paths in project
+
+  Technical approach:
+    - Load source .ttkproject with shapefile layers
+    - For each vector layer:
+      * Create corresponding SQLite table in database
+      * Import shapefile records to SQLite via ImportLayer
+      * Update project to reference SQLite layer (.ttkls file)
+    - Save updated project configuration
+    - Original shapefiles remain untouched
+
+  Usage:
+    project2sqlite <InputProject> <OutputProject> [dbpath] [embedded|ttkls]
+
+  Parameters:
+    - InputProject: source .ttkproject file with shapefile layers
+    - OutputProject: destination .ttkproject file (same extension required)
+    - dbpath: optional path to SQLite database (default: Layers.sqlite)
+    - embedded|ttkls: use embedded path in project or create .ttkls file
+
+  Workflow:
+    1. Prepare source project with shapefile layers
+    2. Run: project2sqlite input.ttkproject output.ttkproject
+    3. Converter creates Layers.sqlite database
+    4. Imports all vector layers to SQLite
+    5. Saves new output.ttkproject referencing SQLite layers
+    6. Output project ready for use immediately
+
+  Benefits of SQLite Storage:
+    - Single file per database (vs. multiple .shp/.dbf/.shx files)
+    - Faster access: SQL queries vs. sequential shapefile scan
+    - Smaller footprint: compression, no index files needed
+    - Transactional: ACID compliance, atomic updates
+    - Portable: SQLite included in most systems
+    - No server required: embedded database, works offline
+
+  SQLite Parameters:
+    - PRAGMA synchronous: OFF (faster writes during import)
+    - PRAGMA journal_mode: OFF (faster bulk insert)
+
+  Raster Layers:
+    - Currently skipped (TODO in code)
+    - Only vector layers converted
+
+  Configuration Output:
+    - New project references layers as:
+      * Embedded: path relative to project file
+      * External .ttkls: separate SQL layer definitions
 }
 {$APPTYPE CONSOLE}
 program project2sqlite;

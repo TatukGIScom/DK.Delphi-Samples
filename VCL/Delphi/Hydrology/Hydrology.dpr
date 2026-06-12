@@ -1,6 +1,3 @@
-﻿//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
 program Hydrology;
 
 uses
@@ -16,3 +13,4 @@ begin
   Application.CreateForm(TfrmHydrology, frmHydrology);
   Application.Run;
 end.
+

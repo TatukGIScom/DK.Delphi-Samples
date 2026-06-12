@@ -1,7 +1,34 @@
 //=============================================================================
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
-
+//
+// Rotation sample — demonstrates rotating map view and handling rotation controls (C++Builder/VCL).
+//
+// What the sample shows:
+//   - Loading a map dataset (countries shapefile) into the main viewer
+//   - Creating a TGIS_ControlNorthArrow indicator showing current rotation angle
+//   - Rotating the map view using a numeric input field (0-360 degrees)
+//   - Using a slider/trackbar for interactive rotation angle adjustment
+//   - Creating synchronized viewer windows displaying different rotation angles
+//   - Applying rotation to all viewers: north, east, south, west orientations
+//   - Using OnRotationChanged event to update controls when map rotates
+//   - Displaying compass rose / north arrow at current rotation angle
+//   - Handling viewer extent synchronization across rotated views
+//   - Controlling labels and symbol orientation under rotation
+//   - Real-time rotation feedback with degree display
+//   - Toggling rotation lock behavior
+//
+// Key TatukGIS API concepts shown here:
+//   TGIS_ViewerWnd              - main visual map control with rotation support
+//   TGIS_ControlNorthArrow      - north arrow indicator showing rotation angle
+//   Rotation angle              - numeric value in degrees (0-360)
+//   OnRotationChanged           - event triggered when map rotates
+//   SetRotation / GetRotation   - programmatic rotation control
+//   TTrackBar                   - slider for rotation adjustment
+//   Extent synchronization      - multi-window extent sharing
+//   TGIS_Params                 - layer styling with rotation
+//   Symbol rotation             - orientation of point markers under map rotation
+//   Label rotation              - text orientation matching map rotation
 //
 //  How to rotate the map.
 //

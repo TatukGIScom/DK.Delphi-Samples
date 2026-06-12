@@ -1,9 +1,3 @@
-//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
-{
-  Export to image window
-}
 program ExportToImage;
 
 uses
@@ -18,3 +12,4 @@ begin
   Application.CreateForm(TfrmExportToImage, frmExportToImage);
   Application.Run;
 end.
+

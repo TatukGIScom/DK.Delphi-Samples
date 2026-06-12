@@ -2,10 +2,36 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to provide SQL Layer support.
-  Edit gistest.ttkls to provied your database access
-  You can use *.ttkls as any other layer (for example open in editor)
+  SQLLayerAdvanced sample — demonstrates advanced SQL database layer operations and styling (Delphi/VCL).
+
+  What the sample shows:
+    - Creating and attaching vector layers from spatial SQL databases
+    - Supporting multiple database backends (SQLite, PostGIS, SQL Server, MySQL)
+    - Loading layers from persistent .ttkls configuration files
+    - Applying layer styles from style repositories
+    - Managing project definitions stored in databases
+    - Querying available styles and projects from the database
+    - Displaying SQL layers in the viewer with custom styling
+    - Handling spatial data attributes and filtering
+    - Editing and saving layer styles to database
+    - Creating new SQL layer connections programmatically
+    - Managing layer visibility and transparency
+    - Handling database connection parameters and authentication
+
+  Key TatukGIS API concepts shown here:
+    TGIS_ViewerWnd              - main visual map control
+    TGIS_LayerSQL               - SQL database layer implementation
+    TGIS_LayerSqlAdo            - ADO-based SQL layer (SQL Server, MySQL)
+    TGIS_LayerSqlSqlite         - SQLite database layer
+    TGIS_LayerSqlPostGis        - PostGIS layer (PostgreSQL)
+    .ttkls configuration file   - layer definition format
+    Spatial database queries    - SELECT geometry WHERE spatial_condition
+    Style management            - storing/retrieving layer styles
+    Project definitions         - storing map configurations
+    Database schema browsing    - discovering available tables/columns
+    TGIS_ControlLegend          - legend control for SQL layers
 }
+
 unit Unit1;
 
 interface
@@ -35,6 +61,10 @@ uses
   Vcl.GisControlLegend;
 
 type
+  { SQLLayerAdvanced sample — demonstrates advanced SQL database layer operations and styling.
+    Creates and attaches vector layers from spatial SQL databases (SQLite, PostGIS, etc.), applies
+    layer styles from persistent style repositories, manages project definitions, and queries the database
+    for available styles and projects. Shows TGIS_LayerSQL instantiation, spatial queries, and schema browsing. }
   TForm1 = class(TForm)
     ToolBar1: TToolBar;
     GIS: TGIS_ViewerWnd;

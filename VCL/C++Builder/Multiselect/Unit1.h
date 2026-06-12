@@ -1,7 +1,35 @@
 //=============================================================================
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
-
+//
+// Multiselect sample — demonstrates selecting and manipulating multiple features (C++Builder/VCL).
+//
+// What the sample shows:
+//   - Loading a polygon or polyline layer into the GIS viewer
+//   - Using the Select interaction mode to pick individual shapes on the map
+//   - Selecting multiple shapes with Ctrl+click or Shift+click combinations
+//   - Highlighting selected shapes with a distinct color overlay
+//   - Displaying selected feature attributes in a grid control (TGIS_ControlAttributes)
+//   - Querying the number of selected features
+//   - Iterating through selected shapes to perform bulk operations
+//   - Clearing the selection to start fresh
+//   - Modifying attributes of all selected features simultaneously
+//   - Deleting multiple selected shapes in one operation
+//   - Using selection for spatial analysis queries
+//   - Exporting selected features to a new layer or file
+//
+// Key TatukGIS API concepts shown here:
+//   TGIS_ViewerWnd              - main visual map control with selection support
+//   TGIS_LayerVector            - vector layer for multiselection
+//   TGIS_Shape                  - individual shape / feature object
+//   IsSelected property          - shape selection state flag
+//   SelectionColor              - highlight color for selected shapes
+//   TGIS_ControlAttributes      - grid showing selected feature attributes
+//   TGIS_ControlLegend          - legend for visual feedback
+//   TGIS_ViewerMode.Select      - interaction mode for shape picking
+//   Shift/Ctrl click            - multiple selection modifiers
+//   Shape iteration             - looping through selected features
+//   Bulk operations             - modifying/deleting multiple shapes
 //
 //  How to select several shapes
 //

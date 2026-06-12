@@ -2,9 +2,11 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 //
-//  How to add layer to the map.
-//
-//  Check project\options\directories in a case of any problems during compilation
+//  Pipeline sample — demonstrates scripted GIS operations using TGIS_Pipeline.
+//  A .ttkpipeline file is loaded and parsed; the user can edit and execute pipeline
+//  commands (ETL operations like opening layers, filtering, contouring) via the
+//  code editor or by double-clicking commands in the list to open parameter dialogs.
+//  Progress bars show operation execution status in real-time.
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
@@ -25,6 +27,8 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 }
 //---------------------------------------------------------------------------
 
+/* Loads a .ttkpipeline file, creates the TGIS_Pipeline object, and populates the
+   command list with available pipeline operations. */
 void __fastcall TForm1::FormCreate(TObject *Sender)
 {
    mmoCode->Lines->LoadFromFile( GisSamplesDataDirDownload() + "\\Samples\\Pipeline\\Contouring.ttkpipeline" );
@@ -56,6 +60,8 @@ void __fastcall TForm1::doPipelineMessage(
 }
 //---------------------------------------------------------------------------
 
+/* Opens the TGIS_PipelineParamsEditor dialog for the selected operation and
+   updates the operation code if OK is clicked. */
 void __fastcall TForm1::doPipelineForm(
   TGIS_PipelineOperationAbstract *_operation
 )
@@ -93,13 +99,17 @@ void __fastcall TForm1::FormDestroy(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Handles double-click in the command list to open the parameter editor for that
+   operation. */
 void __fastcall TForm1::lstbxCommandsDblClick(TObject *Sender)
 {
-	oPipeline->ShowForm( lstbxCommands->Items->operator [](lstbxCommands->ItemIndex), 
+	oPipeline->ShowForm( lstbxCommands->Items->operator [](lstbxCommands->ItemIndex),
 						 mmoCode->CaretPos.Y ) ;
 }
 //---------------------------------------------------------------------------
 
+/* Handles double-click in code editor to open the parameter editor for the clicked
+   line's operation. */
 void __fastcall TForm1::mmoCodeDblClick(TObject *Sender)
 {
   oPipelineLine = mmoCode->CaretPos.Y + 1 ;
@@ -108,12 +118,14 @@ void __fastcall TForm1::mmoCodeDblClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Exits the application. */
 void __fastcall TForm1::btnExitClick(TObject *Sender)
 {
   Application->Terminate() ;
 }
 //---------------------------------------------------------------------------
 
+/* Executes the pipeline script from the code editor. */
 void __fastcall TForm1::btnExecuteClick(TObject *Sender)
 {
   oPipeline->SourceCode = mmoCode->Text ;
@@ -121,12 +133,14 @@ void __fastcall TForm1::btnExecuteClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Updates the current line number when the user clicks in the code editor. */
 void __fastcall TForm1::mmoCodeClick(TObject *Sender)
 {
 	oPipelineLine = mmoCode->CaretPos.Y + 1 ;
 }
 //---------------------------------------------------------------------------
 
+/* Opens help documentation. */
 void __fastcall TForm1::btnHelpClick(TObject *Sender)
 {
   ShellExecute( 0, "open", "https://docs.tatukgis.com/DK11/doc:pipeline",
@@ -134,6 +148,7 @@ void __fastcall TForm1::btnHelpClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Opens a .ttkpipeline file and loads its contents into the code editor. */
 void __fastcall TForm1::btnOpenClick(TObject *Sender)
 {
 	if (!dlgOpen->Execute()) exit ;
@@ -151,6 +166,7 @@ void __fastcall TForm1::btnOpenClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Saves the current pipeline code to a .ttkpipeline file. */
 void __fastcall TForm1::btnSaveClick(TObject *Sender)
 {
 	if (!dlgSave->Execute()) exit ;

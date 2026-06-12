@@ -2,8 +2,29 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-   TatukGIS sample - How to GPS NMEA Unit
+  GPSSimple sample — demonstrates basic GPS data reception and display (Delphi/VCL).
+
+  What the sample shows:
+    - Opening a TGIS_GpsNmea component connected to a serial port
+    - Selecting a serial port (COM 1-10) from a combo box
+    - Setting the baud rate (1200 to 19200) from a combo box
+    - Reading NMEA 0183 GPS sentences from the serial stream
+    - Parsing GPS position data (latitude, longitude, altitude)
+    - Handling GPS position events (GPSPosition callback)
+    - Displaying raw GPS data in a memo control
+    - Real-time position updates as new data arrives
+    - COM port and baud rate switching without restarting
+    - Basic NMEA sentence interpretation
+
+  Key TatukGIS API concepts shown here:
+    TGIS_GpsNmea                - GPS receiver component for serial NMEA data
+    GPSPosition event           - callback fired when new position is received
+    Serial port configuration   - COM port and baud rate selection
+    NMEA 0183 format            - standard GPS sentence structure
+    GPS coordinates             - latitude, longitude, altitude
+    Real-time data streaming    - continuous position updates
 }
+
 unit Unit1;
 
 interface

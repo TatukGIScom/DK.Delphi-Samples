@@ -2,7 +2,11 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to utilize the pipeline functionality.
+  Pipeline sample — demonstrates scripted GIS operations using TGIS_Pipeline.
+  A .ttkpipeline file is loaded and parsed; the user can edit and execute pipeline
+  commands (ETL operations like opening layers, filtering, contouring) via the
+  code editor or by double-clicking commands in the list to open parameter dialogs.
+  Progress bars show operation execution status in real-time.
 }
 unit formMain;
 
@@ -99,6 +103,8 @@ implementation
 
 {$R *.dfm}
 
+{ Updates dynamic progress bars and estimated time labels during pipeline
+  operation execution. }
 procedure TfrmMain.doBusyEvent(
       _sender : TObject ;
       _pos    : Integer ;
@@ -202,6 +208,8 @@ begin
   ShowMessage( _message ) ;
 end ;
 
+{ Opens the TGIS_PipelineParamsEditor dialog for the selected operation and
+  updates the operation code if OK is clicked. }
 procedure TfrmMain.doPipelineForm(
   _operation : TGIS_PipelineOperationAbstract
 ) ;
@@ -228,6 +236,8 @@ begin
   progressBarList.Free ;
 end;
 
+{ Loads a .ttkpipeline file, creates the TGIS_Pipeline object, and populates the
+  command list with available pipeline operations. }
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
   memoCode.Lines.LoadFromFile( TGIS_Utils.GisSamplesDataDirDownload + '\Samples\Pipeline\Contouring.ttkpipeline' );
@@ -334,6 +344,7 @@ begin
   ShellExecute(0, 'open', PChar( url ), nil, nil, SW_SHOWNORMAL);
 end ;
 
+{ Opens a .ttkpipeline file and loads its contents into the code editor. }
 procedure TfrmMain.btnOpenClick(Sender: TObject);
 var
   str   : String      ;
@@ -356,6 +367,7 @@ begin
   end;
 end;
 
+{ Saves the current pipeline code to a .ttkpipeline file. }
 procedure TfrmMain.btnSaveClick(Sender: TObject);
 var
   str   : String      ;
@@ -378,12 +390,15 @@ begin
   end;
 end;
 
+{ Executes the pipeline script from the code editor. }
 procedure TfrmMain.btnExecuteClick(Sender: TObject);
 begin
   oPipeline.SourceCode := memoCode.Text ;
   oPipeline.Execute ;
 end ;
 
+{ Handles double-click in code editor to open the parameter editor for the clicked
+  line's operation. }
 procedure TfrmMain.memoCodeDblClick(Sender: TObject);
 begin
   oPipelineLine := memoCode.CaretPos.Y + 1 ;
@@ -391,11 +406,14 @@ begin
   oPipeline.ShowForm( oPipelineLine ) ;
 end ;
 
+{ Handles double-click in the command list to open the parameter editor for that
+  operation. }
 procedure TfrmMain.lstbxCommandsDblClick(Sender: TObject);
 begin
   oPipeline.ShowForm( lstbxCommands.Items[lstbxCommands.ItemIndex], memoCode.CaretPos.Y ) ;
 end ;
 
+{ Exits the application. }
 procedure TfrmMain.btnExitClick(Sender: TObject);
 begin
   Application.Terminate ;

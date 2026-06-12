@@ -1,8 +1,48 @@
-//=============================================================================
+﻿//=============================================================================
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to write SHP Layer.
+{
+  DirectWrite sample � demonstrates five sequential low-level write techniques on TGIS_LayerSHP:
+  Build (AddShape loop + SaveData), ImportLayerEx (spatial CONTAINS filter), MergeLayerEx
+  (DISJOINT filter), TGIS_LayerVectorDirectWriteHelper (sequential high-performance write), and
+  TGIS_LayerVectorMergeHelper (batch-commit write).  Buttons unlock in sequence; output files go
+  into a numbered Shapes(n) directory.
+
+  Key concepts illustrated:
+    - Sequential file writing: multiple approaches with different trade-offs
+    - Build approach: AddShape loop with SaveData for simple layer creation
+    - ImportLayerEx: copy features with spatial/attribute filtering
+    - MergeLayerEx: combine layers with relationship filters (DISJOINT, CONTAINS, etc.)
+    - DirectWriteHelper: high-performance streaming write for large datasets
+    - MergeHelper: batch-commit operations for efficient multi-feature writes
+    - Spatial filtering: query and copy based on geometry relationships
+    - Attribute filtering: select features by SQL expressions
+    - Performance optimization: appropriate technique for data volume and complexity
+
+  User workflow:
+    1. Run sample - first button "Build" is active
+    2. Click "Build" to create Shapes1 directory with layer from scratch
+    3. "ImportLayerEx" button becomes active - click to filter/copy features
+    4. "MergeLayerEx" button becomes active - combine with spatial filters
+    5. "DirectWrite" button becomes active - high-performance write technique
+    6. "Merge" button becomes active - batch-commit final layer
+    7. All output files created in Shapes(n) subdirectories
+
+  Write techniques:
+    1. Build: Simple loop-and-add approach, good for small datasets
+    2. ImportLayerEx: Filtered copy with spatial/attribute criteria
+    3. MergeLayerEx: Layer combination with spatial relationship tests
+    4. DirectWriteHelper: Streaming write for large feature counts
+    5. MergeHelper: Batch commits for efficient multiple writes
+
+  Key API:
+    - TGIS_LayerVector.AddShape: add individual feature
+    - SaveData: persist layer to disk
+    - ImportLayerEx: copy with filtering and extent control
+    - MergeLayerEx: combine layers with relationship filter
+    - DirectWriteHelper: high-performance write interface
+    - MergeHelper: batch-commit write interface
 }
 unit Unit1;
 
@@ -69,6 +109,8 @@ uses
   GisGeometryFactory,
   GisRtl ;
 
+{ Imports a spatially filtered subset of cities using ImportLayerEx with a CONTAINS WKT polygon
+  (European bounding box); the imported layer is displayed in green. }
 procedure TForm1.btnImportLayerClick(Sender: TObject);
 var
   ll  : TGIS_LayerSHP ;
@@ -102,6 +144,8 @@ begin
 
 end;
 
+{ Merges cities outside the European polygon using MergeLayerEx with a DISJOINT relation;
+  the merged layer is displayed in green. }
 procedure TForm1.btnMergeLayerClick(Sender: TObject);
 var
   ll  : TGIS_LayerSHP ;
@@ -134,6 +178,7 @@ begin
   GIS.InvalidateWholeMap ;
 end;
 
+{ Finds the next unused Shapes(n) directory number and creates it as the output destination. }
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   number := 0;
@@ -149,6 +194,8 @@ begin
   CreateDir('Shapes'+ IntToStr( number ) )
 end;
 
+{ Writes all cities to a new SHP using TGIS_LayerVectorMergeHelper with Commit() per shape for
+  batch-commit writing; resets all buttons on completion. }
 procedure TForm1.btnDirectMergeClick(Sender: TObject);
 var
   lv   : TGIS_LayerSHP ;
@@ -198,6 +245,8 @@ begin
   end ;
 end;
 
+{ Writes all cities to a new SHP using TGIS_LayerVectorDirectWriteHelper
+  (Build -> AddShape loop -> Close) for high-performance sequential writing. }
 procedure TForm1.btnDirectWriteClick(Sender: TObject);
 var
   lv   : TGIS_LayerSHP ;
@@ -240,6 +289,8 @@ begin
   end ;
 end;
 
+{ Creates a new SHP layer via Build(), opens the cities source, copies structure and coordinate
+  system, loops all shapes with AddShape, then saves data. }
 procedure TForm1.btnBuildClick(Sender: TObject);
 var
   lv  : TGIS_LayerSHP ;

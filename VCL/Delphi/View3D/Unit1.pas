@@ -2,7 +2,39 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to create 3D View
+  View3D Sample — Demonstrates 3D visualization of geospatial data including
+  building models, textures, and 3D geometry manipulation.
+
+  Key concepts illustrated:
+    - 3D view mode: switching between 2D and 3D perspective rendering
+    - 3D layer visualization: displaying building geometries in 3D space
+    - Texture mapping: applying bitmap textures to 3D surfaces
+    - 3D navigation: standard and advanced navigation modes
+    - MultiPatch geometry: 3D shapes composed of triangle fans and strips
+    - Coordinate systems in 3D: XYZ coordinates for elevation
+    - Z-axis visualization: height/elevation as the vertical dimension
+
+  User workflow:
+    1. Load a 3D building project (.ttkproject)
+    2. Click "3D View" to switch to 3D perspective
+    3. Use mouse to navigate: drag to rotate, scroll to zoom
+    4. Toggle "Show Textures" to apply/remove building facade textures
+    5. Switch between Standard and Advanced navigation modes
+    6. Toggle "Lock Refresh" / "Unlock Refresh" for performance tuning
+
+  3D visualization features:
+    - Interactive rotation, pan, and zoom in 3D space
+    - Real-time texture rendering on building surfaces
+    - Fast mode: optimized for responsive navigation at lower quality
+    - Advanced navigation: precise control with higher quality rendering
+    - Roof and wall visualization for building structures
+
+  Data: Building3D.ttkproject (3D building models with textures)
+
+  3D geometry types supported:
+    - MultiPatch: complex 3D shapes composed of triangle fans, strips, and rings
+    - Part types: TriangleFan (roof), TriangleStrip (walls), OuterRing (base)
+    - Coordinates: TGIS_Point3D with X, Y, Z (elevation) values
 }
 
 unit Unit1;
@@ -97,20 +129,32 @@ implementation
 
 {$R *.dfm}
 
+{
+  btn2D3DClick
+  Toggles between 2D and 3D view modes.
+  When 3D is enabled, activates 3D-specific controls (textures, navigation, etc).
+  When 3D is disabled, switches back to standard 2D map view.
+}
 procedure TForm1.btn2D3DClick(Sender: TObject);
 begin
+  { Guard: cannot switch view if no data loaded }
   if GIS.IsEmpty then exit ;
 
+  { Toggle the 3D view mode }
   GIS.View3D := not GIS.View3D ;
+
+  { Configure UI and controls based on the new view mode }
   if GIS.View3D then
   begin
+    { Switch to 3D: change button text and enable 3D-specific controls }
     btn2D3D.Caption := '2D View' ;
-    btnTextures.Enabled := true;
-    btnRoof.Enabled := true;
-    btnWalls.Enabled := true;
-    Button2.Enabled := true;
-    GIS_3D.Enabled := true ;
+    btnTextures.Enabled := true;         { Enable texture toggle }
+    btnRoof.Enabled := true;             { Enable roof rendering control }
+    btnWalls.Enabled := true;            { Enable wall rendering control }
+    Button2.Enabled := true;             { Enable another 3D feature }
+    GIS_3D.Enabled := true ;             { Enable the 3D control panel }
   end else begin
+    { Switch to 2D: change button text and disable 3D-specific controls }
     btn2D3D.Caption := '3D View' ;
     btnTextures.Enabled := false;
     btnRoof.Enabled := false;
@@ -118,78 +162,132 @@ begin
     Button2.Enabled := false;
     GIS_3D.Enabled := false;
   end;
+
+  { Reset 3D mode dropdown to default }
   cbx3DMode.ItemIndex := 0 ;
 end;
 
+{ Fit viewport to show all data: 2D extent zoom or 3D home view }
 procedure TForm1.btnFullExtentClick(Sender: TObject);
 begin
+  { Different behavior depending on current view mode }
   if not GIS.View3D then
+    { In 2D mode: zoom to fit all layers in the viewport }
     GIS.FullExtent
   else
+    { In 3D mode: reset the 3D camera to the home/default view position }
     GIS.Viewer3D.ResetView ;
 end;
 
+{
+  btnOpenClick
+  Loads a 3D building project file.
+  Switches back to 2D mode if currently in 3D before loading new data.
+}
 procedure TForm1.btnOpenClick(Sender: TObject);
 begin
   GIS.Lock;
   try
+    { If in 3D mode, switch back to 2D before loading new data }
     if GIS.View3D then
       btn2D3DClick( self ) ;
+
+    { Close any previously loaded data }
     GIS.Close ;
+
+    { Load the 3D building project (.ttkproject bundles layers, styles, CRS) }
     GIS.Open( TGIS_Utils.GisSamplesDataDirDownload() + 'Samples\3D\Building3D.ttkproject');
 
+    { Reset 3D mode dropdown to default }
     cbx3DMode.ItemIndex := 0 ;
   finally
     GIS.Unlock ;
   end;
 end;
 
+{
+  btnNavigationClick
+  Toggles between Standard and Advanced 3D navigation modes.
+  Advanced: precise control with higher quality rendering.
+  Standard: optimized for responsive fast navigation.
+}
 procedure TForm1.btnNavigationClick(Sender: TObject);
 begin
+  { Guard: only applicable in 3D mode }
   if not GIS.View3D then exit ;
-  if not GIS.Viewer3D.AdvNavigation then begin
+
+  { Toggle between navigation modes }
+  if not GIS.Viewer3D.AdvNavigation then
+  begin
+    { Switch to Advanced navigation: precise, high-quality rendering }
     GIS.Viewer3D.AdvNavigation := True ;
     btnNavigation.Caption := 'Std. Navigation' ;
+    { Enable fast mode for performance }
     GIS.Viewer3D.FastMode := True ;
     btnRefresh.Caption := 'Unlock Refresh' ;
   end
   else begin
+    { Switch to Standard navigation: responsive, lower quality }
     GIS.Viewer3D.AdvNavigation := False ;
     btnNavigation.Caption := 'Adv. Navigation' ;
+    { Disable fast mode for higher quality }
     GIS.Viewer3D.FastMode := False ;
     btnRefresh.Caption := 'Lock Refresh' ;
   end;
-
 end;
 
+{
+  btnRefreshClick
+  Toggles FastMode for 3D rendering performance tuning.
+  FastMode: optimized for smooth interaction, lower quality.
+  Locked:   higher quality, may be slower during interaction.
+}
 procedure TForm1.btnRefreshClick(Sender: TObject);
 begin
+  { Guard: only applicable in 3D mode }
   if not GIS.View3D then exit ;
-  if not GIS.Viewer3D.FastMode then begin
+
+  { Toggle fast mode for performance }
+  if not GIS.Viewer3D.FastMode then
+  begin
+    { Enable fast mode: optimized for responsive navigation }
     GIS.Viewer3D.FastMode := True ;
     btnRefresh.Caption := 'Unlock Refresh' ;
   end
   else begin
+    { Disable fast mode: higher quality rendering }
     GIS.Viewer3D.FastMode := False ;
     btnRefresh.Caption := 'Lock Refresh' ;
   end;
 end;
 
+{
+  btnTexturesClick
+  Applies/removes texture bitmaps to building surfaces in 3D view.
+  Textures consist of face textures (walls/roofs) and outline textures (edges).
+}
 procedure TForm1.btnTexturesClick(Sender: TObject);
 var
   lv  : TGIS_LayerVector ;
   bmp : TGIS_Bitmap ;
 begin
+  { Get the buildings vector layer from the viewer }
   lv := GIS.Get( 'buildings') as TGIS_LayerVector ;
   if not Assigned( lv ) then exit ;
 
+  { Check if textures are currently applied }
   if not Assigned( lv.Params.Area.Bitmap ) or lv.Params.Area.Bitmap.IsEmpty then
   begin
+    { Apply textures: load images and assign to layer }
     bmp := TGIS_Bitmap.Create ;
     try
       btnTextures.Caption := 'Hide Textures' ;
+
+      { Load and assign the primary texture (building faces/walls) }
       bmp.LoadFromBitmap(Image2.Picture.Bitmap, '');
       lv.Params.Area.Bitmap := bmp ;
+
+      { Load and assign the outline texture (building edges) }
       bmp.LoadFromBitmap(Image1.Picture.Bitmap, '');
       lv.Params.Area.OutlineBitmap := bmp;
     finally
@@ -197,11 +295,13 @@ begin
     end;
   end
   else begin
+    { Remove textures: revert to solid colors }
     btnTextures.Caption := 'Show Textures' ;
     lv.Params.Area.Bitmap := nil ;
     lv.Params.Area.OutlineBitmap := nil ;
   end ;
 
+  { Refresh the 3D view to apply texture changes }
   GIS.Viewer3D.UpdateWholeMap ;
 end;
 

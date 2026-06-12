@@ -1,9 +1,6 @@
 //=============================================================================
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
-{
-  How to write SHP layer.
-}
 program DirectWrite;
 
 uses

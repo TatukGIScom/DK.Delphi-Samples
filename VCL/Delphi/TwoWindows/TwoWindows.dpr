@@ -1,8 +1,3 @@
-// This source code is a part of TatukGIS Developer Kernel.
-{
-  How to support synchronized, two-windows display.
-}
-
 program TwoWindows;
 
 uses
@@ -16,3 +11,4 @@ begin
   Application.CreateForm(TForm1, Form1);
   Application.Run;
 end.
+

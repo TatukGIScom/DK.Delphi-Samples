@@ -1,10 +1,3 @@
-//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
-{
-  How to provide editing functionality.
-}
-
 program SimpleEdit;
 
 uses
@@ -23,3 +16,4 @@ begin
   Application.CreateForm(TfrmInfo, frmInfo);
   Application.Run;
 end.
+

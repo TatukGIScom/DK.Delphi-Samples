@@ -1,7 +1,34 @@
 //=============================================================================
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
-
+//
+// GPSTracker sample — demonstrates real-time GPS tracking and visualization (C++Builder/VCL).
+//
+// What the sample shows:
+//   - Opening a TGIS_GpsNmea component connected to a serial port
+//   - Creating an in-memory TGIS_LayerVector for GPS waypoints and track
+//   - Adding point shapes to mark each GPS position received
+//   - Creating a polyline shape to show the continuous GPS track
+//   - Selecting serial port and baud rate configuration
+//   - Recording GPS data to a shapefile for archival
+//   - Displaying the track on a TGIS_ViewerWnd map control
+//   - Handling real-time position updates from NMEA stream
+//   - Adding manual waypoint labels with user-defined names
+//   - Fitting the map extent to the track bounds
+//   - Clearing track and starting fresh recording session
+//   - Progress feedback during GPS data reception
+//
+// Key TatukGIS API concepts shown here:
+//   TGIS_GpsNmea                - GPS receiver component for serial NMEA data
+//   TGIS_ViewerWnd              - main visual map control
+//   TGIS_LayerVector            - in-memory vector layer for track storage
+//   TGIS_Shape (point)          - point geometry for waypoint markers
+//   TGIS_Shape (polyline)       - polyline geometry for continuous track
+//   GPSPosition event           - callback for each position update
+//   NMEA 0183                   - standard GPS sentence format
+//   Serial port configuration   - COM port and baud rate
+//   Shapefile export            - saving track to .shp file
+//   Map extent fitting          - FullExtent() for track bounds
 //
 //  How to use GPS Nmea unit.
 //

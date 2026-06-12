@@ -2,7 +2,28 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to add in-memory layers.
+  InMemory sample — demonstrates creating and populating vector layers programmatically
+  at runtime, without loading from files.
+
+  What the sample shows:
+    - Creating an in-memory TGIS_LayerVector with custom symbol styling
+    - Dynamically adding point shapes with random coordinates and colors
+    - Dynamically adding polyline shapes with random vertices and styles
+    - Dynamically adding polygon shapes with custom fills and borders
+    - Programmatically controlling symbol properties (color, size, rotation)
+    - Real-time visualization of dynamically generated features on the map
+    - Animating shapes by updating their positions and redrawing the map
+    - Useful for real-time data visualization and dynamic feature creation
+
+  Key TatukGIS API concepts shown here:
+    TGIS_ViewerWnd              - main visual map control
+    TGIS_LayerVector            - in-memory vector layer container
+    TGIS_Shape                  - individual geometries (point, polyline, polygon)
+    TGIS_ShapeType              - shape type enumeration (Point, Arc, Polygon)
+    TGIS_Symbol                 - visual representation of shapes
+    TGIS_Params.Marker          - point symbol parameters
+    TGIS_Params.Pen             - line drawing parameters (color, width, style)
+    TGIS_Params.Brush           - fill parameters for polygons
 }
 
 unit Unit1;
@@ -39,6 +60,10 @@ uses
   Vcl.GisViewerWnd;
 
 type
+  { InMemory sample — demonstrates creating and populating vector layers programmatically at runtime.
+    Creates an in-memory TGIS_LayerVector with custom symbol styling, then dynamically adds point, polyline,
+    and polygon shapes with random coordinates, colors, and rotations. All data is generated and stored
+    in memory without reading from files; useful for real-time data visualization and dynamic feature creation. }
   TForm1 = class(TForm)
     StatusBar1: TStatusBar;
     ToolBar1: TToolBar;

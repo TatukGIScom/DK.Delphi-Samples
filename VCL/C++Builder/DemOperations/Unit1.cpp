@@ -1,10 +1,17 @@
 //=============================================================================
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
-//
-//  Example of dem operations.
-//
-//  Check project\options\directories in a case of any problems during compilation
+/*
+ * DemOperations sample - demonstrates terrain analysis derived from a DEM raster.
+ *
+ * The sample opens an ADF elevation grid and lets the user choose from the
+ * following TGIS_DemGenerator operations:
+ *   Hillshade, Slope, Slope Hydro, Aspect, TRI, TPI, Roughness,
+ *   Total Curvature, Matrix Gain, Flow Dir.
+ *
+ * A custom hillshade implementation (changeDEM) demonstrates the
+ * TGIS_LayerPixel GridOperationEvent callback mechanism.
+ */
 //---------------------------------------------------------------------------
 
 #include <vcl.h>
@@ -25,18 +32,23 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 }
 //---------------------------------------------------------------------------
 
+/* Resets the viewer to show the full spatial extent of all loaded layers. */
 void __fastcall TForm1::btnFullExtentClick(TObject *Sender)
 {
   GIS->FullExtent();
 }
 //---------------------------------------------------------------------------
 
+/* Switches the viewer interaction mode to zoom. */
 void __fastcall TForm1::btnZoomClick(TObject *Sender)
 {
   GIS->Mode = TGIS_ViewerMode::Zoom ;
 }
 //---------------------------------------------------------------------------
 
+/* Attaches or detaches the custom changeDEM hillshade callback on the source
+   layer when the checkbox state changes.  When attached, the built-in grid
+   rendering is replaced by the manual hillshade computation. */
 void __fastcall TForm1::cbCustomOperationClick(TObject *Sender)
 {
   TGIS_LayerPixel *ll ;
@@ -60,6 +72,9 @@ void __fastcall TForm1::cbCustomOperationClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Creates an output grid layer matching the source DEM, instantiates the
+   DEM operation selected in cbDemOperation, runs TGIS_DemGenerator.Process,
+   and adds the result layer to the viewer. */
 void __fastcall TForm1::btnGenerateClick(TObject *Sender)
 {
   TGIS_LayerPixel *lp ;
@@ -169,6 +184,8 @@ void __fastcall TForm1::btnGenerateClick(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Shows or hides the parameter sub-panels relevant to the currently selected
+   DEM operation (e.g. hillshade params, slope mode, curvature mode). */
 void __fastcall TForm1::cbDemOperationChange(TObject *Sender)
 {
   gbHillShadeParams->Visible = False ;
@@ -198,18 +215,21 @@ void __fastcall TForm1::cbDemOperationChange(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Toggles the viewer between 2-D map view and 3-D perspective view. */
 void __fastcall TForm1::btn1Click(TObject *Sender)
 {
   GIS->View3D = !( GIS->View3D ) ;
 }
 //---------------------------------------------------------------------------
 
+/* Switches the viewer interaction mode to pan/drag. */
 void __fastcall TForm1::btnDragClick(TObject *Sender)
 {
   GIS->Mode = TGIS_ViewerMode::Drag ;
 }
 //---------------------------------------------------------------------------
 
+/* Initialises the open-file filter and loads the default sample DEM on startup. */
 void __fastcall TForm1::FormCreate(TObject *Sender)
 {
   TGIS_FileTypes _mode;
@@ -224,8 +244,9 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 double _fastcall TForm1::trunc(double d){
   return (d>0) ? floor(d) : ceil(d) ;
 }
+/* Reports DEM processing progress on the progress bar.  Shows and updates the
+   bar while _end > 0, and hides it when the operation completes. */
 void __fastcall TForm1::GISBusyEvent(TObject *_sender, int _pos, int _end, bool &_abort)
-
 {
   if ( _end <= 0 ) {
     pboperation->Visible = False ;
@@ -240,6 +261,8 @@ void __fastcall TForm1::GISBusyEvent(TObject *_sender, int _pos, int _end, bool 
 }
 //---------------------------------------------------------------------------
 
+/* Updates the grid shadow angle on the source layer as the track bar position
+   changes, giving an interactive sun-position preview. */
 void __fastcall TForm1::tbShadowAngleChange(TObject *Sender)
 {
   TGIS_LayerPixel *ll ;
@@ -256,6 +279,7 @@ void __fastcall TForm1::tbShadowAngleChange(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+/* Opens a file dialog and loads the chosen raster file into the viewer. */
 void __fastcall TForm1::ToolButton1Click(TObject *Sender)
 {
   if (dlgFileOpen->Execute() == False) {
@@ -267,6 +291,11 @@ void __fastcall TForm1::ToolButton1Click(TObject *Sender)
 #define  RAD_TO_DEG     180.0 / 3.14
 #define  DEG_TO_RAD     3.14 / 180.0
 #define  SQUARE_M_PI_2  (3.14*3.14)/4
+/* Custom GridOperationEvent callback that computes a hillshade value for every
+   cell using a 3x3 neighbourhood (Horn's algorithm).  Reads the nine-cell
+   window from _source, calculates the cosine of the sun incidence angle (cang),
+   and writes the shaded value (1..255) to _output.  Cells containing NoData
+   are passed through unchanged.  Returns true to indicate the output is valid. */
 bool __fastcall TForm1::changeDEM(
   TObject* _layer,
   const TGIS_Extent &_extent,

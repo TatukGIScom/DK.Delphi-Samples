@@ -2,7 +2,32 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  Convert OSM to other formats : SHP, SQL Native
+  ConvertOSM sample — converts OpenStreetMap data to various layer formats (Delphi/VCL).
+
+  What the sample shows:
+    - Loading OpenStreetMap (.osm) XML files
+    - Converting OSM data to multiple output formats (SHP, SQL, SQLite)
+    - Selecting geometry types: Points, Lines, Polygons
+    - Parsing OSM XML structure with TGIS_OSMImporter
+    - Writing separate layer files per geometry type
+    - Progress feedback during conversion
+    - Importer log message display
+    - Target format selection (SHP shapefile, SQL database, SQLite)
+    - Batch geometry conversion workflow
+    - Handling large OSM datasets
+    - Managing export directory and file organization
+
+  Key TatukGIS API concepts shown here:
+    TGIS_ViewerWnd              - main visual map control
+    TGIS_OSMImporter            - OpenStreetMap format reader
+    TGIS_LayerVector            - vector layer output format
+    TGIS_LayerSHP               - ESRI Shapefile export
+    TGIS_LayerSQL               - SQL database layer export
+    TGIS_LayerSQLite            - SQLite database export
+    OSM XML parsing             - OpenStreetMap data structure
+    Geometry type filtering     - Points, Lines, Polygons selection
+    Progress tracking           - conversion status feedback
+    Multi-format export         - simultaneous format generation
 }
 unit Unit1;
 
@@ -132,6 +157,7 @@ begin
   end ;
 end ;
 
+{ Updates the status bar with percentage progress during a long import/export operation. }
 procedure TForm1.doBusy(
       _sender    : TObject ;
       _pos, _end : Integer ;
@@ -148,12 +174,15 @@ begin
   _abort := False ;
 end ;
 
+{ Appends an importer log message to the memo and processes pending UI events. }
 procedure TForm1.doLog( const _txt : String ) ;
 begin
   mmolog.Lines.Add( _txt ) ;
   Application.ProcessMessages ;
 end ;
 
+{ Parses the OSM file with TGIS_OSMImporter and exports each selected geometry type (points,
+  lines, polygons) to a layer file of the chosen format in the export directory. }
 procedure TForm1.convertOSM(
   const _osmPath    : String ;
   const _exportPath : String ;
@@ -225,6 +254,7 @@ begin
   end ;
 end ;
 
+{ Validates that an OSM file and export directory have been selected, then runs the conversion. }
 procedure TForm1.btnConvertClick(Sender: TObject);
 begin
   btnConvert.Enabled := False ;
@@ -247,12 +277,14 @@ begin
   end;
 end ;
 
+{ Opens a file dialog for the user to select the source OSM file. }
 procedure TForm1.btnOSMClick(Sender: TObject);
 begin
   if dlgOpenOSM.Execute() then
     edtOSMPath.Text := dlgOpenOSM.FileName ;
 end ;
 
+{ Opens a folder browse dialog for the user to select the export directory. }
 procedure TForm1.btnSelectFolderClick(Sender: TObject);
 var
   path : String ;

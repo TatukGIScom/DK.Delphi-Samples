@@ -1,11 +1,3 @@
-//=============================================================================
-// This source code is a part of TatukGIS Developer Kernel.
-//=============================================================================
-{
-  Simple BIM viewer.
-  To read IFC files, please follow instructions from Deployment\ICF\Readme.txt
-  BIM support requires Enterprise license.
-}
 program BimViewer;
 
 uses
@@ -21,3 +13,4 @@ begin
   Application.CreateForm(TfrmMain, frmMain);
   Application.Run;
 end.
+

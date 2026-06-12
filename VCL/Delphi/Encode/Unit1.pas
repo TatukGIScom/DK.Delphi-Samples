@@ -2,7 +2,29 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to encode SHP Layer.
+  Encode sample — demonstrates transparent layer encoding using read/write callbacks.
+
+  What the sample shows:
+    - Loading a base world shapefile into the GIS viewer
+    - Exporting layer data to a new file with custom encoding applied
+    - Implementing XOR cipher encoding byte-by-byte using WriteEvent callback
+    - Encoding process keyed on file position for deterministic cipher
+    - Re-opening encoded file from disk
+    - Transparently decoding data on-the-fly using ReadEvent callback
+    - Same XOR cipher used in both read and write paths
+    - Custom callbacks intercepting file I/O for encryption/decryption
+    - Preserving shapefile structure and attributes through encode/decode cycle
+    - Demonstrating round-trip data persistence with encryption
+
+  Key TatukGIS API concepts shown here:
+    TGIS_ViewerWnd              - main visual map control
+    TGIS_LayerSHP              - vector layer for ESRI Shapefiles
+    ReadEvent (callback)        - intercept layer read to decode data
+    WriteEvent (callback)       - intercept layer write to encode data
+    GIS.Add()                   - add layer to the viewer
+    TGIS_LayerSHP.Open()       - open shapefile from disk
+    TGIS_LayerSHP.SaveAs()     - export layer to new file
+    Custom encoding algorithm   - XOR cipher (example of pluggable approach)
 }
 unit Unit1;
 
@@ -74,6 +96,7 @@ implementation
 {$R *.DFM}
 
 
+{ Opens the base world shapefile (WorldDCW) with country name labels. }
 procedure TForm1.btnOpenBaseClick(Sender: TObject);
 var
   ll : TGIS_LayerSHP ;
@@ -90,6 +113,8 @@ begin
   GIS.FullExtent ;
 end;
 
+{ Exports the base layer to encoded.shp via ImportLayer.
+  The WriteEvent callback applies an incrementing-XOR cipher to every byte as it is written. }
 procedure TForm1.btnEncodeClick(Sender: TObject);
 var
   ls : TGIS_LayerVector ;
@@ -117,6 +142,8 @@ begin
   end;
 end;
 
+{ Opens the encoded shapefile with ReadEvent/WriteEvent wired so the XOR cipher is reversed
+  transparently on every read.  The layer is tinted green. }
 procedure TForm1.btnOpenEncodedClick(Sender: TObject);
 var
   ll : TGIS_LayerSHP ;
@@ -135,12 +162,13 @@ begin
   GIS.FullExtent ;
 end;
 
+{ Closes all loaded layers. }
 procedure TForm1.btnCloseAllClick(Sender: TObject);
 begin
   GIS.Close ;
 end;
 
-// do decoding with incrementing XOR value
+{ Decodes each byte by XOR-ing it with (position + index) mod 256, reversing the encoding. }
 procedure TForm1.doRead( _sender : TObject ;
                          _pos    : Integer ;
                          _buffer : Pointer ;
@@ -156,7 +184,7 @@ begin
   end ;
 end ;
 
-// do encoding with incrementing XOR value
+{ Encodes each byte by XOR-ing it with (position + index) mod 256. }
 procedure TForm1.doWrite( _sender : TObject ;
                           _pos    : Integer ;
                           _buffer : Pointer ;

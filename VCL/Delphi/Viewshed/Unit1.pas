@@ -1,3 +1,12 @@
+{
+  Viewshed sample — demonstrates line-of-sight terrain analysis using TGIS_Viewshed.
+  Loads a DEM (Digital Elevation Model) for San Bernardino, CA.  The user clicks on the map
+  to place observers; TGIS_Viewshed.Generate computes a viewshed raster (which cells are
+  visible from all observer points) and an AGL (Above-Ground-Level) raster (minimum height
+  needed for non-visible cells to become visible from at least one observer).
+  Radio buttons switch between binary viewshed, frequency viewshed, and AGL display.
+}
+
 unit Unit1;
 
 interface
@@ -82,6 +91,8 @@ const
   SAMPLE_VIEWSHED_NAME : String = 'Viewshed' ;
   SAMPLE_AGL_NAME      : String = 'Above-Ground-Level' ;
 
+{ Toggles active state between the viewshed and AGL layers based on the selected
+  radio button, refreshes the color ramp, and updates the hint label. }
 procedure TfrmMain.setLayerActive ;
 begin
   GIS.Lock ;
@@ -96,6 +107,8 @@ begin
   showComment ;
 end ;
 
+{ Applies a binary (green = visible) or frequency (red-to-green gradient) color
+  ramp to the viewshed layer based on the selected radio button. }
 procedure TfrmMain.makeViewshedRamp ;
 begin
   if not Assigned( GIS.Get( SAMPLE_VIEWSHED_NAME ) ) then
@@ -135,6 +148,8 @@ begin
   end ;
 end ;
 
+{ Updates the hint label with a description of the currently active layer's
+  color scheme. }
 procedure TfrmMain.showComment;
 begin
   if rbtnViewshedBinary.Checked then
@@ -164,6 +179,8 @@ begin
   GIS.InvalidateTopmost ;
 end;
 
+{ Opens the DEM raster for San Bernardino, CA; creates an Observers vector layer
+  with a tower symbol; and zooms to the full extent. }
 procedure TfrmMain.FormCreate(Sender: TObject);
 begin
   GIS.Lock;
@@ -207,6 +224,9 @@ begin
   tm := GetTickCount ;
 end;
 
+{ In UserDefined mode, adds the clicked point as an observer, runs
+  TGIS_Viewshed.Generate to compute viewshed and AGL rasters, and refreshes the
+  display with the appropriate color ramp. }
 procedure TfrmMain.GISMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
@@ -315,6 +335,8 @@ begin
   showComment ;
 end ;
 
+{ Reads viewshed frequency and AGL values at the cursor position and displays
+  them in the status bar. }
 procedure TfrmMain.GISMouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
 var
@@ -341,11 +363,14 @@ begin
 
 end;
 
+{ Zooms the viewer to the full extent of all layers. }
 procedure TfrmMain.btnFullExtentClick(Sender: TObject);
 begin
   GIS.FullExtent ;
 end ;
 
+{ Removes the viewshed and AGL layers and reverts all observer points to reset
+  the display. }
 procedure TfrmMain.btnResetClick(Sender: TObject);
 begin
   GIS.Lock ;
@@ -365,26 +390,31 @@ begin
   Timer1.Enabled := True ;
 end;
 
+{ Switches the viewer to UserDefined mode for adding observer points. }
 procedure TfrmMain.rbtnAddObserverClick(Sender: TObject);
 begin
   GIS.Mode := TGIS_ViewerMode.UserDefined ;
 end ;
 
+{ Switches the viewer to Zoom mode. }
 procedure TfrmMain.rbtnZoomClick(Sender: TObject);
 begin
   GIS.Mode := TGIS_ViewerMode.Zoom ;
 end ;
 
+{ Refreshes the visible layer when the binary viewshed radio button changes. }
 procedure TfrmMain.rbtnViewshedBinaryClick(Sender: TObject);
 begin
   setLayerActive ;
 end ;
 
+{ Refreshes the visible layer when the frequency viewshed radio button changes. }
 procedure TfrmMain.rbtnViewshedFreqClick(Sender: TObject);
 begin
   setLayerActive ;
 end ;
 
+{ Refreshes the visible layer when the AGL radio button changes. }
 procedure TfrmMain.rbtnAGLClick(Sender: TObject);
 begin
   setLayerActive ;

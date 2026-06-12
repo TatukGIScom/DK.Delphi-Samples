@@ -1,6 +1,35 @@
 ﻿//=============================================================================
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
+{
+  Hydrology sample.
+
+  A step-by-step tutorial that performs common hydrological analyses on a
+  DEM (Digital Elevation Model) raster grid using TGIS_Hydrology.
+  Each button in the UI unlocks the next step in the pipeline:
+
+    1. Identify DEM problems (Sink)     — detects sinks (pits) and flat areas.
+    2. Fill sinks                       — raises depressions to produce a
+                                          hydrologically conditioned DEM.
+    3. Flow Direction                   — encodes the steepest-descent direction
+                                          for each cell (D8 method, 1..128).
+    4. Flow Accumulation                — counts upstream cells draining into
+                                          each cell; reveals the stream network.
+    5. Add outlets (pour points)        — places two sample outlet points on
+                                          high-accumulation cells.
+    6. Watershed                        — delineates the drainage area upstream
+                                          of each outlet.
+    7. Basin                            — partitions the DEM into independent
+                                          drainage basins.
+    8. Stream Order (Strahler)          — assigns a Strahler order to each
+                                          stream segment.
+    9. Convert to vector                — converts the raster basin and stream
+                                          grids to polygon/polyline layers.
+   10. View in 3D                       — drapes the stream network over the
+                                          conditioned DEM in 3-D.
+
+  Data: Bytowski County DEM, Poland (GeoTIFF).
+}
 unit Unit1;
 
 interface
@@ -101,6 +130,13 @@ const
   HYDRO_FIELD_ORDER        = 'ORDER' ;
   HYDRO_FIELD_BASIN        = 'BASIN_ID' ;
 
+  {
+    Progress callback for TGIS_Hydrology and TGIS_GridToPolygon operations.
+    _pos = 0   : initialises the progress bar range (0..100).
+    _pos = -1  : resets the bar to 0 after the operation completes.
+    _pos > 0   : advances the bar to the current percentage value.
+    Calls Application.ProcessMessages so the UI remains responsive.
+  }
   procedure TfrmHydrology.doBusyEvent(
         _sender : TObject ;
         _pos    : Integer ;
@@ -124,6 +160,12 @@ begin
   Application.ProcessMessages ;
 end;
 
+{
+  Creates an in-memory TGIS_LayerPixel grid whose extent, coordinate system,
+  and cell dimensions match those of the reference DEM layer.
+  Anti-aliasing and hillshading are disabled so the raw cell values remain visible.
+  Returns the new, unnamed (until the caller sets .Name) layer.
+}
 // Creates a new grid layer with the same parameters as input DEM and a given name
 function TfrmHydrology.CreateLayerPix(
   const _dem  : TGIS_LayerPixel ;
@@ -137,6 +179,10 @@ begin
   Result.Params.Pixel.GridShadow := False ;
 end;
 
+{
+  Creates an empty in-memory TGIS_LayerVector with the given name, coordinate
+  system, and default shape type.  Opens the layer so shapes can be added immediately.
+}
 // Creates a new vector layer wita a given name, cs and type
 function TfrmHydrology.CreateLayerVec(
   const _name : String ;
@@ -151,6 +197,7 @@ begin
   Result.DefaultShapeType := _type;
 end;
 
+{ Retrieves a TGIS_LayerPixel from the viewer by name. }
 // Gets a pixel layer with a given name from GIS
 function TfrmHydrology.GetLayerGrd(
   const _name : String
@@ -159,6 +206,7 @@ begin
   Result := GIS.Get( _name ) as TGIS_LayerPixel ;
 end;
 
+{ Retrieves a TGIS_LayerVector from the viewer by name. }
 // Gets a vector layer with a given name from GIS
 function TfrmHydrology.GetLayerVec(
   const _name : String
@@ -167,11 +215,17 @@ begin
   Result := GIS.Get( _name ) as TGIS_LayerVector ;
 end;
 
+{ Frees the TGIS_Hydrology toolset when the form closes. }
 procedure TfrmHydrology.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   hydrologyToolset.Free ;
 end;
 
+{
+  Loads the DEM raster (Bytowski County GeoTIFF) into the viewer,
+  stores a reference to the base DEM layer and its spatial extent for
+  subsequent hydrology operations, and creates the TGIS_Hydrology toolset.
+}
 procedure TfrmHydrology.FormShow(Sender: TObject);
 begin
   GIS.Mode := TGIS_ViewerMode.Zoom ;
@@ -192,6 +246,7 @@ begin
   hydrologyToolset.BusyEvent := doBusyEvent ;
 end;
 
+{ Zooms out by a factor of 3/4 centred on the mouse pointer. }
 procedure TfrmHydrology.GISMouseWheelDown(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
 var
@@ -203,6 +258,7 @@ begin
   GIS.ZoomBy( 3/4, pt.X, pt.Y ) ;
 end;
 
+{ Zooms in by a factor of 4/3 centred on the mouse pointer. }
 procedure TfrmHydrology.GISMouseWheelUp(Sender: TObject; Shift: TShiftState;
   MousePos: TPoint; var Handled: Boolean);
 var
@@ -214,6 +270,12 @@ begin
   GIS.ZoomBy( 4/3, pt.X, pt.Y ) ;
 end;
 
+{
+  Step 1 — Identify DEM problems.
+  Runs TGIS_Hydrology.Sink on the raw DEM to produce a grid where non-zero
+  cells mark sinks (isolated depressions) and flat areas that would prevent
+  proper flow routing.  Colours the result in red for easy identification.
+}
 procedure TfrmHydrology.btnSinkClick(Sender: TObject);
 var
   mn, mx : String ;
@@ -240,6 +302,13 @@ begin
   btnFillSinks.Enabled:= True ;
 end;
 
+{
+  Step 2 — Fill sinks.
+  Runs TGIS_Hydrology.Fill on the raw DEM to raise all depressions to the
+  level of their lowest outlet, producing a hydrologically conditioned DEM
+  in which water flows continuously downhill to the edge of the grid.
+  Applies a YellowGreen colour ramp with hillshading for visualisation.
+}
 procedure TfrmHydrology.btnFillSinksClick(Sender: TObject);
 var
   hydro_dem       : TGIS_LayerPixel ;
@@ -273,6 +342,13 @@ begin
   btnFlowDirection.Enabled := True ;
 end;
 
+{
+  Step 3 — Flow Direction.
+  Runs TGIS_Hydrology.FlowDirection on the conditioned DEM.
+  Each output cell receives a power-of-two code (1, 2, 4, 8, 16, 32, 64, 128)
+  indicating the D8 steepest-descent direction.
+  A turbo colour ramp makes the eight directions visually distinct.
+}
 procedure TfrmHydrology.btnFlowDirectionClick(Sender: TObject);
 var
   flowdir, hydro_dem : TGIS_LayerPixel ;

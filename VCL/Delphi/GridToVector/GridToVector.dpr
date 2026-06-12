@@ -12,3 +12,4 @@ begin
   Application.CreateForm(TfrmGridToVector, frmGridToVector);
   Application.Run;
 end.
+

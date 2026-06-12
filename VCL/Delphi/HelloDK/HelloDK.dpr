@@ -12,3 +12,4 @@ begin
   Application.CreateForm(TMainForm, MainForm);
   Application.Run;
 end.
+

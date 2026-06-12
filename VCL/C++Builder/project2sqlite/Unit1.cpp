@@ -1,6 +1,50 @@
 //=============================================================================
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
+/*
+  project2sqlite Sample — Converts GIS projects to store vector layers in SQLite databases.
+
+  Key concepts illustrated:
+    - Project file loading (INI or XML format via TGIS_Config)
+    - Vector layer detection and filtering from projects
+    - SQLite layer creation (TGIS_LayerSqlSqlite)
+    - Layer import and format migration (vector → SQLite)
+    - Project configuration manipulation
+    - Relative vs. embedded paths in projects
+    - .ttkls layer descriptor files for SQLite storage
+    - Performance tuning with SQLite PRAGMA settings
+
+  User workflow:
+    1. Run: project2sqlite InputProject OutputProject [database] [embedded|ttkls]
+    2. Load project file (reads all layers)
+    3. Identify vector layers in the project
+    4. Create SQLite storage layer (TGIS_LayerSqlSqlite)
+    5. Import vector features to SQLite with lossless conversion
+    6. Update project configuration with new SQLite layer references
+    7. Save new project file with SQLite-backed layers
+
+  Layer migration:
+    - Source: any vector format (shapefile, GeoJSON, WFS, etc.)
+    - Destination: SQLite spatial database
+    - Preserves geometry and all attributes
+    - Creates .ttkls descriptor file for project integration
+    - Optimizes SQLite with PRAGMA settings (no sync, no journal)
+
+  Configuration management:
+    - Reads layer definitions from INI or XML project config
+    - Preserves coordinate systems (lv->CS)
+    - Updates layer paths to point to SQLite
+    - Supports embedded paths (relative to project) or standalone ttkls files
+    - Format auto-detection: INI vs. XML configuration
+
+  Key API:
+    - TGIS_ViewerBmp: headless viewer for loading projects
+    - TGIS_Config/TGIS_ConfigFactory: project file abstraction
+    - TGIS_ConfigProjectIni/TGIS_ConfigProjectXml: format-specific implementations
+    - TGIS_LayerVector: source layer interface
+    - TGIS_LayerSqlSqlite: SQLite storage backend
+    - ImportLayer: copy features to SQLite with extent and shape type control
+*/
 
 //  How to create format converter
 //
@@ -46,6 +90,39 @@ using namespace std;
 
 //---------------------------------------------------------------------------
 
+/*
+  main
+  Headless project converter that migrates vector layers from various formats to SQLite.
+
+  Algorithm:
+    1. Initialize COM runtime for Windows compatibility
+    2. Create headless viewer (TGIS_ViewerBmp) to load project without UI
+    3. Load input project and enumerate all layers
+    4. Identify vector layers and skip raster/pixel layers
+    5. For each vector layer:
+       a. Check if layer path already exists in output project config
+       b. If not: create SQLite storage layer (TGIS_LayerSqlSqlite)
+       c. Configure SQLite performance pragmas (disable sync/journal)
+       d. Import all features from vector layer to SQLite
+       e. Update project config with new SQLite layer path
+    6. Save new project file with updated layer references
+    7. Clean up all resources
+
+  Parameters:
+    argc: argument count
+    argv: argument vector
+
+  Command-line arguments:
+    1. InputProject: path to source project file (.ttkproject, .ttkprj, etc.)
+    2. OutputProject: path to destination project file
+    3. [Optional] database: name of SQLite database file (default: "Layers.sqlite")
+    4. [Optional] "embedded" or "ttkls": storage mode
+       - "embedded": store layer paths relative to project (in TTKLS format)
+       - "ttkls": create separate .ttkls descriptor files for each layer
+
+  Returns:
+    0 on success, error code on failure (missing arguments, invalid paths, etc.)
+*/
 #pragma argsused
 int main(int argc, char* argv[])
 {
@@ -68,7 +145,7 @@ int main(int argc, char* argv[])
 
   cout<< "TatukGIS Samples - Project->Sqlite converter." << endl;
   cout<< "Converts vector layers of a project into sqlite database." << endl;
-  
+
   if ( ParamCount() < 2 ) {
     cout << "Usage : "<< endl ;
     cout << "  project2sqlite InputProject OutputProject [db embedded|ttkls] "<< endl ;
@@ -81,6 +158,7 @@ int main(int argc, char* argv[])
     return 0 ;
   }
 
+  // Step 1: Create headless viewer (bitmap-based, no window)
   bmp = new TBitmap() ;
   bmp->Width  = 128 ;
   bmp->Height = 128 ;

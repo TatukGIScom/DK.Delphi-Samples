@@ -2,10 +2,28 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 
-//
-//  How to add layer to the map.
-//
-//  Check project\options\directories in a case of any problems during compilation
+/*
+  Isochrone Map sample.
+
+  Demonstrates how to compute travel-time (isochrone) zones from a chosen
+  origin point on a road network using TGIS_IsochroneMap and TGIS_ShortestPath.
+
+  Workflow:
+    1. Load a road-network SHP layer (US TIGER edges for San Bernardino, CA).
+    2. Style the layer to distinguish highways from local roads.
+    3. Create an output TGIS_LayerVector for the isochrone polygons and a
+       separate TGIS_LayerVector for the origin marker.
+    4. Wire up three network-cost callbacks:
+         - doLinkCostEvent    : sets the base traversal cost to arc length.
+         - doLinkType         : classifies arcs as highway (type 0) or local (type 1).
+         - doLinkDynamic      : optionally blocks highway links at run time.
+    5. On each mouse click (in Select mode) the user picks an origin.
+    6. generateIsochrone calls TGIS_IsochroneMap.Generate once per zone,
+       dividing the maximum cost so each successive call covers a wider area.
+    7. The resulting polygons are smoothed and displayed as colour-coded zones.
+
+  Check project\options\directories in case of any problems during compilation.
+*/
 //---------------------------------------------------------------------------
 
 #ifndef Unit1H

@@ -25,6 +25,10 @@
 #include "VCL.GisViewerWnd.hpp"
 #include "GisTypesUI.hpp"
 //---------------------------------------------------------------------------
+/* TwoWindows sample — demonstrates synchronizing two independent GIS viewers of the same data.
+   Creates a split-pane layout with two TGIS_ViewerWnd instances sharing the same layers. When one viewer
+   is panned or zoomed, the other viewport automatically synchronizes to show the same geographic area.
+   Useful for side-by-side map comparisons or linked views (overview + detail). */
 class TForm1 : public TForm
 {
 __published:	// IDE-managed Components

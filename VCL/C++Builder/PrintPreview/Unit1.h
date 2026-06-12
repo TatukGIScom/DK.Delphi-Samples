@@ -3,7 +3,34 @@
 //=============================================================================
 
 //
-//  How to use PrintPreview controls.
+//  PrintPreview sample — demonstrates print preview and printing maps with layout controls (C++Builder/VCL).
+//
+//  What the sample shows:
+//    - Loading a map dataset (countries shapefile) into the main viewer
+//    - Creating a print layout using TGIS_ControlPrintPreview control
+//    - Adding map frame to layout with specific dimensions and position
+//    - Setting print title and subtitle text on the layout
+//    - Adding north arrow / orientation indicator to the print page
+//    - Adding scale bar with automatic scale calculation
+//    - Adding legend showing layer symbology and colors
+//    - Configuring page orientation (portrait/landscape) and paper size
+//    - Setting print margins and safe area constraints
+//    - Previewing the print layout before sending to printer
+//    - Printing the layout to physical printer
+//    - Exporting layout to file (PDF, PostScript, etc.)
+//    - Controlling map projection and extent on the print page
+//    - Using TGIS_PrintManager to manage print jobs
+//
+//  Key TatukGIS API concepts shown here:
+//    TGIS_ViewerWnd              - main interactive map viewer
+//    TGIS_ControlPrintPreview    - print layout and preview control
+//    TGIS_PrintManager           - print job management system
+//    TGIS_ControlLegend          - legend rendering for print output
+//    Map frame                   - positioned map area on print page
+//    Scale bar                   - automatic scale indicator for print
+//    North arrow                 - map orientation indicator
+//    Title / subtitle            - print page annotations
+//    Page setup                  - paper size, orientation, margins
 //
 //  Check project\options\directories in a case of any problems during compilation
 //---------------------------------------------------------------------------

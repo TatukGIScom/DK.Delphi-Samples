@@ -2,7 +2,33 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to provied a join to external database and how to provide charts.
+  JoinAndChart sample — demonstrates attribute joining and proportional symbol charting.
+
+  What the sample shows:
+    - Joining vector layer attributes with external database table
+    - Loading data from external SQL database into memory
+    - Matching features with database records via common attribute key
+    - Rendering pie charts at feature locations with proportional sizing
+    - Rendering bar charts at feature locations with proportional sizing
+    - Rendering column charts at feature locations with proportional sizing
+    - Controlling chart size based on selected attribute field value
+    - Displaying chart data based on selected value field
+    - Switching between different chart types via combo box selector
+    - Switching between different value fields for chart data
+    - Interactive database joins for real-time visualization updates
+    - Multi-field data representation at geographic locations
+
+  Key TatukGIS API concepts shown here:
+    TGIS_ViewerWnd          - main visual map control
+    TGIS_LayerVector        - vector layer with attributes
+    TGIS_Params             - feature styling and rendering
+    TGIS_Chart              - proportional symbol chart rendering
+    OleDb connection        - external database connection
+    TGIS_LayerVector.Open() - open vector data source
+    Attribute join          - match records by common key
+    Chart types             - pie, bar, column chart styles
+    Feature location        - place charts at shape geometry
+    Data-driven styling     - appearance controlled by database values
 }
 unit Unit1;
 

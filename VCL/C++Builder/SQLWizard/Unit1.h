@@ -1,7 +1,37 @@
 //=============================================================================
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
-
+//
+// SQLWizard sample — demonstrates SQL layer creation via an interactive wizard (C++Builder/VCL).
+//
+// What the sample shows:
+//   - Launching an interactive SQL layer wizard dialog
+//   - Specifying database connection parameters and type
+//   - Selecting spatial tables from the database
+//   - Choosing geometry and attribute columns
+//   - Configuring spatial reference systems
+//   - Setting up layer filtering and field mapping
+//   - Creating new SQL layer (.ttkls) definitions interactively
+//   - Testing database connections before saving
+//   - Applying the newly created layer to the viewer
+//   - Managing multiple SQL layers in the project
+//   - Saving layer definitions for future reuse
+//   - Browsing available databases and tables
+//   - Handling various SQL database backends
+//
+// Key TatukGIS API concepts shown here:
+//   TGIS_ViewerWnd              - main visual map control
+//   TGIS_LayerSqlAdo            - ADO-based SQL layer creation
+//   TGIS_LayerSqlSqlite         - SQLite layer creation
+//   TGIS_LayerSqlPostGis        - PostGIS layer creation
+//   SQL Wizard dialog           - step-by-step layer configuration UI
+//   Database connection         - server, port, user, password parameters
+//   Table selection             - choosing source spatial table
+//   Geometry column selection   - identifying the shape column
+//   Spatial reference system    - setting EPSG code or well-known text
+//   Layer configuration         - .ttkls file format creation
+//   Database schema browsing    - discovery of available tables
+//   TGIS_Utils.GisCreateLayer   - factory method for layer instantiation
 //
 //  SQLWizard Sample.
 //

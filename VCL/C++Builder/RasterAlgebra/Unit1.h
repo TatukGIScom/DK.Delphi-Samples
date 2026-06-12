@@ -1,3 +1,15 @@
+/*
+ * RasterAlgebra sample - demonstrates how to apply mathematical expressions
+ * to raster layers using TGIS_RasterAlgebra to produce derived pixel or grid
+ * outputs.
+ *
+ * The sample loads a pixel image, a grid (DEM), or a vector layer into the
+ * viewer, then evaluates a user-supplied formula cell-by-cell to build a new
+ * result layer.  Supported formula examples:
+ *   Pixel inversion : RGB(255 - pixel.R, 255 - pixel.G, 255 - pixel.B)
+ *   Grid thresholding: IF(grid < AVG(grid), MIN(grid), MAX(grid))
+ *   Vector rasterize : IF(NODATA(vector.GIS_UID), RGB(0,255,0), RGB(255,0,0))
+ */
 //---------------------------------------------------------------------------
 
 #ifndef Unit1H
@@ -34,7 +46,11 @@ __published:	// IDE-managed Components
 	void __fastcall btnOpenVectorClick(TObject *Sender);
 	void __fastcall btnExecuteClick(TObject *Sender);
 private:	// User declarations
+	/* Reports raster algebra execution progress on the progress bar.
+	   _pos = 0 initializes the bar; _pos = -1 resets it after completion. */
 	void __fastcall doBusyEvent(TObject *_sender, int _pos, int _end, bool &_abort);
+	/* Applies a blue-lime-red colour ramp to grid layer _l, mapping its full
+	   value range to the ramp and disabling the default grid shadow. */
 	void __fastcall applyRamp(TGIS_LayerPixel *_l);
 public:		// User declarations
 	__fastcall TfrmMain(TComponent* Owner);

@@ -2,7 +2,30 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to use field properties of a layer.
+  Hierarchy sample — demonstrates layer organization and grouping using TGIS_Hierarchy.
+
+  What the sample shows:
+    - Creating a hierarchical layer structure (nested groups of layers) on a map
+    - Organizing related layers (e.g., Poland/Waters/Lakes, Poland/Areas/city)
+    - Using CreateGroup() to create named logical groups for layer organization
+    - Using AddLayer() and DeleteLayer() to manage layer group membership
+    - Creating nested groups with multi-level hierarchies via CreateGroup chains
+    - Using MoveGroup() to reparent groups within the hierarchy tree
+    - Using Groups() accessor to retrieve groups by name for further operations
+    - Displaying the hierarchy in a legend control via TGIS_ControlLegendMode.Groups
+    - Loading layers from .ttkproject file with pre-configured hierarchy
+    - Interactive legend showing grouped layer structure
+
+  Key TatukGIS API concepts shown here:
+    TGIS_ViewerWnd              - main visual map control
+    TGIS_Hierarchy              - layer grouping and organization system
+    TGIS_Hierarchy.CreateGroup() - creates a named group container
+    TGIS_Hierarchy.AddLayer()    - adds layer to a group
+    TGIS_Hierarchy.DeleteLayer() - removes layer from a group
+    TGIS_Hierarchy.MoveGroup()   - reparents a group to another group
+    TGIS_Hierarchy.Groups()      - accessor to retrieve groups by name
+    TGIS_ControlLegend           - legend panel (Groups mode for hierarchy view)
+    TGIS_ControlLegendMode       - display modes (Layers vs. Groups)
 }
 
 unit Unit1;
@@ -38,6 +61,10 @@ uses
   Vcl.GisViewerWnd;
 
 type
+  { Hierarchy sample — demonstrates layer organization and grouping using TGIS_Hierarchy.
+    Creates a hierarchical layer structure (nested groups of layers) on a map, organizing related
+    layers (e.g., Poland/Waters/Lakes, Poland/Areas/city). Supports group creation, layer assignment,
+    group nesting, and parsing hierarchy from INI format strings. Displays the hierarchy in a legend control. }
   TForm1 = class(TForm)
     ToolBar1: TToolBar;
     Button1: TButton;

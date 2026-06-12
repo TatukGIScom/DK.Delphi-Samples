@@ -2,7 +2,41 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to use field rules.
+  FieldRules sample - Demonstrates field validation and constraint rules for
+  attribute data entry and layer attribute integrity.
+
+  Key concepts illustrated:
+    - TGIS_FieldRule: defines constraints and validation on fields
+    - Alias rules: provide user-friendly names for database columns
+    - Check rules: validate against logical expressions
+    - List rules: restrict to predefined value enumeration
+    - Validation rules: regex pattern matching for text fields
+    - Required fields: enforce NOT NULL constraints
+    - Domain rules: restrict to specific value domain
+
+  Implementation:
+    - Buttons for adding each rule type (Alias, Check, List, Validate, Required)
+    - Email pattern validation: regex for email format
+    - Custom expression editor for complex rules
+    - Real-time rule attachment to layer fields
+    - Attributes control panel showing active rules
+
+  User workflow:
+    1. Create or load vector layer
+    2. Click buttons to add validation rules
+    3. Enter rule parameters (pattern, list values, etc.)
+    4. Rules apply to layer attribute fields
+    5. Edit features in grid - rules enforced automatically
+    6. Invalid values rejected with error message
+
+  Code structure:
+    - TForm1: main form with rule buttons
+    - btnAddAlias_Click: add field alias/rename
+    - btnAddCheck_Click: add logical expression constraint
+    - btnAddList_Click: add enumerated list constraint
+    - btnAddValidate_Click: add regex pattern validation
+    - btnAddRequired_Click: add NOT NULL constraint
+    - Rule callbacks: enforce validation on data entry
 }
 unit Unit1;
 

@@ -2,7 +2,40 @@
 // This source code is a part of TatukGIS Developer Kernel.
 //=============================================================================
 {
-  How to provide basic Client-Server solution (Server side)
+  Server Unit - Server-side component of distributed GIS architecture.
+  Demonstrates TCP/IP geographic data serving to multiple client connections.
+
+  Key concepts illustrated:
+    - Indy TIdTCPServer: listen for incoming client connections
+    - Multi-client handling: serve multiple simultaneous connections
+    - Geographic data serialization: convert layers to network format
+    - Data streaming: transmit GIS layer data over network
+    - Connection management: track active clients and session state
+    - Asynchronous operations: handle clients without blocking main thread
+
+  Technical approach:
+    - TIdTCPServer component: listen on port 5555
+    - Connection threads: each client gets dedicated thread
+    - Layer management: load geographic data into memory
+    - Data serialization: convert TGIS_Layer to network format
+    - Broadcast: optionally send data to all connected clients
+    - Cleanup: remove disconnected clients and release resources
+
+  Code structure:
+    - TForm1: main server form with layer management
+    - FormCreate: initialize server, load geographic data
+    - btnStart_Click: bind server to port 5555 and start listening
+    - btnStop_Click: shutdown server, disconnect all clients
+    - IdTCPServerExecute: handle client connection (in thread)
+    - OnClientConnect: triggered when client connects
+    - OnClientDisconnect: triggered when client disconnects
+
+  Network protocol:
+    - Port: 5555 (TCP/IP)
+    - Format: TatukGIS binary layer serialization
+    - Multi-packet transmission: break large data into chunks
+    - Connection pooling: reuse connections for multiple requests
+    - Load balancing: distribute across available server threads
 }
 unit Unit1;
 
