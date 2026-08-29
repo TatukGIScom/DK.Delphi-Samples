@@ -1,0 +1,45 @@
+package GisDebugVisualizer;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS OFF}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION ON}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO OFF}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES OFF}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE RELEASE}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'TatukGIS TGIS_Shape Debug Visualizer'}
+{$DESIGNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  vcl,
+  designide,
+  dbrtl;
+
+contains
+  GisVis.Core in 'GisVis.Core.pas',
+  GisVis.Debugger.Evaluator in 'GisVis.Debugger.Evaluator.pas',
+  GisVis.Debugger.ViewerFrame in 'GisVis.Debugger.ViewerFrame.pas',
+  GisVis.Debugger.DockForm in 'GisVis.Debugger.DockForm.pas',
+  GisVis.Debugger.Notifier in 'GisVis.Debugger.Notifier.pas';
+
+end.

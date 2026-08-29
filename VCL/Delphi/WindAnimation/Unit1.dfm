@@ -1,0 +1,62 @@
+object FormMain: TFormMain
+  Left = 0
+  Top = 0
+  Margins.Left = 5
+  Margins.Top = 5
+  Margins.Right = 5
+  Margins.Bottom = 5
+  Caption = 'Wind Animation'
+  ClientHeight = 800
+  ClientWidth = 1200
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -18
+  Font.Name = 'Segoe UI'
+  Font.Style = []
+  OnShow = FormShow
+  PixelsPerInch = 144
+  TextHeight = 25
+  object GIS: TGIS_ViewerWnd
+    Left = 0
+    Top = 0
+    Width = 1200
+    Height = 800
+    Cursor = 18
+    Margins.Left = 5
+    Margins.Top = 5
+    Margins.Right = 5
+    Margins.Bottom = 5
+    CursorForDrag = crDefault
+    CursorForEdit = crDefault
+    CursorForSelect = crDefault
+    CursorForUserDefined = crDefault
+    CursorForZoom = crDefault
+    CursorForZoomEx = crDefault
+    CursorForCameraPosition = crDefault
+    CursorForCameraRotation = crDefault
+    CursorForCameraXYZ = crDefault
+    CursorForCameraXY = crDefault
+    CursorForCameraZoom = crDefault
+    CursorForSunPosition = crDefault
+    CursorFor3DSelect = crDefault
+    Align = alClient
+    Ctl3D = True
+    ParentColor = False
+    ParentCtl3D = False
+    TabOrder = 0
+    AutoStyle = False
+    KeepScale = False
+    DelayedUpdate = 700
+    ProgressiveUpdate = 100
+    Mode = Zoom
+    BorderStyle = bsNone
+  end
+  object Timer1: TTimer
+    Enabled = False
+    Interval = 60
+    OnTimer = Timer1Timer
+    Left = 36
+    Top = 564
+  end
+end
