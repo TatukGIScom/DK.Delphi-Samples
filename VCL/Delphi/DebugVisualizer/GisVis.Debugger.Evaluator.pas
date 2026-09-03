@@ -1,3 +1,26 @@
+//=============================================================================
+// This source code is a part of TatukGIS Developer Kernel.
+//=============================================================================
+{
+  GisVis.Debugger.Evaluator — RAD Studio debugger expression evaluator (Delphi/VCL).
+
+  What the unit provides:
+    - TGisDebugEvaluator class for evaluating debugger expressions
+    - IOTAThreadNotifier interface implementation for debugger interaction
+    - Expression evaluation with configurable timeout
+    - Object address resolution from debugger expressions
+    - Support for Delphi XE2+ (version 23.0+) thread notifier enhancements
+    - Asynchronous evaluation with blocking wait (poll-based completion detection)
+
+  Key functions:
+    Evaluate()                  - evaluate expression and return string result
+    EvaluateObjectAddress()     - get object memory address from expression
+    ShowLayer()                 - specialized evaluation for layer visualization
+    EvaluateComplete()          - callback when debugger expression completes (overloaded)
+
+  Note: Uses IOTAThreadNotifier to hook into debugger evaluation callbacks.
+        Implements polling with timeout to get asynchronous results synchronously.
+}
 unit GisVis.Debugger.Evaluator ;
 
 interface

@@ -1,3 +1,28 @@
+//=============================================================================
+// This source code is a part of TatukGIS Developer Kernel.
+//=============================================================================
+{
+  GisVis.Debugger.Notifier — RAD Studio debugger visualizer plugin registration (Delphi/VCL).
+
+  What the unit provides:
+    - TGisShapeDebugVisualizer class implementing IOTADebuggerVisualizer interface
+    - Plugin registration for TGIS_Shape and descendant class visualization
+    - Debugger context menu integration ("Show on TatukGIS Map..." option)
+    - Value replacement (replaces object reference with visual representation)
+    - External viewer window management for shape inspection
+
+  Key interfaces implemented:
+    IOTADebuggerVisualizer              - register custom visualizer with IDE
+    IOTADebuggerVisualizerValueReplacer - provide alternate representation text
+    IOTADebuggerVisualizerExternalViewer- open external window for visualization
+
+  Supported types:
+    TGIS_Shape (and all descendants through class hierarchy)
+
+  Registration:
+    Called via package registration mechanism to make visualizer available in IDE.
+    Visualizer appears in debugger Inspector and variable tooltip context menus.
+}
 unit GisVis.Debugger.Notifier ;
 
 interface

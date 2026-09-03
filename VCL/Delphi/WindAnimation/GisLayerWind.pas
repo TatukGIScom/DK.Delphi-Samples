@@ -1,7 +1,31 @@
-/// <summary>
-///   Provides a custom GIS layer that renders animated wind particles
-///   using the TWindEngine.
-/// </summary>
+//=============================================================================
+// This source code is a part of TatukGIS Developer Kernel.
+//=============================================================================
+{
+  WindAnimation — demonstrates animated wind particle rendering on a geographic map (Delphi/VCL).
+
+  What the sample shows:
+    - Custom GIS layer implementation for rendering complex animated data
+    - Loading meteorological wind data from JSON format (U/V wind components)
+    - Particle system simulation with wind-driven movement (4000+ particles)
+    - Bilinear interpolation of grid data for smooth particle motion
+    - Real-time coordinate transformation between geographic (WGS84) and screen pixels
+    - Opacity/fading effects for visual trail smoothing
+    - Dynamic buffer management for high-performance rendering
+    - Speed-based color gradients (Windy-style wind visualization)
+    - Particle respawning at map edges and age limits
+    - Integration with TatukGIS viewer viewport offsets and zoom levels
+
+  Key TatukGIS API concepts shown here:
+    TGIS_Layer                  - base class for custom layer implementations
+    TGIS_LayerWind              - custom wind particle layer
+    TGIS_Bitmap                 - double-buffering for smooth animation
+    TGIS_RendererAbstract       - abstract renderer for layer drawing
+    TGIS_RendererContext        - rendering context setup
+    DrawEx                      - custom layer rendering override
+    TGIS_Extent / TGIS_Point    - geographic coordinate system
+    TWindEngine                 - particle system and wind interpolation
+}
 unit GisLayerWind ;
 
 interface
@@ -66,11 +90,13 @@ const
 
 { TGIS_LayerWind }
 
+{ Constructor
+  Initializes the wind layer with pixel-based rendering parameters.
+  Sets layer as persistent and prepares for wind engine data. }
 constructor TGIS_LayerWind.Create ;
 begin
   inherited ;
 
-  // Initialize parameters and set the layer subtype as persistent
   ParamsList.SetUp(TGIS_ParamsSectionPixel.Create) ;
   FSubType := FSubType + [TGIS_LayerSubType.Persistent] ;
   Path := '' ;
@@ -78,47 +104,69 @@ begin
   FIsModified := False ;
 end ;
 
+{ doDestroy (override)
+  Releases the wind engine and rendering buffer when the layer is destroyed. }
 procedure TGIS_LayerWind.doDestroy ;
 begin
-  // Free the internal wind engine and bitmap buffer to prevent memory leaks
   FEngine.Free ;
   FBuffer.Free ;
 
   inherited ;
 end ;
 
+{ setUp (override)
+  Initializes the wind layer: sets WGS84 coordinate system, creates rendering
+  buffer and wind engine, loads meteorological JSON data from Path property,
+  and initializes particles.
+
+  Algorithm:
+    1. Set coordinate system to WGS84 (EPSG:4326) for global wind data.
+    2. Allocate rendering buffer (double-buffer) sized to viewer canvas.
+    3. Create wind engine with 4000 particles and multi-color mode.
+    4. Load wind data from JSON file if Path points to valid file.
+    5. Initialize particles scattered across viewer window. }
 procedure TGIS_LayerWind.setUp ;
 var
   w, h : Integer ;
 begin
   inherited ;
 
-  // Set the coordinate system to WGS84 (EPSG : 4326) and initialize the valid extent
+  // Set coordinate system to WGS84 (world extent)
   SetCSByEPSG(4326) ;
   FExtent := CS.ValidityExtent ;
 
-  // Retrieve the current viewer canvas dimensions
+  // Determine viewer canvas dimensions for buffer allocation
   w := Viewer.Ref.ViewerParent.ControlCanvasWidth ;
   h := Viewer.Ref.ViewerParent.ControlCanvasHeight ;
 
-  // Create and initialize the bitmap buffer used for smooth particle trail rendering
+  // Allocate double-buffer for particle trail rendering
   FBuffer := TGIS_Bitmap.Create(w, h) ;
   FBuffer.Clear( TGIS_Color.FromARGB(255, 255, 255, 255) ) ;
   FBuffer.MakeTransparent ;
 
-  // Initialize the wind engine with 4000 active particles
+  // Initialize wind engine and load meteorological data
   FEngine := TWindEngine.Create( NUMBER_OF_PARTICLES ) ;
-  // use gradient color ramp
   FEngine.OneColor := False ;
 
-  // Load meteorological JSON data if the specified file path exists
   if SafeFileExists(Path) then
     FEngine.LoadDataFromJSON( TFile.ReadAllText(Path) ) ;
 
-  // Initialize particle positions within the viewer's screen dimensions
+  // Scatter particles across current viewport
   FEngine.InitializeParticles(w, h) ;
 end ;
 
+{ DrawEx (override)
+  Renders animated wind particles for the current map extent.
+  Updates particle positions, applies fading trail effects, and composites final frame.
+
+  Algorithm:
+    1. Exit if layer not visible in current extent.
+    2. Get viewer canvas dimensions; reallocate buffer if size changed (e.g., window resize).
+    3. Convert map extent to screen rectangle accounting for viewport offset.
+    4. Update all particles: interpolate wind vectors, move particles, handle respawning.
+    5. Apply opacity/fading effect based on average wind speed (visual trail effect).
+    6. Render particles onto double-buffer using abstract renderer.
+    7. Composite final buffer image onto main GIS canvas. }
 function TGIS_LayerWind.DrawEx(
   const _extent : TGIS_Extent
 ) : Boolean ;
@@ -130,7 +178,6 @@ var
   ctx : TGIS_RendererContext ;
   rct : TRect ;
 begin
-  // Verify if the layer is visible in the current extent
   Result := IsVisible(_extent) ;
   if not Result then Exit ;
 
@@ -138,7 +185,7 @@ begin
   w := Viewer.Ref.ViewerParent.ControlCanvasWidth ;
   h := Viewer.Ref.ViewerParent.ControlCanvasHeight ;
 
-  // Reallocate the rendering buffer dynamically if the viewer dimensions have changed
+  // Reallocate buffer if viewer window size changed
   if (w <> FBuffer.Width) or (h <> FBuffer.Height) then
   begin
     FBuffer.Free ;
@@ -146,38 +193,36 @@ begin
     FBuffer.MakeTransparent ;
   end ;
 
-  // Calculate the screen rectangle corresponding to the current map extent
+  // Convert map extent to screen rectangle (accounts for window offset)
   rct := Viewer.Ref.MapToScreenRect(_extent) ;
 
-  // Update particle positions based on the wind grid data and the current view offset
+  // Update particle simulation for current extent and viewport
   FEngine.UpdateWGSWithOffset(
-    w, h,            // Full dimensions of the viewer window
-    rct.Width,       // Map width in pixels
-    rct.Height,      // Map height in pixels
-    rct.Left,        // Left margin of the map in the window
-    rct.Top,         // Top margin of the map in the window
-    ANIMATION_SPEED, // SpeedScale (animation speed)
+    w, h,
+    rct.Width,       // Map drawing area width
+    rct.Height,      // Map drawing area height
+    rct.Left,        // Left offset (pan/zoom dependent)
+    rct.Top,         // Top offset (pan/zoom dependent)
+    ANIMATION_SPEED,
     _extent.XMin, _extent.XMax, _extent.YMin, _extent.YMax
   ) ;
 
-  // Calculate fading/opacity effect dynamically based on the average wind speed
+  // Dynamic fading effect: faster wind = more opaque trails
   avgSpeed := FEngine.GetAverageSpeed ;
   calcAlpha := FADING_EFFECT + (avgSpeed * SPEED_FACTOR) ;
   calcAlpha := EnsureRange(Round(calcAlpha), 8, 100) ;
 
-  // Apply the calculated opacity to create a smooth, fading trail effect for particles
   FBuffer.ApplyOpacity(Round(calcAlpha)) ;
 
+  // Render particles onto double-buffer
   ctx := TGIS_RendererContext.Create ;
   try
-    // Create a local renderer instance to draw the updated particles onto the buffer
     rnd := rdr.CreateInstance ;
     try
       ctx.AssignBaseMap(FBuffer, False) ;
       rnd.CreateContext(Viewer.Ref.ViewerParent, Viewer.Ref, ctx, Point(0, 0), w, h, Viewer.Ref.PPI, 100) ;
       rnd.PrepareDraw ;
 
-      // Draw the wind particles onto the temporary rendering context
       FEngine.DrawParticles(rnd) ;
     finally
       rnd.AfterDraw ;
@@ -188,7 +233,7 @@ begin
     ctx.Free ;
   end ;
 
-  // Render the final composition buffer directly onto the main GIS canvas
+  // Composite final buffer to GIS canvas
   rdr.CanvasDrawBitmap( FBuffer, Rect(0, 0, w, h) ) ;
 
   Result := True ;

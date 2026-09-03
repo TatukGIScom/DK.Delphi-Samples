@@ -1,3 +1,26 @@
+//=============================================================================
+// This source code is a part of TatukGIS Developer Kernel.
+//=============================================================================
+{
+  GisVis.Core — utility functions for debugger shape visualization (Delphi/VCL).
+
+  What the unit provides:
+    - Shape statistics record (TGisVisShapeStats) for metadata and geometry properties
+    - WKT (Well-Known Text) parsing and geometry reconstruction from text format
+    - Quote character stripping from debugger expressions
+    - Text truncation utilities for display in UI
+    - In-memory layer factory for visualization
+    - Shape building from WKT geometry strings
+    - Statistics computation (extent, area, length) from shapes
+
+  Key functions:
+    GisVisStripQuotes           - remove enclosing single quotes from strings
+    GisVisWktGeometryType       - extract geometry type from WKT string
+    GisVisTruncate              - truncate text to max length with ellipsis
+    GisVisCreateMemoryLayer     - factory for in-memory vector layer
+    GisVisBuildShapeFromWKT     - reconstruct shape object from WKT text
+    GisVisComputeStats          - extract geometric and topological statistics
+}
 unit GisVis.Core ;
 
 interface

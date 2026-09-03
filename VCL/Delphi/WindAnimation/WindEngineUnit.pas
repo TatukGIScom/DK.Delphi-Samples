@@ -1,6 +1,31 @@
-/// <summary>
-///   Provides the wind engine and particle system for rendering animated wind maps.
-/// </summary>
+//=============================================================================
+// This source code is a part of TatukGIS Developer Kernel.
+//=============================================================================
+{
+  WindEngineUnit â€” wind particle system engine for animated meteorological visualization (Delphi/VCL).
+
+  What the unit provides:
+    - TWindParticle record for individual animated wind particles
+    - TWindEngine class managing 4000+ wind particles with physics simulation
+    - Meteorological grid data loading (U/V wind components from JSON)
+    - Particle initialization in WGS84 geographic coordinates
+    - Real-time particle position updates via bilinear wind grid interpolation
+    - Particle respawning at map edges and age limits
+    - Speed-based color mapping (gradient and monochrome color schemes)
+    - Trail effect opacity/fading calculations
+    - Rendering to both VCL Canvas and abstract GIS renderers
+
+  Key components:
+    TWindParticle               - single particle (position, speed, color, age)
+    TWindEngine                 - particle system simulator and renderer
+    LatLonToScreen (local)       - geographic to screen coordinate transformation
+    UpdateWGSWithOffset()       - main physics and animation update loop
+    LoadDataFromJSON()          - parse meteorological wind data
+    DrawParticles()             - render particles to output (overloaded)
+
+  Data format: Wind data loaded from JSON containing nx, ny (grid dimensions),
+  and flat arrays of U, V components representing wind velocity at each grid point.
+}
 unit WindEngineUnit ;
 
 interface
@@ -126,6 +151,9 @@ uses
   System.Generics.Collections,
   GisTypesUI ;
 
+{ Constructor
+  Initializes the wind engine with specified particle count.
+  Sets up empty particle array and zero grid dimensions. }
 constructor TWindEngine.Create(
   const ParticleCount : Integer
 ) ;
@@ -137,6 +165,8 @@ begin
   FOneColor := False ;
 end ;
 
+{ Destructor
+  Frees all dynamically allocated wind grid data and particle arrays. }
 destructor TWindEngine.Destroy ;
 begin
   SetLength(FGridU, 0, 0) ;
@@ -145,27 +175,39 @@ begin
   inherited ;
 end ;
 
+{ InitializeParticlesWGS
+  Randomly distributes particles across the world at WGS84 coordinates.
+  Assigns random lifespans to create staggered respawning and smooth animation.
+
+  Algorithm:
+    1. Distribute particles longitude: -180 to +180 degrees.
+    2. Distribute particles latitude: -85 to +85 degrees (Mercator limits).
+    3. Assign random MaxAge (20-50 frames) and random current Age to stagger death. }
 procedure TWindEngine.InitializeParticlesWGS ;
 var
   i : Integer ;
 begin
   for i := 0 to High(FParticles) do
   begin
-    // Randomly distribute from -180 to 180 degrees (Longitude)
+    // Randomly distribute longitude and latitude across world bounds
     FParticles[i].Lon := -180.0 + Random(3600) / 10.0 ;
-
-    // Randomly distribute from -85 to 85 degrees (Latitude - Mercator projection limits)
     FParticles[i].Lat := -85.0 + Random(1700) / 10.0 ;
 
-    // Assign a random lifespan to ensure particles don't all die at once
+    // Stagger lifespan so particles don't all respawn at the same time
     FParticles[i].MaxAge := 20 + Random(30) ;
     FParticles[i].Age := Random(FParticles[i].MaxAge) ;
   end ;
 end ;
 
-/// <summary>
-///   Maps geographic coordinates to a window pixel, accounting for map margins (offsets).
-/// </summary>
+{ LatLonToScreen (local helper)
+  Converts geographic WGS84 coordinates to screen pixels, accounting for the
+  current map extent and viewport offset. Returns True if point is within visible map area.
+
+  Algorithm:
+    1. Linear map of longitude to X pixel coordinate (normalized to map width).
+    2. Linear map of latitude to Y pixel coordinate (inverted for screen coords).
+    3. Apply viewport offset (MapLeft, MapTop) to position in window.
+    4. Return visibility test: True if pixel is within map bounds. }
 function LatLonToScreen(
   const Lat, Lon : Double ;
   const MinWidthLon, MaxWidthLon, MinHeightLat, MaxHeightLat : Double ;
@@ -174,24 +216,35 @@ function LatLonToScreen(
   out x, y : Single
 ) : Boolean ;
 begin
-  // 1. Linear mapping of the horizontal coordinate (Longitude - Lon)
-  // Calculate the percentage position in the current extent and multiply by map width
+  // Map longitude to X pixel within map rectangle
   x := ((Lon - MinWidthLon) / (MaxWidthLon - MinWidthLon)) * MapWidth ;
 
-  // 2. Linear mapping of the vertical coordinate (Latitude - Lat)
-  // Since the Y axis goes down, MaxLat maps to pixel 0 (top edge of the map)
+  // Map latitude to Y pixel (inverted: MaxLat=0, MinLat=MapHeight)
   y := ((MaxHeightLat - Lat) / (MaxHeightLat - MinHeightLat)) * MapHeight ;
 
-  // 3. Add GIS Viewer window offset
-  // Translate the point from the local map layout to global screen coordinates
+  // Apply viewport offset to convert from local map coords to screen coords
   x := x + MapLeft ;
   y := y + MapTop ;
 
-  // 4. Visibility validation
-  // Returns True if the point is physically within the current map rectangle
+  // Test if pixel is within map rectangle (with 10-pixel margin for smooth transitions)
   Result := (x >= MapLeft) and (x <= MapLeft + MapWidth) and (y >= MapTop) and (y <= MapTop + MapHeight) ;
 end ;
 
+{ UpdateWGSWithOffset
+  Animates all wind particles for one frame. Interpolates wind vectors from grid
+  data, moves particles according to wind direction/speed, handles respawning at
+  map edges and age limits, and updates particle colors based on wind speed.
+
+  Called each render frame to advance the animation. Requires meteorological grid
+  data to be loaded via LoadDataFromJSON first.
+
+  Algorithm:
+    1. Exit if wind grid data not loaded.
+    2. For each particle: age it, compute screen position from current geographic coords.
+    3. Check death conditions (max age or out-of-bounds); respawn if needed.
+    4. Interpolate wind U,V components from grid via bilinear interpolation.
+    5. Compute wind speed and apply color gradient based on speed magnitude.
+    6. Move particle in geographic space according to interpolated wind velocity. }
 procedure TWindEngine.UpdateWGSWithOffset(
   const FormWidth, FormHeight : Integer ;
   const MapWidth, MapHeight : Integer ;
@@ -205,19 +258,19 @@ var
   normLon, normLat : Single ;
   deltaLon, deltaLat : Double ;
 begin
-  // Prevent execution if meteorological data is missing
   if (FGridW = 0) or (FGridH = 0) then
     Exit ;
 
-  // Calculate the current geographic span of the view (width and height in degrees)
+  // Calculate current map extent size in degrees (used for zoom-aware scaling)
   deltaLon := ExtentMaxLon - ExtentMinLon ;
   deltaLat := ExtentMaxLat - ExtentMinLat ;
 
+  // === PHASE 2: Process all particles ===
   for i := 0 to High(FParticles) do
   begin
     Inc(FParticles[i].Age) ;
 
-    // STEP 1 : Determine the current screen position of the particle considering the GIS map offset
+    // === STEP 2.1: Project geographic position to screen pixels ===
     LatLonToScreen(
       FParticles[i].Lat, FParticles[i].Lon, ExtentMinLon,
       ExtentMaxLon, ExtentMinLat, ExtentMaxLat,
@@ -225,12 +278,12 @@ begin
       FParticles[i].X, FParticles[i].Y
     ) ;
 
-    // Save current position as OldX/OldY to draw the trail (line) later
+    // === STEP 2.2: Save previous position for trail rendering ===
     FParticles[i].OldX := FParticles[i].X ;
     FParticles[i].OldY := FParticles[i].Y ;
 
-    // STEP 2 : Check death conditions (old age or escaping the physical MAP area)
-    // A 10-pixel margin allows particles to smoothly enter/exit the map edges
+    // === STEP 2.3: Check death conditions and respawn if needed ===
+    // Particles die at max age or exit map bounds (with 10-pixel margin for smooth transitions)
     if (FParticles[i].Age > FParticles[i].MaxAge) or
        (FParticles[i].X < MapLeft - 10) or
        (FParticles[i].X > MapLeft + MapWidth + 10) or
@@ -256,16 +309,17 @@ begin
       Continue ;
     end ;
 
-    // STEP 3 : Interpolate grid data (Using global wind arrays 0..360, 0..181)
+    // === STEP 2.4: Interpolate wind vectors from meteorological grid ===
+    // Maps particle position to grid coordinates and performs bilinear interpolation.
     normLon := FParticles[i].Lon ;
 
-    // Normalize Longitude to fit 0..360 range
+    // === STEP 2.4a: Normalize longitude to 0..360 range ===
     while normLon < 0 do
       normLon := normLon + 360.0 ;
     while normLon >= 360.0 do
       normLon := normLon - 360.0 ;
 
-    // Convert Lat coordinate to grid row index (from North Pole 90° downwards)
+    // Convert Lat coordinate to grid row index (from North Pole 90ï¿½ downwards)
     normLat := 90.0 - FParticles[i].Lat ;
 
     // Calculate grid indices and interpolation factors

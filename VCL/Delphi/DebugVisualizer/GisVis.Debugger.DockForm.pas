@@ -1,3 +1,23 @@
+//=============================================================================
+// This source code is a part of TatukGIS Developer Kernel.
+//=============================================================================
+{
+  GisVis.Debugger.DockForm — RAD Studio debugger dockable window factory (Delphi/VCL).
+
+  What the unit provides:
+    - TGisVisDockForm class implementing INTACustomDockableForm interface
+    - Factory for creating debugger inspector windows hosting shape visualizers
+    - Window state persistence (save/restore position and size)
+    - Menu and toolbar integration with RAD Studio IDE
+    - Expression-specific visualization windows
+    - Helper interface for frame-form communication
+
+  Key concepts:
+    INTACustomDockableForm      - RAD Studio dockable window protocol
+    TCustomFrameClass           - frame template for visualization UI
+    Window state persistence    - INI file storage of window geometry
+    IDE integration             - menu/toolbar customization points
+}
 unit GisVis.Debugger.DockForm ;
 
 interface

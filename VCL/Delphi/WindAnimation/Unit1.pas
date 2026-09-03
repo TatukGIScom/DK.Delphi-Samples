@@ -1,5 +1,27 @@
+//=============================================================================
+// This source code is a part of TatukGIS Developer Kernel.
+//=============================================================================
 {
-  Provides the wind engine and particle system for rendering animated wind maps.
+  WindAnimation Main Form — demonstrates real-time animated wind visualization (Delphi/VCL).
+
+  What the sample shows:
+    - Main application window hosting the wind visualization layer
+    - Loading base map imagery (satellite/raster data) as background
+    - Creating and configuring the custom wind animation layer
+    - Loading meteorological wind data from JSON files
+    - Real-time particle animation using OnTimer callbacks
+    - Integration of custom layers with standard GIS viewers
+    - Disabling layer caching for smooth real-time rendering
+    - Viewport synchronization (FullExtent zooming)
+
+  Key TatukGIS API concepts shown here:
+    TGIS_ViewerWnd              - main map visualization control
+    TGIS_LayerJPG               - raster/image layer for base map
+    TGIS_LayerWind              - custom animated wind particle layer
+    GIS.Add()                   - add layers to viewer
+    GIS.InvalidateTopmost()     - refresh topmost layer only (efficient update)
+    CachedPaint                 - layer caching control (False = no cache)
+    TTimer                      - frame animation trigger
 }
 unit Unit1;
 
@@ -46,12 +68,25 @@ uses
   GisLayerJPG,
   GisUtils ;
 
+{ FormShow
+  Initializes the wind visualization sample. Loads satellite imagery as base map,
+  creates the wind animation layer with JSON meteorological data, and starts the
+  animation timer for real-time particle updates.
+
+  Algorithm:
+    1. Load world satellite imagery (VisibleEarth 8km base map).
+    2. Create wind animation layer and set meteorological JSON data path.
+    3. Disable layer caching to ensure smooth real-time rendering.
+    4. Add wind layer to viewer and zoom to full extent.
+    5. Enable timer for frame-by-frame animation. }
 procedure TFormMain.FormShow(Sender: TObject);
 var
   lv : TGIS_LayerWind ;
 begin
+  // Load base map imagery
   GIS.Open(TGIS_Utils.GisSamplesDataDirDownload + '\World\VisibleEarth\world_8km.jpg') ;
 
+  // Create and configure wind animation layer
   lv := TGIS_LayerWind.Create ;
   lv.Path := 'wind-global.json' ;
   lv.CachedPaint := False ;
@@ -60,6 +95,9 @@ begin
   Timer1.Enabled := True ;
 end;
 
+{ Timer1Timer
+  Animation frame callback. Refreshes the topmost (wind) layer each frame.
+  Called repeatedly while animation is running to advance particle positions. }
 procedure TFormMain.Timer1Timer(Sender: TObject);
 begin
   GIS.InvalidateTopmost ;
